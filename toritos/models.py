@@ -20,7 +20,7 @@ class Observatory(db.Model):
 
 class CCD(db.Model):
 
-    __tablename__ = 'ccd'
+    __tablename__ = 'CCD'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False, unique=True)

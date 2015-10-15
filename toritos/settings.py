@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-DEBUG = False
+DEBUG = True
 
-CONNECTION = 'sqlite:///cada.db'
+CONNECTION = 'sqlite:///toritos-dev.db'
 
