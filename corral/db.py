@@ -13,16 +13,16 @@ from sqlalchemy.ext import declarative
 
 from sqlalchemy_utils import *
 
-from .conf import PACKAGE, settings
+from . import conf
 
 
 # =============================================================================
 # CONSTANTS
 # =============================================================================
 
-MODELS_MODULE = "{}.models".format(PACKAGE)
+MODELS_MODULE = "{}.models".format(conf.PACKAGE)
 
-engine = create_engine(settings.CONNECTION, echo=settings.DEBUG)
+engine = create_engine(conf.settings.CONNECTION, echo=conf.settings.DEBUG)
 
 Model = declarative.declarative_base(name="Model", bind=engine)
 
