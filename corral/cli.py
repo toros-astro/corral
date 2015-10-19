@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from . import db
+from . import core, db
+
 
 def run(args):
-    db.get_models_module()
+    core.setup_enviroment()
     db.create_all()
