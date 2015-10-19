@@ -12,7 +12,7 @@ import collections
 # FUNCTIONS
 # =============================================================================
 
-def to_namedtuple(name, **d):
+def to_namedtuple(name, d):
     keys = list(d.keys())
     namedtuple = collections.namedtuple(name, d)
     return namedtuple(**d)

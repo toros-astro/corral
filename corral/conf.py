@@ -20,9 +20,9 @@ CORRAL_SETTINGS_MODULE = os.environ["CORRAL_SETTINGS_MODULE"]
 PACKAGE = CORRAL_SETTINGS_MODULE.split(".", 1)[0]
 
 DEFAULT_SETTINGS = util.to_namedtuple(
-    "DefaultSettings",
-    DEBUG=True,
-    CONNECTION='sqlite:///corral-dev.db')
+    "DefaultSettings", {
+        "DEBUG": True,
+        "CONNECTION": 'sqlite:///corral-dev.db'})
 
 
 # =============================================================================
