@@ -4,5 +4,5 @@
 from . import db
 
 
-def setup_enviroment():
+def setup_environment():
     db.load_models_module()

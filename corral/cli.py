@@ -101,7 +101,7 @@ def split_parsed_args(parsed_args):
 
 
 def run_from_command_line(args):
-    core.setup_enviroment()
+    core.setup_environment()
     parser = create_parser()
     parsed_args = parser.parse_args(args)
     func, args = split_parsed_args(parsed_args)
