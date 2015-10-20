@@ -39,6 +39,9 @@ class BaseCommand(object):
             return collected
         return collect(cls)
 
+    def setup(self):
+        pass
+
     def add_arguments(self, parser):
         pass
 
@@ -105,20 +108,11 @@ class Shell(BaseCommand):
         lines.append("-" * 80)
         return "\n".join(lines)
 
-    def handle(self):
-        slocals = self._get_locals()
-        banner = self._create_banner(slocals)
+    def run_plain(self, slocals, banner):
         console = code.InteractiveConsole(slocals)
         console.interact(banner)
 
-
-class IPython(Shell):
-    """Run the IPython shell inside Corral enviroment"""
-
-    options = {
-        "title": "ipython"}
-
-    def handle(self):
+    def run_ipython(self, slocals, sbanner):
         from IPython import start_ipython
         slocals = self._get_locals()
         banner = self._create_banner(slocals)
@@ -126,8 +120,29 @@ class IPython(Shell):
             argv=['--TerminalInteractiveShell.banner2={}'.format(banner)],
             user_ns=slocals)
 
+    def setup(self):
+        self.shells = collections.OrderedDict()
+        try:
+            from IPython import start_ipython
+            self.shells["ipython"] = self.run_ipython
+        except ImportError:
+            pass
+        self.shells["plain"] = self.run_plain
 
-class Notebook(Shell):
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--shell", dest="shell", action="store",
+            choices=self.shells.keys(), default=self.shells.keys()[0],
+            help="Specify the shell to be used")
+
+    def handle(self, shell):
+        slocals = self._get_locals()
+        banner = self._create_banner(slocals)
+        shell = self.shells[shell]
+        shell(slocals, banner)
+
+
+class Notebook(BaseCommand):
     """Run the Jupyter notebook inside Corral enviroment"""
 
     options = {
@@ -165,6 +180,7 @@ def create_parser():
 
         parser = subparsers.add_parser(title, **options)
         command = cls()
+        command.setup()
         command.add_arguments(parser)
         parser.set_defaults(func=command.handle)
 
