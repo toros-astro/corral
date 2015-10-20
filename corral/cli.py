@@ -127,6 +127,17 @@ class IPython(Shell):
             user_ns=slocals)
 
 
+class Notebook(Shell):
+    """Run the Jupyter notebook inside Corral enviroment"""
+
+    options = {
+        "title": "notebook"}
+
+    def handle(self):
+        from IPython import start_ipython
+        start_ipython(argv=['notebook'])
+
+
 # =============================================================================
 # FUNCTIONS
 # =============================================================================
