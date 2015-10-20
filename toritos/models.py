@@ -40,8 +40,10 @@ class Campaign(db.Model):
     name = db.Column(db.String(100), nullable=False, unique=True)
     description = db.Column(db.Text, nullable=True)
 
+    observatory_id = db.Column(db.Integer, db.ForeignKey('Observatory.id'))
     observatory = db.relationship(
         "Observatory", backref=db.backref('campaigns', order_by=id))
+    ccd_id = db.Column(db.Integer, db.ForeignKey('ccd.id'))
     ccd = db.relationship(
         "CCD", backref=db.backref('campaigns', order_by=id))
 
@@ -74,8 +76,10 @@ class StateChange(db.Model):
     count = db.Column(db.Integer)
     path = db.Column(db.Text, nullable=True)
 
+    state_id = db.Column(db.Integer, db.ForeignKey('state.id'))
     state = db.relationship(
         "State", backref=db.backref('statechanges', order_by=id))
+    pawprint_id = db.Column(db.Integer, db.ForeingKey('pawprint.id'))
     pawprint = db.relationship(
         "Pawprint", backref=db.backref('statechanges', order_by=id))
 
@@ -108,6 +112,7 @@ class Source(db.Model):
     mag_err = db.Column(db.Float, nullable=False)
     class_source = db.Column(db.String, nullable=True)
 
+    pawprint_id = db.Column(db.Integer, db.ForeignKey('pawprint.id'))
     pawprint = db.relationship(
         "Pawprint", backref=db.backref('sources', order_by=id))
 
@@ -130,8 +135,10 @@ class Candidate(db.Model):
     mag_err = db.Column(db.Float, nullable=False)
     predicted = db.Column(db.ChoiceType(PREDICTED_TYPES), nullable=True)
 
+    pawprint_id = db.Column(db.Integer, db.ForeignKey('pawprint.id'))
     pawprint = db.relationship(
         "Pawprint", backref=db.backref('candidates', order_by=id))
+    stack_id = db.Column(db.Integer, db.ForeignKey('stack.id'))
     stack = db.relationship(
         "Stack", backref=db.backref('candidates', order_by=id))
 
@@ -164,8 +171,10 @@ class StackStateChange(db.Model):
     count = db.Column(db.Integer)
     path = db.Column(db.Text, nullable=True)
 
+    stackstate_id = db.Column(db.Integer, db.ForeignKey('stackstate.id'))
     stackstate = db.relationship(
         "StackState", backref=db.backref('stack_statechanges', order_by=id))
+    stack_id = db.Column(db.Integer, db.ForeignKey('stack.id'))
     stack = db.relationship(
         "Stack", backref=db.backref('stack_statechanges', order_by=id))
 
@@ -192,8 +201,10 @@ class Pawprint(db.Model):
     xbinning = db.Column(db.Integer, nullable=False)
     ybinning = db.Column(db.Integer, nullable=False)
 
+    state_id = db.Column(db.Integer, db.ForeignKey('state.id'))
     state = db.relationship(
         "State", backref=db.backref('pawprints', order_by=id))
+    campaign_id = db.Column(db.Integer, db.ForeignKey('campaign.id'))
     campaign = db.relationship(
         "Campaign", backref=db.backref('pawprints', order_by=id))
 
@@ -214,18 +225,20 @@ class MasterCal(db.Model):
     def repr(self):
         return self.id
 
-        
+
 class Combination(db.Model):
- 
+
     __tablename__ = 'Combination'
-    
+
     id = db.Column(db.Integer, primary_key=True)
-    
+
+    calfile_id = db.Column(db.Integer, db.ForeignKey('calfile.id'))
     calfile = db.relationship(
         "CalFile", backref=db.backref('combinations', order_by=id))
+    mastercal_id = db.Column(db.Integer, db.ForeignKey('mastercal.id'))
     mastercal = db.relationship(
         "MasterCal", backref=db.backref('combinations', order_by=id))
-    
+
     def repr(self):
         return self.id
 
@@ -242,4 +255,4 @@ class CalFile(db.Model):
     imagetype = db.Column(db.String(16), nullable=False)
 
     def repr(self):
-         return self.id
+        return self.id
