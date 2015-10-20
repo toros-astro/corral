@@ -51,7 +51,7 @@ class BaseCommand(object):
 
 
 # =============================================================================
-# REAL COMMANDS
+# BUILT-INS COMMANDS
 # =============================================================================
 
 class CreateDB(BaseCommand):
@@ -98,7 +98,9 @@ class Shell(BaseCommand):
         for module_name, imported in sorted(six.iteritems(by_module)):
             prefix = ", ".join(imported)
             suffix = "({})".format(module_name) if module_name else ""
-            lines.append("LOAD: {} {}".format(prefix, suffix))
+            line = "LOAD: {} {}".format(prefix, suffix)
+            lines.append(line)
+        lines.append("-" * 80)
         return "\n".join(lines)
 
     def handle(self):
@@ -108,18 +110,18 @@ class Shell(BaseCommand):
         console.interact(banner)
 
 
-#~ class IPython(Shell):
-#~
-    #~ options = {
-        #~ "title": "ipython"}
-#~
-    #~ def handle(self):
-        #~ import IPython
-        #~ slocals = self._get_locals()
-        #~ banner = self._create_banner(slocals)
-        #~ shell = IPython.InteractiveShell()
-        #~ print shell.instance()
-        #~ IPython.start_ipython(user_ns=slocals)
+class IPython(Shell):
+
+    options = {
+        "title": "ipython"}
+
+    def handle(self):
+        from IPython import start_ipython
+        slocals = self._get_locals()
+        banner = self._create_banner(slocals)
+        start_ipython(
+            argv=['--TerminalInteractiveShell.banner2={}'.format(banner)],
+            user_ns=slocals)
 
 
 # =============================================================================
