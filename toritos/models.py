@@ -184,6 +184,13 @@ class Pawprint(db.Model):
 
     # agregar todo lo que el fits header tenga
     # y columnas adicionales
+    exptime = db.Column(db.Integer, nullable=False)
+    ccdtemp = db.Column(db.Float, nullable=True)
+    imagetype = db.Column(db.String(16), nullable=False)
+    jd = db.Column(db.Float, nullable=False)
+    targname = db.Column(db.String(40), nullable=True)
+    xbinning = db.Column(db.Integer, nullable=False)
+    ybinning = db.Column(db.Integer, nullable=False)
 
     state = db.relationship(
         "State", backref=db.backref('pawprints', order_by=id))
