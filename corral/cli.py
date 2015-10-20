@@ -112,26 +112,33 @@ class Shell(BaseCommand):
         console = code.InteractiveConsole(slocals)
         console.interact(banner)
 
-    def run_ipython(self, slocals, sbanner):
+    def run_ipython(self, slocals, banner):
         from IPython import start_ipython
-        slocals = self._get_locals()
-        banner = self._create_banner(slocals)
         start_ipython(
             argv=['--TerminalInteractiveShell.banner2={}'.format(banner)],
             user_ns=slocals)
 
+    def run_bpython(self, slocals, banner):
+        from bpython import embed
+        embed(locals_=slocals, banner=banner)
+
     def setup(self):
         self.shells = collections.OrderedDict()
         try:
-            from IPython import start_ipython
+            import IPython
             self.shells["ipython"] = self.run_ipython
+        except ImportError:
+            pass
+        try:
+            import bpython
+            self.shells["bpython"] = self.run_bpython
         except ImportError:
             pass
         self.shells["plain"] = self.run_plain
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--shell", dest="shell", action="store",
+            "--shell", "-s", dest="shell", action="store",
             choices=self.shells.keys(), default=self.shells.keys()[0],
             help="Specify the shell to be used")
 
