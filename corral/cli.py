@@ -55,6 +55,7 @@ class BaseCommand(object):
 # =============================================================================
 
 class CreateDB(BaseCommand):
+    """Create all the database structure"""
 
     options = {
         "title": "createdb"}
@@ -77,6 +78,7 @@ class CreateDB(BaseCommand):
 
 
 class Shell(BaseCommand):
+    """Run the Python shell inside Corral enviroment"""
 
     options = {
         "title": "shell"}
@@ -111,6 +113,7 @@ class Shell(BaseCommand):
 
 
 class IPython(Shell):
+    """Run the IPython shell inside Corral enviroment"""
 
     options = {
         "title": "ipython"}
