@@ -4,4 +4,3 @@
 DEBUG = True
 
 CONNECTION = 'sqlite:///toritos-dev.db'
-

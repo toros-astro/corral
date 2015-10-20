@@ -4,6 +4,8 @@
 import importlib
 import argparse
 import abc
+import collections
+import code
 
 import six
 
@@ -22,6 +24,20 @@ CLI_MODULE = "{}.cli".format(conf.PACKAGE)
 
 @six.add_metaclass(abc.ABCMeta)
 class BaseCommand(object):
+
+    @classmethod
+    def subclasses(cls):
+        return set(cls.__subclasses__())
+
+    @classmethod
+    def collect_subclasses(cls):
+        def collect(basecls):
+            collected = set()
+            for scls in basecls.subclasses():
+                collected.add(scls)
+                collected.update(scls.collect_subclasses())
+            return collected
+        return collect(cls)
 
     def add_arguments(self, parser):
         pass
@@ -60,6 +76,52 @@ class CreateDB(BaseCommand):
             db.create_all()
 
 
+class Shell(BaseCommand):
+
+    options = {
+        "title": "shell"}
+
+    def _get_locals(self):
+        slocals = {}
+        slocals.update({
+            cls.__name__: cls for cls in db.Model.__subclasses__()})
+        if hasattr(conf.settings, "SHELL_LOCALS"):
+            slocals.update(conf.settings.SHELL_LOCALS)
+        return slocals
+
+    def _create_banner(self, slocals):
+        by_module = collections.defaultdict(list)
+        for k, v in slocals.items():
+            module_name = getattr(v, "__module__", None) or ""
+            by_module[module_name].append(k)
+        lines = []
+        for module_name, imported in sorted(six.iteritems(by_module)):
+            prefix = ", ".join(imported)
+            suffix = "({})".format(module_name) if module_name else ""
+            lines.append("LOAD: {} {}".format(prefix, suffix))
+        return "\n".join(lines)
+
+    def handle(self):
+        slocals = self._get_locals()
+        banner = self._create_banner(slocals)
+        console = code.InteractiveConsole(slocals)
+        console.interact(banner)
+
+
+#~ class IPython(Shell):
+#~
+    #~ options = {
+        #~ "title": "ipython"}
+#~
+    #~ def handle(self):
+        #~ import IPython
+        #~ slocals = self._get_locals()
+        #~ banner = self._create_banner(slocals)
+        #~ shell = IPython.InteractiveShell()
+        #~ print shell.instance()
+        #~ IPython.start_ipython(user_ns=slocals)
+
+
 # =============================================================================
 # FUNCTIONS
 # =============================================================================
@@ -76,7 +138,7 @@ def create_parser():
         prog="corral", description="Powerful pipeline framework")
     subparsers = global_parser.add_subparsers(help="command help")
 
-    for cls in BaseCommand.__subclasses__():
+    for cls in BaseCommand.collect_subclasses():
         options = getattr(cls, "options", {}) or {}
         title = options.pop("title", cls.__name__.lower())
         options["description"] = options.get("description", cls.__doc__) or ""
