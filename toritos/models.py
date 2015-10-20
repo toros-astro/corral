@@ -199,3 +199,47 @@ class Pawprint(db.Model):
 
     def repr(self):
         return self.id
+
+
+class MasterCal(db.Model):
+	
+	__tablename__ = 'MasterCal'
+	
+	id = db.Column(db.Integer, primary_key=True)
+	created_at = db.Column(db.DateTime(timezone=True))
+	modified_at = db.Column(db.DateTime(timezone=True))
+	path = db.Column(db.Text, nullable=True)
+	imagetype = db.Column(db.String(40), nullable=False)
+	
+    def repr(self):
+        return self.id
+
+        
+class Combination(db.Model):
+	 
+    __tablename__ = 'Combination'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    
+    calfile = db.relationship(
+        "CalFile", backref=db.backref('combinations', order_by=id))
+    mastercal = db.relationship(
+        "MasterCal", backref=db.backref('combinations', order_by=id))
+    
+    def repr(self):
+		return self.id
+	
+	
+class CalFile(db.Model):
+	
+	__tablename__ = 'CalFile'
+	
+	id = db.Column(db.Integer, primary_key=True)
+	path = db.Column(db.Text, nullable=True)
+	observation_date = db.Column(db.DateTime(timezone=True))
+	exptime = db.Column(db.Integer, nullable=False)
+	created_at = db.Column(db.DateTime(timezone=True))
+	imagetype = db.Column(db.String(16), nullable=False)
+	
+	def repr(self):
+		return self.id
