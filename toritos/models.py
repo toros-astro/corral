@@ -79,7 +79,7 @@ class StateChange(db.Model):
     state_id = db.Column(db.Integer, db.ForeignKey('state.id'))
     state = db.relationship(
         "State", backref=db.backref('statechanges', order_by=id))
-    pawprint_id = db.Column(db.Integer, db.ForeingKey('pawprint.id'))
+    pawprint_id = db.Column(db.Integer, db.ForeignKey('pawprint.id'))
     pawprint = db.relationship(
         "Pawprint", backref=db.backref('statechanges', order_by=id))
 
