@@ -167,14 +167,15 @@ class Notebook(BaseCommand):
 def create_parser():
     try:
         importlib.import_module(CLI_MODULE)
-    except ImportError:
-        pass
+    except ImportError as err:
+        msg = "ImportError in module '{}'".format(CLI_MODULE)
+        core.logger.error(msg)
 
     command_names = set()
 
     global_parser = argparse.ArgumentParser(
-        prog="corral",
-        description="Powerful pipeline framework", version=core.get_version())
+        description="Powerful pipeline framework", version=core.get_version(),
+        epilog="License: BSD 3")
     subparsers = global_parser.add_subparsers(help="command help")
 
     for cls in BaseCommand.collect_subclasses():
