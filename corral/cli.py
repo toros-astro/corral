@@ -174,8 +174,7 @@ def create_parser():
     command_names = set()
 
     global_parser = argparse.ArgumentParser(
-        description="Powerful pipeline framework", version=core.get_version(),
-        epilog="License: BSD 3")
+        description="Powerful pipeline framework", version=core.get_version())
     subparsers = global_parser.add_subparsers(help="command help")
 
     for cls in BaseCommand.collect_subclasses():
