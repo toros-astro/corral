@@ -43,7 +43,7 @@ class Campaign(db.Model):
     observatory_id = db.Column(db.Integer, db.ForeignKey('Observatory.id'))
     observatory = db.relationship(
         "Observatory", backref=db.backref('campaigns', order_by=id))
-    ccd_id = db.Column(db.Integer, db.ForeignKey('ccd.id'))
+    ccd_id = db.Column(db.Integer, db.ForeignKey('CCD.id'))
     ccd = db.relationship(
         "CCD", backref=db.backref('campaigns', order_by=id))
 
@@ -76,10 +76,10 @@ class StateChange(db.Model):
     count = db.Column(db.Integer)
     path = db.Column(db.Text, nullable=True)
 
-    state_id = db.Column(db.Integer, db.ForeignKey('state.id'))
+    state_id = db.Column(db.Integer, db.ForeignKey('State.id'))
     state = db.relationship(
         "State", backref=db.backref('statechanges', order_by=id))
-    pawprint_id = db.Column(db.Integer, db.ForeignKey('pawprint.id'))
+    pawprint_id = db.Column(db.Integer, db.ForeignKey('Pawprint.id'))
     pawprint = db.relationship(
         "Pawprint", backref=db.backref('statechanges', order_by=id))
 
@@ -112,7 +112,7 @@ class Source(db.Model):
     mag_err = db.Column(db.Float, nullable=False)
     class_source = db.Column(db.String, nullable=True)
 
-    pawprint_id = db.Column(db.Integer, db.ForeignKey('pawprint.id'))
+    pawprint_id = db.Column(db.Integer, db.ForeignKey('Pawprint.id'))
     pawprint = db.relationship(
         "Pawprint", backref=db.backref('sources', order_by=id))
 
@@ -135,10 +135,10 @@ class Candidate(db.Model):
     mag_err = db.Column(db.Float, nullable=False)
     predicted = db.Column(db.ChoiceType(PREDICTED_TYPES), nullable=True)
 
-    pawprint_id = db.Column(db.Integer, db.ForeignKey('pawprint.id'))
+    pawprint_id = db.Column(db.Integer, db.ForeignKey('Pawprint.id'))
     pawprint = db.relationship(
         "Pawprint", backref=db.backref('candidates', order_by=id))
-    stack_id = db.Column(db.Integer, db.ForeignKey('stack.id'))
+    stack_id = db.Column(db.Integer, db.ForeignKey('Stack.id'))
     stack = db.relationship(
         "Stack", backref=db.backref('candidates', order_by=id))
 
@@ -171,10 +171,10 @@ class StackStateChange(db.Model):
     count = db.Column(db.Integer)
     path = db.Column(db.Text, nullable=True)
 
-    stackstate_id = db.Column(db.Integer, db.ForeignKey('stackstate.id'))
+    stackstate_id = db.Column(db.Integer, db.ForeignKey('StackState.id'))
     stackstate = db.relationship(
         "StackState", backref=db.backref('stack_statechanges', order_by=id))
-    stack_id = db.Column(db.Integer, db.ForeignKey('stack.id'))
+    stack_id = db.Column(db.Integer, db.ForeignKey('Stack.id'))
     stack = db.relationship(
         "Stack", backref=db.backref('stack_statechanges', order_by=id))
 
@@ -201,12 +201,25 @@ class Pawprint(db.Model):
     xbinning = db.Column(db.Integer, nullable=False)
     ybinning = db.Column(db.Integer, nullable=False)
 
-    state_id = db.Column(db.Integer, db.ForeignKey('state.id'))
+    state_id = db.Column(db.Integer, db.ForeignKey('State.id'))
     state = db.relationship(
         "State", backref=db.backref('pawprints', order_by=id))
-    campaign_id = db.Column(db.Integer, db.ForeignKey('campaign.id'))
+    campaign_id = db.Column(db.Integer, db.ForeignKey('Campaign.id'))
     campaign = db.relationship(
         "Campaign", backref=db.backref('pawprints', order_by=id))
+
+    def repr(self):
+        return self.id
+
+
+class Stack(db.Model):
+
+    __tablename__ = 'Stack'
+
+    id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column(db.DateTime(timezone=True))
+    modified_at = db.Column(db.DateTime(timezone=True))
+    path = db.Column(db.Text, nullable=True)
 
     def repr(self):
         return self.id
@@ -232,10 +245,10 @@ class Combination(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    calfile_id = db.Column(db.Integer, db.ForeignKey('calfile.id'))
+    calfile_id = db.Column(db.Integer, db.ForeignKey('CalFile.id'))
     calfile = db.relationship(
         "CalFile", backref=db.backref('combinations', order_by=id))
-    mastercal_id = db.Column(db.Integer, db.ForeignKey('mastercal.id'))
+    mastercal_id = db.Column(db.Integer, db.ForeignKey('MasterCal.id'))
     mastercal = db.relationship(
         "MasterCal", backref=db.backref('combinations', order_by=id))
 
