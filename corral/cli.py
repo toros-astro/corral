@@ -9,7 +9,8 @@ import code
 
 import six
 
-from . import core, db, conf
+from . import core, db, conf, util
+
 
 # =============================================================================
 # CONSTANTS
@@ -24,20 +25,6 @@ CLI_MODULE = "{}.cli".format(conf.PACKAGE)
 
 @six.add_metaclass(abc.ABCMeta)
 class BaseCommand(object):
-
-    @classmethod
-    def subclasses(cls):
-        return set(cls.__subclasses__())
-
-    @classmethod
-    def collect_subclasses(cls):
-        def collect(basecls):
-            collected = set()
-            for scls in basecls.subclasses():
-                collected.add(scls)
-                collected.update(scls.collect_subclasses())
-            return collected
-        return collect(cls)
 
     def setup(self):
         pass
@@ -168,8 +155,7 @@ def create_parser():
     try:
         importlib.import_module(CLI_MODULE)
     except ImportError as err:
-        msg = "ImportError in module '{}'".format(CLI_MODULE)
-        core.logger.error(msg)
+        core.logger.error(six.text_type(err))
 
     command_names = set()
 
@@ -177,7 +163,7 @@ def create_parser():
         description="Powerful pipeline framework", version=core.get_version())
     subparsers = global_parser.add_subparsers(help="command help")
 
-    for cls in BaseCommand.collect_subclasses():
+    for cls in util.collect_subclasses(BaseCommand):
         options = getattr(cls, "options", {}) or {}
         title = options.pop("title", cls.__name__.lower())
         options["description"] = options.get("description", cls.__doc__) or ""
