@@ -55,6 +55,9 @@ class LazySettings(object):
     def __str__(self):
         return repr(self)
 
+    def get_settings_module(self):
+        return self._settings
+
 
 # =============================================================================
 # LOAD
