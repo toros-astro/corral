@@ -22,14 +22,20 @@ from . import conf
 
 MODELS_MODULE = "{}.models".format(conf.PACKAGE)
 
-engine = create_engine(conf.settings.CONNECTION, echo=conf.settings.DEBUG)
+engine = None
 
-Model = declarative.declarative_base(name="Model", bind=engine)
+Model = None
 
 
 # =============================================================================
 # FUNCTIONS
 # =============================================================================
+
+def setup():
+    global engine, Model
+    engine = create_engine(conf.settings.CONNECTION, echo=conf.settings.DEBUG)
+    Model = declarative.declarative_base(name="Model", bind=engine)
+
 
 def load_models_module():
     return importlib.import_module(MODELS_MODULE)

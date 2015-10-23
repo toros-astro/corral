@@ -17,5 +17,6 @@ def get_version():
 
 
 def setup_environment():
+    db.setup()
     db.load_models_module()
 

@@ -35,6 +35,9 @@ class LazySettings(object):
         self._settings_module_name = settings_module_name
         self._settings = importlib.import_module(settings_module_name)
 
+    def update(self, ns):
+        self.__dict__.update(ns)
+
     def __getattr__(self, name):
         if name.startswith("_"):
             raise AttributeError("'{}' is a private setting name".format(name))
