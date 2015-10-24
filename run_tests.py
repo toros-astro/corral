@@ -70,8 +70,7 @@ def run_tests(verbosity=1, failfast=False):
     for modname in TEST_MODULES:
         try:
             dot_modname = ".{}".format(modname)
-            module = importlib.import_module(
-                dot_modname, package="corral.tests")
+            module = importlib.import_module(dot_modname, "tests")
             tests = loader.loadTestsFromModule(module)
             if tests.countTestCases():
                     suite.addTests(tests)
