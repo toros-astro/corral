@@ -12,6 +12,10 @@ import logging
 
 import six
 
+from corral import util
+
+from tests  import base
+
 
 # =============================================================================
 # CONSTANTS
@@ -24,11 +28,6 @@ PATH = os.path.abspath(os.path.dirname(__file__))
 TESTS_PATH = os.path.join(PATH, "tests")
 
 GLOB_FILTER = os.path.join(TESTS_PATH, "*.py")
-
-TEST_MODULES = [
-    os.path.splitext(os.path.basename(fn))[0]
-    for fn in glob.glob(GLOB_FILTER)
-    if os.path.basename(fn).startswith("test_")]
 
 
 # =============================================================================
@@ -59,6 +58,22 @@ def create_parser():
     return parser
 
 
+def load_test_modules():
+    test_modules_names = [
+        os.path.splitext(os.path.basename(fn))[0]
+        for fn in glob.glob(GLOB_FILTER)
+        if os.path.basename(fn).startswith("test_")]
+    test_modules = set()
+    for modname in test_modules_names:
+        try:
+            dot_modname = ".{}".format(modname)
+            module = importlib.import_module(dot_modname, "tests")
+            test_modules.add(module)
+        except ImportError as err:
+            logger.error(six.text_type(err))
+    return tuple(test_modules)
+
+
 def run_tests(verbosity=1, failfast=False):
     """Run test of corral"""
 
@@ -67,15 +82,12 @@ def run_tests(verbosity=1, failfast=False):
     runner = unittest.runner.TextTestRunner(
         verbosity=verbosity, failfast=failfast)
 
-    for modname in TEST_MODULES:
-        try:
-            dot_modname = ".{}".format(modname)
-            module = importlib.import_module(dot_modname, "tests")
-            tests = loader.loadTestsFromModule(module)
-            if tests.countTestCases():
-                    suite.addTests(tests)
-        except ImportError as err:
-            logger.error(six.text_type(err))
+    load_test_modules()
+
+    for testcase in util.collect_subclasses(base.BaseTest):
+        tests = loader.loadTestsFromTestCase(testcase)
+        if tests.countTestCases():
+                suite.addTests(tests)
     return runner.run(suite)
 
 
