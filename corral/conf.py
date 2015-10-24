@@ -17,7 +17,7 @@ from . import util
 
 CORRAL_SETTINGS_MODULE = os.environ["CORRAL_SETTINGS_MODULE"]
 
-PACKAGE = CORRAL_SETTINGS_MODULE.split(".", 1)[0]
+PACKAGE = CORRAL_SETTINGS_MODULE.rsplit(".", 1)[0]
 
 DEFAULT_SETTINGS = util.to_namedtuple(
     'DefaultSettings', {

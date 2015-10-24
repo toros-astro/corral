@@ -5,28 +5,43 @@ import os
 import sys
 import argparse
 import types
+import unittest
+import glob
+import importlib
+import logging
 
-PKG_NAME = "test"
-
-DEFAULT_SETTINGS = "{}.virtual_settings".format(PKG_NAME)
-
-DEFAULT_MODELS = "{}.models".format(PKG_NAME)
-
-TEST_NS = {
-    "DEBUG": True,
-    "CONNECTION": 'sqlite:///:memory:'
-}
+import six
 
 
-def default_settings_module_name():
-    settings = types.ModuleType(DEFAULT_SETTINGS)
-    sys.modules[DEFAULT_SETTINGS] = settings
+# =============================================================================
+# CONSTANTS
+# =============================================================================
 
-    models = types.ModuleType(DEFAULT_MODELS)
-    sys.modules[DEFAULT_MODELS] = models
+DEFAULT_SETTINGS = "tests.settings"
 
-    return DEFAULT_SETTINGS
+PATH = os.path.abspath(os.path.dirname(__file__))
 
+TESTS_PATH = os.path.join(PATH, "tests")
+
+GLOB_FILTER = os.path.join(TESTS_PATH, "*.py")
+
+TEST_MODULES = [
+    os.path.splitext(os.path.basename(fn))[0]
+    for fn in glob.glob(GLOB_FILTER)
+    if os.path.basename(fn).startswith("test_")]
+
+
+# =============================================================================
+# LOGGING
+# =============================================================================
+
+logging.basicConfig(format="[%(asctime)-15s] %(message)s'")
+logger = logging.getLogger("CorralTest")
+
+
+# =============================================================================
+# FUNCTIONS
+# =============================================================================
 
 def create_parser():
     parser = argparse.ArgumentParser(
@@ -38,31 +53,57 @@ def create_parser():
         "-f", "--failfast", dest='failfast', default=False,
         help='Stop on first fail or error', action='store_true')
     parser.add_argument(
-        "--settings", dest='settings', default=None,
+        "--settings", dest='settings', default=DEFAULT_SETTINGS,
         help='Settings to run the test cases', action='store')
 
     return parser
 
 
-if __name__ == "__main__":
+def run_tests(verbosity=1, failfast=False):
+    """Run test of corral"""
+
+    suite = unittest.TestSuite()
+    loader = unittest.TestLoader()
+    runner = unittest.runner.TextTestRunner(
+        verbosity=verbosity, failfast=failfast)
+
+    for modname in TEST_MODULES:
+        try:
+            dot_modname = ".{}".format(modname)
+            module = importlib.import_module(
+                dot_modname, package="corral.tests")
+            tests = loader.loadTestsFromModule(module)
+            if tests.countTestCases():
+                    suite.addTests(tests)
+        except ImportError as err:
+            logger.error(six.text_type(err))
+    return runner.run(suite)
+
+
+def main(argv):
     parser = create_parser()
-    arguments = parser.parse_args(sys.argv[1:])
+    arguments = parser.parse_args(argv)
 
-    settings = arguments.settings or default_settings_module_name()
+    os.environ.setdefault("CORRAL_SETTINGS_MODULE", arguments.settings)
 
-    os.environ.setdefault("CORRAL_SETTINGS_MODULE", settings)
-
-    from corral import core, conf, tests, db
+    from corral import core, conf, db
 
     # SETUP THE ENVIRONMENT
-    conf.settings.update(TEST_NS)
     core.setup_environment()
     db.create_all()
 
     # RUN THE TESTS
-    result = tests.run_tests(
+    result = run_tests(
         verbosity=arguments.verbosity, failfast=arguments.failfast)
 
     # EXIT WITH CORRECT STATUS
     sys.exit(not result.wasSuccessful())
+
+
+# =============================================================================
+# MAIN
+# =============================================================================
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
 

@@ -15,7 +15,8 @@
 import sys
 
 from .base import BaseTest
-from .. import conf
+
+from corral import conf
 
 
 # =============================================================================
