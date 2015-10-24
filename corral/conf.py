@@ -34,6 +34,7 @@ class LazySettings(object):
     def __init__(self, settings_module_name):
         self._settings_module_name = settings_module_name
         self._settings = importlib.import_module(settings_module_name)
+        self._path = os.path.dirname(self._settings.__file__)
 
     def update(self, ns):
         self.__dict__.update(ns)
@@ -57,6 +58,13 @@ class LazySettings(object):
 
     def get_settings_module(self):
         return self._settings
+
+    def has_module(self, name):
+        name = name.rsplit(".", 1)[-1]
+        full_path = os.path.join(self._path, name)
+        return (
+            os.path.isfile(full_path + ".py") or
+            os.path.isfile(full_path + ".pyc"))
 
 
 # =============================================================================

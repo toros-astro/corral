@@ -6,12 +6,11 @@
 
 import logging
 
+from . import VERSION
 from . import db
 
 
-VERSION = __version__ = ("0", "0", "1")
-
-logging.basicConfig(format="[%(asctime)-15s] %(message)s'")
+logging.basicConfig(format="[%(asctime)-15s] %(message)s")
 logger = logging.getLogger("Corral")
 
 

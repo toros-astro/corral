@@ -59,6 +59,11 @@ class TestLazySettings(BaseTest):
             self.lazy_settings.CONNECTION = original
         self.assertEqual(self.lazy_settings.CONNECTION, original)
 
+    def test_has_module(self):
+        self.assertTrue(self.lazy_settings.has_module("models"))
+        self.assertFalse(self.lazy_settings.has_module("___models___"))
+
+
 # =============================================================================
 # MAIN
 # =============================================================================

@@ -152,10 +152,11 @@ class Notebook(BaseCommand):
 # =============================================================================
 
 def create_parser():
-    try:
-        importlib.import_module(CLI_MODULE)
-    except ImportError as err:
-        core.logger.error(six.text_type(err))
+    if conf.settings.has_module("cli"):
+        try:
+            importlib.import_module(CLI_MODULE)
+        except ImportError as err:
+            core.logger.error(six.text_type(err))
 
     command_names = set()
 
