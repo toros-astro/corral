@@ -17,6 +17,8 @@ import inspect
 
 from corral import core, VERSION
 
+import mock
+
 from . import models
 from .base import BaseTest
 
@@ -33,10 +35,11 @@ class TestCore(BaseTest):
         self.assertEqual(actual, expected)
 
     def test_setup_environment(self):
-        # if this not work all the tests must fails so... nothing
-        pass
-
-
+        with mock.patch("corral.db.setup") as setup:
+            with mock.patch("corral.db.load_models_module") as load_mm:
+                core.setup_environment()
+                self.assertTrue(setup.called)
+                self.assertTrue(load_mm.called)
 
 
 # =============================================================================
