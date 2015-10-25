@@ -182,16 +182,15 @@ def create_parser():
     return global_parser
 
 
-def extract_func(parsed_args):
-    args = {
-        n: getattr(parsed_args, n)
-        for n in dir(parsed_args) if n != "func" and not n.startswith("_")}
-    return parsed_args.func, args
+def extract_func(ns):
+    kwargs = dict(ns._get_kwargs())
+    func = kwargs.pop("func")
+    return func, kwargs
 
 
 def run_from_command_line(args):
     core.setup_environment()
     parser = create_parser()
     parsed_args = parser.parse_args(args)
-    func, args = extract_func(parsed_args)
-    func(**args)
+    func, kwargs = extract_func(parsed_args)
+    func(**kwargs)

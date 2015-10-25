@@ -15,11 +15,10 @@
 import sys
 import inspect
 
-from .base import BaseTest
-
 from corral import db, conf, util
 
 from . import models
+from .base import BaseTest
 
 
 # =============================================================================

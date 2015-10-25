@@ -15,11 +15,10 @@
 import sys
 import inspect
 
-from .base import BaseTest
-
 from corral import core, VERSION
 
 from . import models
+from .base import BaseTest
 
 
 # =============================================================================
