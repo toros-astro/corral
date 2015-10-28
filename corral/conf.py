@@ -6,7 +6,6 @@
 # =============================================================================
 
 import os
-import importlib
 
 from . import util
 
@@ -33,7 +32,7 @@ class LazySettings(object):
 
     def __init__(self, settings_module_name):
         self._settings_module_name = settings_module_name
-        self._settings = importlib.import_module(settings_module_name)
+        self._settings = util.dimport(settings_module_name)
         self._path = os.path.dirname(self._settings.__file__)
 
     def update(self, ns):

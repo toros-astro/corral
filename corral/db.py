@@ -5,15 +5,13 @@
 # IMPORTS
 # =============================================================================
 
-import importlib
-
 from sqlalchemy import *
 from sqlalchemy.orm import *
 from sqlalchemy.ext import declarative
 
 from sqlalchemy_utils import *
 
-from . import conf
+from . import conf, util
 
 
 # =============================================================================
@@ -38,7 +36,7 @@ def setup():
 
 
 def load_models_module():
-    return importlib.import_module(MODELS_MODULE)
+    return util.dimport(MODELS_MODULE)
 
 
 def create_all(*args, **kwargs):

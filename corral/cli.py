@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import importlib
 import argparse
 import abc
 import collections
@@ -154,7 +153,7 @@ class Notebook(BaseCommand):
 def create_parser():
     if conf.settings.has_module("cli"):
         try:
-            importlib.import_module(CLI_MODULE)
+            util.dimport(CLI_MODULE)
         except ImportError as err:
             core.logger.error(six.text_type(err))
 

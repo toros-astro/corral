@@ -32,10 +32,10 @@ def collect_subclasses(cls):
 def dimport(importpath):
     if "." in importpath:
         module_name, cls_name = importpath.rsplit(".", 1)
-        module = importlib.import_module(module_name)
         try:
+            module = importlib.import_module(module_name)
             return getattr(module, cls_name)
-        except ImportError:
+        except (ImportError, AttributeError):
             pass
     try:
         return importlib.import_module(importpath)
