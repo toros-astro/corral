@@ -6,6 +6,7 @@
 # =============================================================================
 
 import collections
+import importlib
 
 
 # =============================================================================
@@ -26,3 +27,19 @@ def collect_subclasses(cls):
             collected.update(collect(subcls))
         return collected
     return tuple(collect(cls))
+
+
+def dimport(importpath):
+    if "." in importpath:
+        module_name, cls_name = importpath.rsplit(".", 1)
+        module = importlib.import_module(module_name)
+        try:
+            return getattr(module, cls_name)
+        except ImportError:
+            pass
+    try:
+        return importlib.import_module(importpath)
+    except:
+        raise ImportError("No module named {}".format(importpath))
+
+

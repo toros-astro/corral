@@ -47,6 +47,17 @@ class TestUtil(BaseTest):
 
         self.assertItemsEqual(actual, expected)
 
+    def test_ddimport(self):
+        import os
+        actual = util.dimport("os")
+        self.assertEqual(actual, os)
+
+        actual = util.dimport("os.path")
+        self.assertEqual(actual, os.path)
+
+        actual = util.dimport("os.open")
+        self.assertEqual(actual, os.open)
+
 
 # =============================================================================
 # MAIN
