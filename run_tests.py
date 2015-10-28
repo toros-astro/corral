@@ -65,12 +65,9 @@ def load_test_modules():
         if os.path.basename(fn).startswith("test_")]
     test_modules = set()
     for modname in test_modules_names:
-        try:
-            dot_modname = ".{}".format(modname)
-            module = importlib.import_module(dot_modname, "tests")
-            test_modules.add(module)
-        except ImportError as err:
-            logger.error(six.text_type(err))
+        dot_modname = ".{}".format(modname)
+        module = importlib.import_module(dot_modname, "tests")
+        test_modules.add(module)
     return tuple(test_modules)
 
 
