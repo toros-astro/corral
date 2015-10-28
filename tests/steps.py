@@ -4,10 +4,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from corral import steps
+from corral import run
 
 
-class TestLoader(steps.Loader):
+class TestLoader(run.Loader):
 
     def generate(self):
         pass

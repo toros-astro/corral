@@ -12,7 +12,7 @@
 # IMPORTS
 # =============================================================================
 
-from corral import steps, conf, exceptions
+from corral import run, conf, exceptions
 
 import mock
 
@@ -28,12 +28,12 @@ from .base import BaseTest
 class TestSteps(BaseTest):
 
     def test_load_loader(self):
-        actual = steps.load_loader()
+        actual = run.load_loader()
         self.assertIs(actual, TestLoader)
 
         with mock.patch("corral.conf.settings.LOADER", new="os.open"):
             with self.assertRaises(exceptions.ImproperlyConfigured):
-                steps.load_loader()
+                run.load_loader()
 
 
 # =============================================================================
