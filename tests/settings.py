@@ -5,4 +5,4 @@ CONNECTION = 'sqlite:///:memory:'
 
 LOADER = "tests.steps.TestLoader"
 
-STEPS = []
+STEPS = ["tests.steps.Step1", "tests.steps.Step2"]

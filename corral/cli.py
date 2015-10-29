@@ -8,7 +8,7 @@ import code
 
 import six
 
-from . import core, db, conf, util
+from . import core, db, conf, util, run
 
 
 # =============================================================================
@@ -144,6 +144,16 @@ class Notebook(BaseCommand):
     def handle(self):
         from IPython import start_ipython
         start_ipython(argv=['notebook'])
+
+
+class Load(BaseCommand):
+    """Load the new pawprints into the database """
+
+    options = {"title": "load"}
+
+    def handle(self):
+        cls = run.load_loader()
+        run.execute_loader(cls)
 
 
 # =============================================================================

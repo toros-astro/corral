@@ -4,6 +4,8 @@
 import abc
 import inspect
 
+import sqlalchemy.orm
+
 import six
 
 from . import conf, db, util, exceptions
@@ -32,7 +34,7 @@ class _Processor(object):
 
 class Loader(_Processor):
 
-    @property
+    @abc.abstractmethod
     def generate(self):
         pass
 
@@ -64,7 +66,14 @@ def load_loader():
 
 
 def load_steps():
-    pass
+    steps = []
+    for import_string in conf.settings.STEPS:
+        cls = util.dimport(import_string)
+        if not (inspect.isclass(cls) and issubclass(cls, Step)):
+            msg = "STEP '{}' must be subclass of 'corral.steps.Step'"
+            raise exceptions.ImproperlyConfigured(msg.format(import_string))
+        steps.append(cls)
+    return tuple(steps)
 
 
 def execute_step(step_cls):
@@ -72,10 +81,23 @@ def execute_step(step_cls):
 
 
 def execute_loader(loader_cls):
-    pass
+    if not (inspect.isclass(loader_cls) and issubclass(loader_cls, Loader)):
+        msg = "loader_cls '{}' must be subclass of 'corral.steps.Loader'"
+        raise TypeError(msg.format(loader_cls))
+    with db.session_scope() as session:
+        loader = loader_cls(session)
+        loader.setup()
+        try:
+            for obj in loader.generate():
+                if not isinstance(obj, db.Model):
+                    msg = "{} must be an instance of corral.db.Model"
+                    raise TypeError(msg.format(obj))
+                session.add(obj)
+        finally:
+            loader.teardown()
 
 
-def execute_steps(steps_clss):
+def execute_steps(steps_cls):
     pass
 
 

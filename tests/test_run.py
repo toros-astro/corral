@@ -16,7 +16,7 @@ from corral import run, conf, exceptions
 
 import mock
 
-from .steps import TestLoader
+from .steps import TestLoader, Step1, Step2
 
 from .base import BaseTest
 
@@ -34,6 +34,16 @@ class TestSteps(BaseTest):
         with mock.patch("corral.conf.settings.LOADER", new="os.open"):
             with self.assertRaises(exceptions.ImproperlyConfigured):
                 run.load_loader()
+
+    def test_load_steps(self):
+        actual = run.load_steps()
+        expected = (Step1, Step2)
+        self.assertEqual(actual, expected)
+
+        with mock.patch("corral.conf.settings.STEPS", new=["os.open"]):
+            with self.assertRaises(exceptions.ImproperlyConfigured):
+                run.load_steps()
+
 
 
 # =============================================================================
