@@ -147,7 +147,7 @@ class Notebook(BaseCommand):
 
 
 class Load(BaseCommand):
-    """Load the new pawprints into the database """
+    """Excecute the loader class"""
 
     options = {"title": "load"}
 
