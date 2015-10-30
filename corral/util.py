@@ -43,3 +43,6 @@ def dimport(importpath):
         raise ImportError("No module named {}".format(importpath))
 
 
+def scandir(path):
+
+    return None

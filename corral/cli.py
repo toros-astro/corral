@@ -146,6 +146,19 @@ class Notebook(BaseCommand):
         start_ipython(argv=['notebook'])
 
 
+class Exec(BaseCommand):
+    """Execute file inside corral environment"""
+
+    options = {"title": "exec"}
+
+    def add_arguments(self, parser):
+        parser.add_argument("path", action="store",help="Path to script")
+
+    def handle(self, path):
+        ns = {}
+        execfile(path, ns, ns)
+
+
 class Load(BaseCommand):
     """Load the new pawprints into the database """
 
