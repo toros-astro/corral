@@ -12,11 +12,12 @@
 # IMPORTS
 # =============================================================================
 
-from corral import run, conf, exceptions
+from corral import run, conf, exceptions, db
 
 import mock
 
 from .steps import TestLoader, Step1, Step2
+from .models import SampleModel
 
 from .base import BaseTest
 
@@ -44,6 +45,15 @@ class TestSteps(BaseTest):
             with self.assertRaises(exceptions.ImproperlyConfigured):
                 run.load_steps()
 
+    def test_execute_loader(self):
+        run.execute_loader(TestLoader)
+        with db.session_scope() as session:
+            self.assertTrue(session.query(SampleModel).count(), 1)
+
+        with mock.patch(
+            "tests.steps.TestLoader.generate", return_value=[None]):
+                with self.assertRaises(TypeError):
+                    run.execute_loader(TestLoader)
 
 
 # =============================================================================
