@@ -152,7 +152,7 @@ class Exec(BaseCommand):
     options = {"title": "exec"}
 
     def add_arguments(self, parser):
-        parser.add_argument("path", action="store",help="Path to script")
+        parser.add_argument("path", action="store", help="Path to script")
 
     def handle(self, path):
         ns = {}

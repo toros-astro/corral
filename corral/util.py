@@ -41,8 +41,3 @@ def dimport(importpath):
         return importlib.import_module(importpath)
     except:
         raise ImportError("No module named {}".format(importpath))
-
-
-def scandir(path):
-
-    return None
