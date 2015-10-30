@@ -21,15 +21,22 @@ class _Processor(object):
     def __init__(self, session):
         self.__session = session
 
+    def __enter__(self):
+        self.setup()
+        return self
+
+    def __exit__(self ,type, value, traceback):
+        return self.teardown(type, value, traceback)
+
     def setup(self):
+        pass
+
+    def teardown(self, type, value, traceback):
         pass
 
     @property
     def session(self):
         return self.__session
-
-    def teardown(self):
-        pass
 
 
 class Loader(_Processor):
@@ -76,28 +83,21 @@ def load_steps():
     return tuple(steps)
 
 
-def execute_step(step_cls):
-    pass
-
-
 def execute_loader(loader_cls):
+
     if not (inspect.isclass(loader_cls) and issubclass(loader_cls, Loader)):
         msg = "loader_cls '{}' must be subclass of 'corral.steps.Loader'"
         raise TypeError(msg.format(loader_cls))
-    with db.session_scope() as session:
-        loader = loader_cls(session)
-        loader.setup()
-        try:
-            for obj in loader.generate():
-                if not isinstance(obj, db.Model):
-                    msg = "{} must be an instance of corral.db.Model"
-                    raise TypeError(msg.format(obj))
-                session.add(obj)
-        finally:
-            loader.teardown()
+
+    with db.session_scope() as session, loader_cls(session) as loader:
+        for obj in loader.generate():
+            if not isinstance(obj, db.Model):
+                msg = "{} must be an instance of corral.db.Model"
+                raise TypeError(msg.format(obj))
+            session.add(obj)
 
 
-def execute_steps(steps_cls):
+def execute_step(steps_cls):
     pass
 
 

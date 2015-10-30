@@ -3,11 +3,14 @@
 
 from corral import run
 
+from . import models
+
 
 class TestLoader(run.Loader):
 
     def generate(self):
-        pass
+        yield models.SampleModel(name="foo")
+
 
 class Step1(run.Step):
     def process(self, *args, **kwargs):
