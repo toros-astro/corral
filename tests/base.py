@@ -21,9 +21,11 @@ import unittest
 
 class BaseTest(unittest.TestCase):
 
-    @classmethod
-    def modname(cls):
-        return cls.__module__.rsplit(".", 1)[-1].replace("test_", "", 1)
+    def tearDown(self):
+        from corral import util, db
+        with db.session_scope() as session:
+            for model in util.collect_subclasses(db.Model):
+                session.query(model).delete()
 
 
 # =============================================================================
