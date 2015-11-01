@@ -12,7 +12,7 @@
 # IMPORTS
 # =============================================================================
 
-from corral import run, conf, exceptions, db
+from corral import run, exceptions, db
 
 import mock
 
@@ -48,12 +48,41 @@ class TestSteps(BaseTest):
     def test_execute_loader(self):
         run.execute_loader(TestLoader)
         with db.session_scope() as session:
-            self.assertTrue(session.query(SampleModel).count(), 1)
+            self.assertEqual(session.query(SampleModel).count(), 1)
 
-        with mock.patch(
-            "tests.steps.TestLoader.generate", return_value=[None]):
+        with mock.patch("tests.steps.TestLoader.generate",
+                        return_value=[None]):
                 with self.assertRaises(TypeError):
                     run.execute_loader(TestLoader)
+
+    def test_execute_step(self):
+        sample_id = None
+        with db.session_scope() as session:
+            sample = SampleModel(name=None)
+            session.add(sample)
+            session.commit()
+            sample_id = sample.id
+
+        run.execute_step(Step1)
+        with db.session_scope() as session:
+            query = session.query(SampleModel)
+            self.assertEqual(query.count(), 1)
+            sample = session.query(SampleModel).get(sample_id)
+            self.assertEqual(sample.name, "Step1")
+
+        run.execute_step(Step2)
+        with db.session_scope() as session:
+            query = session.query(SampleModel)
+            self.assertEqual(query.count(), 2)
+            sample = session.query(SampleModel).get(sample_id)
+            self.assertEqual(sample.name, "Step2")
+
+        run.execute_step(Step1)
+        with db.session_scope() as session:
+            query = session.query(SampleModel)
+            self.assertEqual(query.count(), 2)
+            sample = session.query(SampleModel).get(sample_id)
+            self.assertEqual(sample.name, "Step2")
 
 
 # =============================================================================

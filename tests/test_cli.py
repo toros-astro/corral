@@ -12,17 +12,16 @@
 # IMPORTS
 # =============================================================================
 
-import sys
-import inspect
 import argparse
 import random
 
 import mock
 
-from corral import cli, core
+from corral import cli
 
 from .cli import TestAPICommand
 from .base import BaseTest
+
 
 # =============================================================================
 # BASE CLASS

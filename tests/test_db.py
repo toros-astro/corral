@@ -12,12 +12,11 @@
 # IMPORTS
 # =============================================================================
 
-import sys
 import inspect
 
 import mock
 
-from corral import db, conf, util
+from corral import db, util
 
 from . import models
 from .base import BaseTest
@@ -55,7 +54,7 @@ class TestDB(BaseTest):
             self.assertTrue(m_create_all.called)
 
         with mock.patch("corral.db.Model.metadata.create_all") as m_create_all:
-            db.create_all(1,2,3, a=1)
+            db.create_all(1, 2, 3, a=1)
             self.assertTrue(m_create_all.called)
             self.assertEqual(m_create_all.call_args[0], (1, 2, 3))
             self.assertEqual(m_create_all.call_args[1], {"a": 1})

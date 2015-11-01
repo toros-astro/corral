@@ -12,14 +12,10 @@
 # IMPORTS
 # =============================================================================
 
-import sys
-import inspect
-
 from corral import core, VERSION
 
 import mock
 
-from . import models
 from .base import BaseTest
 
 

@@ -48,14 +48,15 @@ class Loader(_Processor):
 
 class Step(_Processor):
 
-    def get_queryset(self):
+    @abc.abstractmethod
+    def get_objects(self):
         pass
 
     @abc.abstractmethod
-    def process(self, *args, **kwargs):
+    def process(self, obj):
         raise NotImplementedError()
 
-    def validate(self, **kwargs):
+    def validate(self, obj):
         pass
 
 
@@ -67,7 +68,7 @@ def load_loader():
     import_string = conf.settings.LOADER
     cls = util.dimport(import_string)
     if not (inspect.isclass(cls) and issubclass(cls, Loader)):
-        msg = "LOADER '{}' must be subclass of 'corral.steps.Loader'"
+        msg = "LOADER '{}' must be subclass of 'corral.run.Loader'"
         raise exceptions.ImproperlyConfigured(msg.format(import_string))
     return cls
 
@@ -77,7 +78,7 @@ def load_steps():
     for import_string in conf.settings.STEPS:
         cls = util.dimport(import_string)
         if not (inspect.isclass(cls) and issubclass(cls, Step)):
-            msg = "STEP '{}' must be subclass of 'corral.steps.Step'"
+            msg = "STEP '{}' must be subclass of 'corral.run.Step'"
             raise exceptions.ImproperlyConfigured(msg.format(import_string))
         steps.append(cls)
     return tuple(steps)
@@ -86,20 +87,35 @@ def load_steps():
 def execute_loader(loader_cls):
 
     if not (inspect.isclass(loader_cls) and issubclass(loader_cls, Loader)):
-        msg = "loader_cls '{}' must be subclass of 'corral.steps.Loader'"
+        msg = "loader_cls '{}' must be subclass of 'corral.run.Loader'"
         raise TypeError(msg.format(loader_cls))
 
     with db.session_scope() as session, loader_cls(session) as loader:
-        for obj in loader.generate():
+        generator = loader.generate()
+        for obj in (generator or []):
             if not isinstance(obj, db.Model):
                 msg = "{} must be an instance of corral.db.Model"
                 raise TypeError(msg.format(obj))
             session.add(obj)
 
 
-def execute_step(steps_cls):
-    pass
+def execute_step(step_cls):
+    if not (inspect.isclass(step_cls) and issubclass(step_cls, Step)):
+        msg = "step_cls '{}' must be subclass of 'corral.run.Step'"
+        raise TypeError(msg.format(loader_cls))
 
+    with db.session_scope() as session, step_cls(session) as step:
+        for obj in step.get_objects():
+            if not isinstance(obj, db.Model):
+                msg = "{} must be an instance of corral.db.Model"
+                raise TypeError(msg.format(obj))
+            generator = step.process(obj) or []
+            if not hasattr(generator, "__iter__"):
+                generator = (generator,)
+            for proc_obj in generator:
+                step.validate(proc_obj)
+                session.add(proc_obj)
+            session.add(obj)
 
 
 
