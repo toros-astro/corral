@@ -17,9 +17,10 @@ import random
 
 import mock
 
-from corral import cli
+from corral import cli, run
 
 from .cli import TestAPICommand
+from .steps import TestLoader, Step1, Step2
 from .base import BaseTest
 
 
@@ -40,9 +41,7 @@ class TestCli(BaseTest):
             cli.run_from_command_line(["foo"])
             self.assertTrue(setup_environment.called)
 
-        self.assertEqual(
-            actual,
-            {'setup': seed, 'add_arguments': seed + 1, 'handle': seed + 2})
+        self.assertEqual(actual, {'setup': seed, 'handle': seed + 2})
 
     def test_extract_func(self):
         ns = argparse.Namespace(func="func", foo="foo", faa="faa")
@@ -87,7 +86,7 @@ class TestCli(BaseTest):
             "plain": "code.InteractiveConsole.interact",
         }
 
-        shell_cmd = cli.Shell()
+        shell_cmd = cli.Shell(mock.Mock())
         shell_cmd.setup()
         shells = shell_cmd.shells
 
@@ -121,6 +120,45 @@ class TestCli(BaseTest):
                 self.assertTrue(start_ipython.called)
                 self.assertEqual(
                     start_ipython.call_args[1], {'argv': ['notebook']})
+
+    def test_run_command(self):
+        with mock.patch("corral.run.execute_step") as execute_step:
+            with mock.patch("corral.core.setup_environment"):
+                cli.run_from_command_line(["run"])
+                expected = map(mock.call, run.load_steps())
+                execute_step.assert_has_calls(expected)
+
+        with mock.patch("corral.run.execute_step") as execute_step:
+            with mock.patch("corral.core.setup_environment"):
+                cli.run_from_command_line(["run", "--steps", "Step1", "Step2"])
+                expected = map(mock.call, run.load_steps())
+                execute_step.assert_has_calls(expected)
+
+        with mock.patch("corral.run.execute_step") as execute_step:
+            with mock.patch("corral.core.setup_environment"):
+                cli.run_from_command_line(["run", "--steps", "Step1"])
+                expected = [mock.call(Step1)]
+                execute_step.assert_has_calls(expected)
+
+        with mock.patch("corral.run.execute_step") as execute_step:
+            with mock.patch("corral.core.setup_environment"):
+                cli.run_from_command_line(["run", "--steps", "Step2"])
+                expected = [mock.call(Step2)]
+                execute_step.assert_has_calls(expected)
+
+        with mock.patch("corral.run.execute_step") as execute_step:
+            with mock.patch("sys.stderr"):
+                with mock.patch("corral.core.setup_environment"):
+                    with self.assertRaises(SystemExit):
+                        cli.run_from_command_line(
+                            ["run", "--steps", "Step2", "Step2"])
+
+        with mock.patch("corral.run.execute_step") as execute_step:
+            with mock.patch("sys.stderr"):
+                with mock.patch("corral.core.setup_environment"):
+                    with self.assertRaises(SystemExit):
+                        cli.run_from_command_line(
+                            ["run", "--steps", "FOO"])
 
 
 # =============================================================================

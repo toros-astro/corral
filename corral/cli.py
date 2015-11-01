@@ -25,10 +25,10 @@ CLI_MODULE = "{}.cli".format(conf.PACKAGE)
 @six.add_metaclass(abc.ABCMeta)
 class BaseCommand(object):
 
-    def setup(self):
-        pass
+    def __init__(self, parser):
+        self.parser = parser
 
-    def add_arguments(self, parser):
+    def setup(self):
         pass
 
     def ask(self, question):
@@ -49,8 +49,8 @@ class CreateDB(BaseCommand):
     options = {
         "title": "createdb"}
 
-    def add_arguments(self, parser):
-        parser.add_argument(
+    def setup(self):
+        self.parser.add_argument(
             "--noinput", dest="noinput", action="store_true", default=False,
             help="Create the database without asking")
 
@@ -122,8 +122,7 @@ class Shell(BaseCommand):
             pass
         self.shells["plain"] = self.run_plain
 
-    def add_arguments(self, parser):
-        parser.add_argument(
+        self.parser.add_argument(
             "--shell", "-s", dest="shell", action="store",
             choices=self.shells.keys(), default=self.shells.keys()[0],
             help="Specify the shell to be used")
@@ -151,8 +150,8 @@ class Exec(BaseCommand):
 
     options = {"title": "exec"}
 
-    def add_arguments(self, parser):
-        parser.add_argument("path", action="store", help="Path to script")
+    def setup(self):
+        self.parser.add_argument("path", action="store", help="Path to script")
 
     def handle(self, path):
         ns = {}
@@ -167,6 +166,37 @@ class Load(BaseCommand):
     def handle(self):
         cls = run.load_loader()
         run.execute_loader(cls)
+
+
+class Run(BaseCommand):
+    """Excecute the steps in order or one step in particular"""
+
+    options = {"title": "run"}
+
+    def _step_classes(self, class_name):
+        if class_name in self.buff:
+            self.parser.error("Duplicated step name '{}'".format(class_name))
+            return
+        self.buff.add(class_name)
+        try:
+            return self.mapped_steps[class_name]
+        except KeyError:
+            self.parser.error("Invalid step name '{}'".format(class_name))
+
+    def setup(self):
+        self.all_steps = run.load_steps()
+        self.mapped_steps = {cls.__name__: cls for cls in self.all_steps}
+        self.buff = set()
+
+        self.parser.add_argument(
+            "--steps", dest="step_classes", action="store", nargs="+",
+            help="Step class name", default=self.all_steps,
+            type=self._step_classes)
+
+    def handle(self, step_classes):
+        for step_cls in step_classes:
+            run.execute_step(step_cls)
+
 
 
 # =============================================================================
@@ -196,9 +226,8 @@ def create_parser():
         command_names.add(title)
 
         parser = subparsers.add_parser(title, **options)
-        command = cls()
+        command = cls(parser)
         command.setup()
-        command.add_arguments(parser)
         parser.set_defaults(func=command.handle)
 
     return global_parser

@@ -6,3 +6,5 @@ DEBUG = True
 CONNECTION = 'sqlite:///toritos-dev.db'
 
 LOADER = "toritos.load.Load"
+
+STEPS = []
