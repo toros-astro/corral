@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import logging
 
 from . import VERSION
@@ -21,4 +18,3 @@ def get_version():
 def setup_environment():
     db.setup()
     db.load_models_module()
-
