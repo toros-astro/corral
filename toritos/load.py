@@ -11,4 +11,10 @@ class Load(run.Loader):
         for afile in pawprints:
             paw = models.Pawprint()
             hdr = fits.getheader(afile)
+            paw.exptime = header['EXPTIME']
+            paw.jd = header['JD']
+            paw.ccdtemp = header['CCD-TEMP']
+            paw.imagetype = header['IMAGETYP']
+            paw.xbinning = header['XBINNING']
+            paw.ybinning = header['YBINNING']
             yield paw

@@ -193,6 +193,18 @@ class Pawprint(db.Model):
 
     # agregar todo lo que el fits header tenga
     # y columnas adicionales
+    simple = db.Column(db.String(8), nullable=True)
+    bitpix = db.Column(db.Integer, nullable=True)
+    naxis = db.Column(db.Integer, nullable=True)
+    naxis1 = db.Column(db.Integer, nullable=True)
+    naxis2 = db.Column(db.Integer, nullable=True)
+    bscale = db.Column(db.Float, nullable=True)
+    bzero = db.Column(db.Float, nullable=True)
+    exposure = db.Column(db.Float, nullable=True)
+    set_temp = db.Column(db.Float, nullable=True)
+    xpixsz = db.Column(db.Float, nullable=True)
+    ypixsz = db.Column(db.Float, nullable=True)
+
     exptime = db.Column(db.Integer, nullable=False)
     ccdtemp = db.Column(db.Float, nullable=True)
     imagetype = db.Column(db.String(16), nullable=False)
