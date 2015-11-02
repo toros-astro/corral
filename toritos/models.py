@@ -190,9 +190,6 @@ class Pawprint(db.Model):
     created_at = db.Column(db.DateTime(timezone=True))
     observation_date = db.Column(db.DateTime(timezone=True))
     modified_at = db.Column(db.DateTime(timezone=True))
-
-    # agregar todo lo que el fits header tenga
-    # y columnas adicionales
     simple = db.Column(db.String(8), nullable=True)
     bitpix = db.Column(db.Integer, nullable=True)
     naxis = db.Column(db.Integer, nullable=True)
@@ -204,7 +201,6 @@ class Pawprint(db.Model):
     set_temp = db.Column(db.Float, nullable=True)
     xpixsz = db.Column(db.Float, nullable=True)
     ypixsz = db.Column(db.Float, nullable=True)
-
     exptime = db.Column(db.Integer, nullable=False)
     ccdtemp = db.Column(db.Float, nullable=True)
     imagetype = db.Column(db.String(16), nullable=False)
@@ -212,6 +208,10 @@ class Pawprint(db.Model):
     targname = db.Column(db.String(40), nullable=True)
     xbinning = db.Column(db.Integer, nullable=False)
     ybinning = db.Column(db.Integer, nullable=False)
+    readoutm = db.Column(db.String(24), nullable=False)
+    imagetyp = db.Column(db.String(24), nullable=False)
+    object_ = db.Column(db.String(24), nullable=True)
+    observer = db.Column(db.String(48), nullable=True)
 
     state_id = db.Column(db.Integer, db.ForeignKey('State.id'))
     state = db.relationship(
