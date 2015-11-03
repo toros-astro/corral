@@ -14,7 +14,7 @@ class Observatory(db.Model):
     longitude = db.Column(db.Float, nullable=False)
     description = db.Column(db.Text, nullable=True)
 
-    def repr(self):
+    def __repr__(self):
         return self.name
 
 
@@ -47,7 +47,7 @@ class Campaign(db.Model):
     ccd = db.relationship(
         "CCD", backref=db.backref('campaigns', order_by=id))
 
-    def repr(self):
+    def __repr__(self):
         return self.name
 
 
@@ -83,7 +83,7 @@ class StateChange(db.Model):
     pawprint = db.relationship(
         "Pawprint", backref=db.backref('statechanges', order_by=id))
 
-    def repr(self):
+    def __repr__(self):
         return "{} ({})".format(repr(self.pawprint), repr(self.state))
 
 
@@ -97,7 +97,7 @@ class Reference(db.Model):
     dec = db.Column(db.Float, nullable=False)
     FoV = db.Column(db.Float, nullable=False)
 
-    def repr(self):
+    def __repr__(self):
         return self.path
 
 
@@ -116,7 +116,7 @@ class Source(db.Model):
     pawprint = db.relationship(
         "Pawprint", backref=db.backref('sources', order_by=id))
 
-    def repr(self):
+    def __repr__(self):
         return "({}, {})".format(self.ra, self.dec)
 
 
@@ -142,7 +142,7 @@ class Candidate(db.Model):
     stack = db.relationship(
         "Stack", backref=db.backref('candidates', order_by=id))
 
-    def repr(self):
+    def __repr__(self):
         return "({}, {})".format(self.ra, self.dec)
 
 
@@ -178,7 +178,7 @@ class StackStateChange(db.Model):
     stack = db.relationship(
         "Stack", backref=db.backref('stack_statechanges', order_by=id))
 
-    def repr(self):
+    def __repr__(self):
         return "{} ({})".format(repr(self.stack), repr(self.stackstate))
 
 
@@ -220,7 +220,7 @@ class Pawprint(db.Model):
     campaign = db.relationship(
         "Campaign", backref=db.backref('pawprints', order_by=id))
 
-    def repr(self):
+    def __repr__(self):
         return self.id
 
 
@@ -233,7 +233,7 @@ class Stack(db.Model):
     modified_at = db.Column(db.DateTime(timezone=True))
     path = db.Column(db.Text, nullable=True)
 
-    def repr(self):
+    def __repr__(self):
         return self.id
 
 
@@ -247,7 +247,7 @@ class MasterCal(db.Model):
     path = db.Column(db.Text, nullable=True)
     imagetype = db.Column(db.String(40), nullable=False)
 
-    def repr(self):
+    def __repr__(self):
         return self.id
 
 
@@ -264,7 +264,7 @@ class Combination(db.Model):
     mastercal = db.relationship(
         "MasterCal", backref=db.backref('combinations', order_by=id))
 
-    def repr(self):
+    def __repr__(self):
         return self.id
 
 
@@ -279,5 +279,5 @@ class CalFile(db.Model):
     created_at = db.Column(db.DateTime(timezone=True))
     imagetype = db.Column(db.String(16), nullable=False)
 
-    def repr(self):
+    def __repr__(self):
         return self.id
