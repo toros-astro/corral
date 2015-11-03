@@ -73,7 +73,7 @@ class Shell(BaseCommand):
         "title": "shell"}
 
     def _get_locals(self):
-        slocals = {"db": db}
+        slocals = {}
         slocals.update({
             cls.__name__: cls for cls in db.Model.__subclasses__()})
         if hasattr(conf.settings, "SHELL_LOCALS"):
