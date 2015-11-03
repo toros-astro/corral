@@ -1,10 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# This module contains the table model definitions for toritos database.
+# It uses the sqlalchemy orm to define the column structures
+
+
 from corral import db
 
 
 class Observatory(db.Model):
+    """Model for observatories. SQLAlchemy Model object.
+    """
 
     __tablename__ = 'Observatory'
 
@@ -27,6 +33,7 @@ class CCD(db.Model):
     brand = db.Column(db.String(100), nullable=False)
     model = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
+    xpixsize = db.Column(db.Float, nullable=True)
 
     def __repr__(self):
         return self.name
