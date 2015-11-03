@@ -73,7 +73,7 @@ class Shell(BaseCommand):
         "title": "shell"}
 
     def _get_locals(self):
-        slocals = {}
+        slocals = {"db": db}
         slocals.update({
             cls.__name__: cls for cls in db.Model.__subclasses__()})
         if hasattr(conf.settings, "SHELL_LOCALS"):
@@ -129,9 +129,11 @@ class Shell(BaseCommand):
 
     def handle(self, shell):
         slocals = self._get_locals()
-        banner = self._create_banner(slocals)
-        shell = self.shells[shell]
-        shell(slocals, banner)
+        with db.session_scope() as session:
+            slocals["session"] = session
+            banner = self._create_banner(slocals)
+            shell = self.shells[shell]
+            shell(slocals, banner)
 
 
 class Notebook(BaseCommand):
