@@ -1,42 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import argparse
-import abc
+"""This module contains all the buil in cli commands of corral"""
+
+
+# =============================================================================
+# IMPORTS
+# =============================================================================
+
 import collections
 import code
 
 import six
 
-from . import core, db, conf, util, run
-
-
-# =============================================================================
-# CONSTANTS
-# =============================================================================
-
-CLI_MODULE = "{}.cli".format(conf.PACKAGE)
-
-
-# =============================================================================
-# CLASS
-# =============================================================================
-
-@six.add_metaclass(abc.ABCMeta)
-class BaseCommand(object):
-
-    def __init__(self, parser):
-        self.parser = parser
-
-    def setup(self):
-        pass
-
-    def ask(self, question):
-        return six.moves.input(question)
-
-    @abc.abstractmethod
-    def handle(self, *args, **kwargs):
-        raise NotImplementedError()
+from .. import db, conf, run
+from .base import BaseCommand
 
 
 # =============================================================================
@@ -111,12 +89,12 @@ class Shell(BaseCommand):
     def setup(self):
         self.shells = collections.OrderedDict()
         try:
-            import IPython
+            import IPython  # noqa
             self.shells["ipython"] = self.run_ipython
         except ImportError:
             pass
         try:
-            import bpython
+            import bpython  # noqa
             self.shells["bpython"] = self.run_bpython
         except ImportError:
             pass
@@ -198,52 +176,3 @@ class Run(BaseCommand):
     def handle(self, step_classes):
         for step_cls in step_classes:
             run.execute_step(step_cls)
-
-
-
-# =============================================================================
-# FUNCTIONS
-# =============================================================================
-
-def create_parser():
-    if conf.settings.has_module("cli"):
-        try:
-            util.dimport(CLI_MODULE)
-        except ImportError as err:
-            core.logger.error(six.text_type(err))
-
-    command_names = set()
-
-    global_parser = argparse.ArgumentParser(
-        description="Powerful pipeline framework", version=core.get_version())
-    subparsers = global_parser.add_subparsers(help="command help")
-
-    for cls in util.collect_subclasses(BaseCommand):
-        options = getattr(cls, "options", {}) or {}
-        title = options.pop("title", cls.__name__.lower())
-        options["description"] = options.get("description", cls.__doc__) or ""
-
-        if title in command_names:
-            raise ValueError("Duplicate Command '{}'".format(title))
-        command_names.add(title)
-
-        parser = subparsers.add_parser(title, **options)
-        command = cls(parser)
-        command.setup()
-        parser.set_defaults(func=command.handle)
-
-    return global_parser
-
-
-def extract_func(ns):
-    kwargs = dict(ns._get_kwargs())
-    func = kwargs.pop("func")
-    return func, kwargs
-
-
-def run_from_command_line(args):
-    core.setup_environment()
-    parser = create_parser()
-    parsed_args = parser.parse_args(args)
-    func, kwargs = extract_func(parsed_args)
-    func(**kwargs)
