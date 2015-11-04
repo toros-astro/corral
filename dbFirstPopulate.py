@@ -41,21 +41,6 @@ campaign.ccd_id = cameraA.id
 # PAWPRINTS
 # -----------------------------------------------------------------------------
 
-def pawprint_load(image_filepath):
-    header = fits.getheader(image_filepath)
-
-    paw = models.Pawprint()
-    paw.exptime = header['EXPTIME']
-    paw.jd = header['JD']
-    paw.ccdtemp = header['CCD-TEMP']
-    paw.imagetype = header['IMAGETYP']
-    paw.xbinning = header['XBINNING']
-    paw.ybinning = header['YBINNING']
-    paw.campaign_id = campaign.id
-    paw.observation_date = datetime.datetime.strptime(header['DATE-OBS'],
-    '%Y-%m-%dT%H:%M:%S.%f')
-    return paw
-
 pawpath = os.path.join(observationsdir, 'M22.fit')
 paw = pawprint_load(pawpath)
 

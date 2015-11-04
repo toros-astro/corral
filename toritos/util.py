@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Module with simple tools for specific
-# toritos data handling routines.
+"""Module with simple tools for specific
+toritos data handling routines.
+
+"""
 
 import os
 import datetime
 
 from astropy.io import fits
+
 
 def scandir(path):
     """
@@ -16,8 +19,10 @@ def scandir(path):
     """
 
     for root, dirs, files in os.walk(path):
-        for afile in files if '.fit' in afile:
-            yield os.path.join(root, afile)
+        for afile in files:
+            if os.path.splitext(afile)[-1].lower() in ('.fit', '.fits'):
+                #print afile
+                yield os.path.join(root, afile)
 
 
 def creation_date(filename):
@@ -31,43 +36,45 @@ def modification_date(filename):
 
 
 def obs_date(obsdate):
-    return datetime.datetime.strptime(obsdate,'%Y-%m-%dT%H:%M:%S.%f')
+    if obsdate is not None:
+        try:
+            return datetime.datetime.strptime(obsdate, '%Y-%m-%dT%H:%M:%S')
+        except ValueError:
+            return datetime.datetime.strptime(obsdate, '%Y-%m-%dT%H:%M:%S.%f')
 
-def fitsparser(fitsfile, paw_object):
+
+
+def fitsparser(fitsfile):
     """
     Parse a fits file, translating its metadata to column values
     in the paw_object row element, from table pawprint.
     """
 
-    paw_object.modified_at = modification_date(fitsfile)
-    paw_object.created_at = creation_time(fitsfile)
+    header = fits.getheader(fitsfile)
 
-    hdr = fits.getheader(fitsfile)
-
-    paw_object.observation_date = obsdate(header['DATE-OBS'])
-    paw_object.exptime = header['EXPTIME']
-    paw_object.jd = header['JD']
-    paw_object.ccdtemp = header['CCD-TEMP']
-    paw_object.imagetype = header['IMAGETYP']
-    paw_object.xbinning = header['XBINNING']
-    paw_object.ybinning = header['YBINNING']
-    paw_object.bitpix = header['BITPIX']
-    paw_object.simple = header['SIMPLE']
-    paw_object.naxis = header['NAXIS']
-    paw_object.naxis1 = header['NAXIS1']
-    paw_object.naxis2 = header['NAXIS2']
-    paw_object.bscale = header['BSCALE']
-    paw_object.bzero = header['BZERO']
-    paw_object.exposure = header['EXPOSURE']
-    paw_object.set_temp = header['SET-TEMP']
-    paw_object.xpixsz = header['XPIXSZ']
-    paw_object.ypixsz = header['YPIXSZ']
-    paw_object.imagetype = header['IMAGETYP']
-    paw_object.readoutm = header['READOUTM']
-    paw_object.object_ = header['OBJECT']
-    paw_object.observer = header['OBSERVER']
-
-    #paw_object.state_id =
-
-
-    return paw_object
+    return {
+        "observation_date": obs_date(header.get('DATE-OBS')),
+        "exptime": header.get('EXPTIME'),
+        "jd": header.get('JD'),
+        "ccdtemp": header.get('CCD-TEMP'),
+        "imagetype": header.get('IMAGETYP'),
+        "xbinning": header.get('XBINNING'),
+        "ybinning": header.get('YBINNING'),
+        "bitpix": header.get('BITPIX'),
+        "simple": header.get('SIMPLE'),
+        "naxis": header.get('NAXIS'),
+        "naxis1": header.get('NAXIS1'),
+        "naxis2": header.get('NAXIS2'),
+        "bscale": header.get('BSCALE'),
+        "bzero": header.get('BZERO'),
+        "exposure": header.get('EXPOSURE'),
+        "set_temp": header.get('SET-TEMP'),
+        "xpixsz": header.get('XPIXSZ'),
+        "ypixsz": header.get('YPIXSZ'),
+        "imagetype": header.get('IMAGETYP', "unknown"),
+        "readoutm": header.get('READOUTM'),
+        "object_": header.get('OBJECT'),
+        "observer": header.get('OBSERVER'),
+        "modified_at": modification_date(fitsfile),
+        "created_at": creation_date(fitsfile),
+    }

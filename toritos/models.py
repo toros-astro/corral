@@ -194,6 +194,7 @@ class Pawprint(db.Model):
     __tablename__ = 'Pawprint'
 
     id = db.Column(db.Integer, primary_key=True)
+    jd = db.Column(db.Float, nullable=False)
     created_at = db.Column(db.DateTime(timezone=True))
     observation_date = db.Column(db.DateTime(timezone=True))
     modified_at = db.Column(db.DateTime(timezone=True))
@@ -210,12 +211,11 @@ class Pawprint(db.Model):
     ypixsz = db.Column(db.Float, nullable=True)
     exptime = db.Column(db.Integer, nullable=False)
     ccdtemp = db.Column(db.Float, nullable=True)
-    imagetype = db.Column(db.String(16), nullable=False)
-    jd = db.Column(db.Float, nullable=False)
+    imagetype = db.Column(db.String(32), nullable=False)
     targname = db.Column(db.String(40), nullable=True)
     xbinning = db.Column(db.Integer, nullable=False)
     ybinning = db.Column(db.Integer, nullable=False)
-    readoutm = db.Column(db.String(24), nullable=False)
+    readoutm = db.Column(db.String(24), nullable=True)
     imagetyp = db.Column(db.String(24), nullable=False)
     object_ = db.Column(db.String(24), nullable=True)
     observer = db.Column(db.String(48), nullable=True)
