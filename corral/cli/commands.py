@@ -104,7 +104,7 @@ class Shell(BaseCommand):
 
         self.parser.add_argument(
             "--shell", "-s", dest="shell", action="store",
-            choices=self.shells.keys(), default=self.shells.keys()[0],
+            choices=self.shells.keys(), default=list(self.shells.keys())[0],
             help="Specify the shell to be used")
 
     def handle(self, shell):

@@ -37,7 +37,7 @@ class TestDB(BaseTest):
             v for k, v in vars(models).items()
             if inspect.isclass(v) and issubclass(v, db.Model)
             and not k.startswith("_")]
-        self.assertItemsEqual(actual, self.tn2model.values())
+        self.assertCountEqual(actual, self.tn2model.values())
 
     def test_model_module_correctly_imported(self):
         self.assertIs(models, db.load_models_module())
@@ -56,8 +56,8 @@ class TestDB(BaseTest):
         with mock.patch("corral.db.Model.metadata.create_all") as m_create_all:
             db.create_all(1, 2, 3, a=1)
             self.assertTrue(m_create_all.called)
-            self.assertEqual(m_create_all.call_args[0], (1, 2, 3))
-            self.assertEqual(m_create_all.call_args[1], {"a": 1})
+            self.assertEquals(m_create_all.call_args[0], (1, 2, 3))
+            self.assertEquals(m_create_all.call_args[1], {"a": 1})
 
 
 # =============================================================================

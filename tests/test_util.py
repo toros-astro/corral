@@ -45,7 +45,7 @@ class TestUtil(BaseTest):
         actual = util.collect_subclasses(Base)
         expected = (Level1, Level2)
 
-        self.assertItemsEqual(actual, expected)
+        self.assertCountEqual(actual, expected)
 
     def test_ddimport(self):
         import os

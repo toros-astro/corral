@@ -35,8 +35,9 @@ def create_parser():
 
     command_names = set()
 
-    global_parser = argparse.ArgumentParser(
-        description=core.get_description(), version=core.get_version())
+    global_parser = argparse.ArgumentParser(description=core.get_description())
+    global_parser.add_argument(
+        "--version", action="version", version=core.get_version())
     subparsers = global_parser.add_subparsers(help="command help")
 
     for cls in util.collect_subclasses(BaseCommand):

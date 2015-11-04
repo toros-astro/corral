@@ -14,6 +14,8 @@
 
 import unittest
 
+import six
+
 
 # =============================================================================
 # BASE CLASS
@@ -27,6 +29,8 @@ class BaseTest(unittest.TestCase):
             for model in util.collect_subclasses(db.Model):
                 session.query(model).delete()
 
+    if six.PY2:
+        assertCountEqual = six.assertCountEqual
 
 # =============================================================================
 # MAIN
