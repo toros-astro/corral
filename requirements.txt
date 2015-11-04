@@ -1,7 +1,4 @@
 SQLAlchemy==1.0.8
 SQLAlchemy-Utils==0.31.0
 six==1.10.0
-ipython==3
-pyzmq>=14.7.0
-tornado>=4.2.1
-Jinja2>=2.8
+texttable==0.8.3

@@ -14,6 +14,8 @@ import code
 import six
 
 from .. import db, conf, run
+from ..libs import sqlalchemy_sql_shell as sql_shell
+
 from .base import BaseCommand
 
 
@@ -123,6 +125,21 @@ class Notebook(BaseCommand):
     def handle(self):
         from IPython import start_ipython
         start_ipython(argv=['notebook'])
+
+
+class DBShell(BaseCommand):
+    """Run an SQL shell throught sqlalchemy"""
+
+    options = {"title": "dbshell"}
+
+    def handle(self):
+        original_echo = db.engine.echo
+        try:
+            db.engine.echo = False
+            print("Connected to: {}".format(db.engine))
+            sql_shell.run(db.engine)
+        finally:
+            db.engine.echo = False
 
 
 class Exec(BaseCommand):
