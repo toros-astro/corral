@@ -68,3 +68,4 @@ def run_from_command_line(args):
     parsed_args = parser.parse_args(args)
     func, kwargs = extract_func(parsed_args)
     func(**kwargs)
+

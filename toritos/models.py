@@ -216,7 +216,6 @@ class Pawprint(db.Model):
     xbinning = db.Column(db.Integer, nullable=False)
     ybinning = db.Column(db.Integer, nullable=False)
     readoutm = db.Column(db.String(24), nullable=True)
-    imagetyp = db.Column(db.String(24), nullable=False)
     object_ = db.Column(db.String(24), nullable=True)
     observer = db.Column(db.String(48), nullable=True)
 

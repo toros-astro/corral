@@ -57,7 +57,6 @@ def fitsparser(fitsfile):
         "exptime": header.get('EXPTIME'),
         "jd": header.get('JD'),
         "ccdtemp": header.get('CCD-TEMP'),
-        "imagetype": header.get('IMAGETYP'),
         "xbinning": header.get('XBINNING'),
         "ybinning": header.get('YBINNING'),
         "bitpix": header.get('BITPIX'),
