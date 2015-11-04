@@ -3,7 +3,7 @@
 
 import logging
 
-from . import VERSION
+from . import VERSION, DOC
 from . import db
 
 
@@ -12,7 +12,10 @@ logger = logging.getLogger("Corral")
 
 
 def get_version():
-    return ".".join(VERSION)
+    return VERSION
+
+def get_description():
+    return DOC
 
 
 def setup_environment():

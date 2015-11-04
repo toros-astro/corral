@@ -27,7 +27,7 @@ class TestCore(BaseTest):
 
     def test_get_version(self):
         actual = core.get_version()
-        expected = ".".join(VERSION)
+        expected = VERSION
         self.assertEqual(actual, expected)
 
     def test_setup_environment(self):

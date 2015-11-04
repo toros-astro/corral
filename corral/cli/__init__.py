@@ -36,7 +36,7 @@ def create_parser():
     command_names = set()
 
     global_parser = argparse.ArgumentParser(
-        description="Powerful pipeline framework", version=core.get_version())
+        description=core.get_description(), version=core.get_version())
     subparsers = global_parser.add_subparsers(help="command help")
 
     for cls in util.collect_subclasses(BaseCommand):
