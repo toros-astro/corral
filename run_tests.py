@@ -97,7 +97,7 @@ def main(argv):
     from corral import core, conf, db
 
     # SETUP THE ENVIRONMENT
-    if arguments.verbosity < 2:
+    if arguments.verbosity < 3:
         conf.settings.DEBUG = False
     core.setup_environment()
     db.create_all()

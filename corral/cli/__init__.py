@@ -20,15 +20,18 @@ COMMANDS_MODULE = "{}.commands".format(conf.PACKAGE)
 # FUNCTIONS
 # =============================================================================
 
+def load_commands_module():
+    if conf.settings.has_module("commands"):
+        try:
+            return util.dimport(COMMANDS_MODULE)
+        except ImportError as err:
+            core.logger.error(six.text_type(err))
+
 def create_parser():
 
     from . import commands  # noqa
 
-    if conf.settings.has_module("commands"):
-        try:
-            util.dimport(COMMANDS_MODULE)
-        except ImportError as err:
-            core.logger.error(six.text_type(err))
+    load_commands_module()
 
     command_names = set()
 

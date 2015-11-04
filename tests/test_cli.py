@@ -18,8 +18,9 @@ import random
 import mock
 
 from corral import cli, run
+from corral.cli import commands as builtin_commands
 
-from .cli import TestAPICommand
+from .commands import TestAPICommand
 from .steps import TestLoader, Step1, Step2
 from .base import BaseTest
 
@@ -32,16 +33,13 @@ class TestCli(BaseTest):
 
     def test_command_api(self):
 
-        actual = {}
-        seed = random.random()
-
-        TestAPICommand.set_ns(actual, seed)
-
         with mock.patch("corral.core.setup_environment") as setup_environment:
-            cli.run_from_command_line(["foo"])
-            self.assertTrue(setup_environment.called)
-
-        self.assertEqual(actual, {'setup': seed, 'handle': seed + 2})
+            with mock.patch("tests.commands.TestAPICommand.setup") as setup:
+                with mock.patch("tests.commands.TestAPICommand.handle") as hdl:
+                    cli.run_from_command_line(["foo"])
+                    setup_environment.assert_any_call()
+                    setup.assert_any_call()
+                    hdl.assert_any_call()
 
     def test_extract_func(self):
         ns = argparse.Namespace(func="func", foo="foo", faa="faa")
@@ -51,32 +49,32 @@ class TestCli(BaseTest):
         self.assertEqual(actual, expected)
 
     def test_create_db_comand(self):
-        with mock.patch("corral.cli.CreateDB.ask", return_value="yes") as ask:
+        with mock.patch("corral.cli.commands.CreateDB.ask", return_value="yes") as ask:
             with mock.patch("corral.db.create_all") as create_all:
                 with mock.patch("corral.core.setup_environment"):
                     cli.run_from_command_line(["createdb"])
                     self.assertTrue(ask.called)
                     self.assertTrue(create_all.called)
 
-        with mock.patch("corral.cli.CreateDB.ask", return_value="no") as ask:
+        with mock.patch("corral.cli.commands.CreateDB.ask", return_value="no") as ask:
             with mock.patch("corral.db.create_all") as create_all:
                 with mock.patch("corral.core.setup_environment"):
                     cli.run_from_command_line(["createdb"])
                     self.assertTrue(ask.called)
-                    self.assertFalse(create_all.called)
+                    create_all.assert_not_called()
 
-        with mock.patch("corral.cli.CreateDB.ask", return_value="yes") as ask:
+        with mock.patch("corral.cli.commands.CreateDB.ask", return_value="yes") as ask:
             with mock.patch("corral.db.create_all") as create_all:
                 with mock.patch("corral.core.setup_environment"):
                     cli.run_from_command_line(["createdb", "--noinput"])
-                    self.assertFalse(ask.called)
+                    ask.assert_not_called()
                     self.assertTrue(create_all.called)
 
-        with mock.patch("corral.cli.CreateDB.ask", return_value="no") as ask:
+        with mock.patch("corral.cli.commands.CreateDB.ask", return_value="no") as ask:
             with mock.patch("corral.db.create_all") as create_all:
                 with mock.patch("corral.core.setup_environment"):
                     cli.run_from_command_line(["createdb", "--noinput"])
-                    self.assertFalse(ask.called)
+                    ask.assert_not_called()
                     self.assertTrue(create_all.called)
 
     def test_shell_command(self):
@@ -86,7 +84,7 @@ class TestCli(BaseTest):
             "plain": "code.InteractiveConsole.interact",
         }
 
-        shell_cmd = cli.Shell(mock.Mock())
+        shell_cmd = builtin_commands.Shell(mock.Mock())
         shell_cmd.setup()
         shells = shell_cmd.shells
 
@@ -118,8 +116,8 @@ class TestCli(BaseTest):
             with mock.patch("corral.core.setup_environment"):
                 cli.run_from_command_line(["notebook"])
                 self.assertTrue(start_ipython.called)
-                self.assertEqual(
-                    start_ipython.call_args[1], {'argv': ['notebook']})
+                expected = [mock.call(argv=['notebook'])]
+                start_ipython.assert_has_calls(expected)
 
     def test_run_command(self):
         with mock.patch("corral.run.execute_step") as execute_step:
@@ -159,7 +157,6 @@ class TestCli(BaseTest):
                     with self.assertRaises(SystemExit):
                         cli.run_from_command_line(
                             ["run", "--steps", "FOO"])
-
 
 # =============================================================================
 # MAIN
