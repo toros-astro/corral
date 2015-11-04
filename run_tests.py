@@ -4,17 +4,14 @@
 import os
 import sys
 import argparse
-import types
 import unittest
 import glob
 import importlib
 import logging
 
-import six
-
 from corral import util
 
-from tests  import base
+from tests import base
 
 
 # =============================================================================
@@ -116,4 +113,3 @@ def main(argv):
 
 if __name__ == "__main__":
     main(sys.argv[1:])
-

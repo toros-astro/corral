@@ -4,8 +4,6 @@
 import abc
 import inspect
 
-import sqlalchemy.orm
-
 import six
 
 from . import conf, db, util, exceptions
@@ -25,7 +23,7 @@ class _Processor(object):
         self.setup()
         return self
 
-    def __exit__(self ,type, value, traceback):
+    def __exit__(self, type, value, traceback):
         return self.teardown(type, value, traceback)
 
     def setup(self):
@@ -102,7 +100,7 @@ def execute_loader(loader_cls):
 def execute_step(step_cls):
     if not (inspect.isclass(step_cls) and issubclass(step_cls, Step)):
         msg = "step_cls '{}' must be subclass of 'corral.run.Step'"
-        raise TypeError(msg.format(loader_cls))
+        raise TypeError(msg.format(step_cls))
 
     with db.session_scope() as session, step_cls(session) as step:
         for obj in step.get_objects():
@@ -116,6 +114,3 @@ def execute_step(step_cls):
                 step.validate(proc_obj)
                 session.add(proc_obj)
             session.add(obj)
-
-
-

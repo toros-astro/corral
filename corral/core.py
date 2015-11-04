@@ -14,6 +14,7 @@ logger = logging.getLogger("Corral")
 def get_version():
     return VERSION
 
+
 def get_description():
     return DOC
 

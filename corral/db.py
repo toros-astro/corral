@@ -7,11 +7,11 @@
 
 from contextlib import contextmanager
 
-from sqlalchemy import *
-from sqlalchemy.orm import *
+from sqlalchemy import *  # noqa
+from sqlalchemy.orm import *  # noqa
 from sqlalchemy.ext import declarative
 
-from sqlalchemy_utils import *
+from sqlalchemy_utils import *  # noqa
 
 from . import conf, util
 

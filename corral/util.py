@@ -15,7 +15,7 @@ import importlib
 
 def to_namedtuple(name, d):
     keys = list(d.keys())
-    namedtuple = collections.namedtuple(name, d)
+    namedtuple = collections.namedtuple(name, keys)
     return namedtuple(**d)
 
 

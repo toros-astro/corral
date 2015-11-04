@@ -13,15 +13,13 @@
 # =============================================================================
 
 import argparse
-import random
 
 import mock
 
 from corral import cli, run
 from corral.cli import commands as builtin_commands
 
-from .commands import TestAPICommand
-from .steps import TestLoader, Step1, Step2
+from .steps import Step1, Step2
 from .base import BaseTest
 
 
@@ -49,28 +47,29 @@ class TestCli(BaseTest):
         self.assertEqual(actual, expected)
 
     def test_create_db_comand(self):
-        with mock.patch("corral.cli.commands.CreateDB.ask", return_value="yes") as ask:
+        patch = "corral.cli.commands.CreateDB.ask"
+        with mock.patch(patch, return_value="yes") as ask:
             with mock.patch("corral.db.create_all") as create_all:
                 with mock.patch("corral.core.setup_environment"):
                     cli.run_from_command_line(["createdb"])
                     self.assertTrue(ask.called)
                     self.assertTrue(create_all.called)
 
-        with mock.patch("corral.cli.commands.CreateDB.ask", return_value="no") as ask:
+        with mock.patch(patch, return_value="no") as ask:
             with mock.patch("corral.db.create_all") as create_all:
                 with mock.patch("corral.core.setup_environment"):
                     cli.run_from_command_line(["createdb"])
                     self.assertTrue(ask.called)
                     create_all.assert_not_called()
 
-        with mock.patch("corral.cli.commands.CreateDB.ask", return_value="yes") as ask:
+        with mock.patch(patch, return_value="yes") as ask:
             with mock.patch("corral.db.create_all") as create_all:
                 with mock.patch("corral.core.setup_environment"):
                     cli.run_from_command_line(["createdb", "--noinput"])
                     ask.assert_not_called()
                     self.assertTrue(create_all.called)
 
-        with mock.patch("corral.cli.commands.CreateDB.ask", return_value="no") as ask:
+        with mock.patch(patch, return_value="no") as ask:
             with mock.patch("corral.db.create_all") as create_all:
                 with mock.patch("corral.core.setup_environment"):
                     cli.run_from_command_line(["createdb", "--noinput"])

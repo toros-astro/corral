@@ -139,7 +139,7 @@ class DBShell(BaseCommand):
             print("Connected to: {}".format(db.engine))
             sql_shell.run(db.engine)
         finally:
-            db.engine.echo = False
+            db.engine.echo = original_echo
 
 
 class Exec(BaseCommand):

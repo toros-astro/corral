@@ -8,31 +8,11 @@ to connect to different database engines.
 
 """
 
-# Copyright (c) 2012-2013 Marc Abramowitz and SurveyMonkey
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy of
-# this software and associated documentation files (the "Software"), to deal in
-# the Software without restriction, including without limitation the rights to
-# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-# the Software, and to permit persons to whom the Software is furnished to do so,
-# subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-import readline   # make raw_input use readline
 import sys
 
 import six
 
-import sqlalchemy
+import sqlalchemy as sa
 
 from texttable import Texttable
 
@@ -63,7 +43,7 @@ def process_query(conn, query):
 
     try:
         result = conn.execute(query)
-    except (sqlalchemy.exc.ProgrammingError, sqlalchemy.exc.OperationalError) as e:
+    except (sa.exc.ProgrammingError, sa.exc.OperationalError) as e:
         print(str(e))
     else:
         if result.returns_rows:
@@ -73,7 +53,7 @@ def process_query(conn, query):
                         table.header(row.keys())
 
                     table.add_row(row)
-            except sqlalchemy.exc.ResourceClosedError as e:
+            except sa.exc.ResourceClosedError as e:
                 print(str(e))
             else:
                 print(table.draw())
@@ -95,8 +75,3 @@ def run(engine):
 
         if query:
             process_query(conn, query)
-
-
-if __name__ == '__main__':
-    main()
-

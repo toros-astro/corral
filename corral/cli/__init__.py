@@ -27,6 +27,7 @@ def load_commands_module():
         except ImportError as err:
             core.logger.error(six.text_type(err))
 
+
 def create_parser():
 
     from . import commands  # noqa
@@ -69,4 +70,3 @@ def run_from_command_line(args):
     parsed_args = parser.parse_args(args)
     func, kwargs = extract_func(parsed_args)
     func(**kwargs)
-
