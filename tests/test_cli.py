@@ -18,7 +18,7 @@ import mock
 
 import six
 
-from corral import cli, run
+from corral import cli, run, db
 from corral.cli import commands as builtin_commands
 
 from . import commands
@@ -142,6 +142,25 @@ class Shell(BaseTest):
             with mock.patch("corral.core.setup_environment"):
                 cli.run_from_command_line(["shell", "--shell", "plain"])
                 self.assertTrue(interact.called)
+
+
+class DBShell(BaseTest):
+
+    def test_dbshell(self):
+        with mock.patch("corral.libs.sqlalchemy_sql_shell.run") as run_dbshell:
+            with mock.patch("corral.core.setup_environment"):
+                with mock.patch("sys.stdout"):
+                    cli.run_from_command_line(["dbshell"])
+                    run_dbshell.assert_called_with(db.engine)
+
+
+class Exec(BaseTest):
+
+    def test_execfile(self):
+        with mock.patch("__builtin__.execfile") as execfile:
+            with mock.patch("corral.core.setup_environment"):
+                cli.run_from_command_line(["exec", "foo"])
+                execfile.assert_called_with("foo", {}, {})
 
 
 class Notebook(BaseTest):
