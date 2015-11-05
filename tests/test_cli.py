@@ -18,7 +18,7 @@ import mock
 
 import six
 
-from corral import cli, run, db
+from corral import cli, run
 from corral.cli import commands as builtin_commands
 
 from . import commands

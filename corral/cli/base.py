@@ -24,4 +24,4 @@ class BaseCommand(object):
 
     @abc.abstractmethod
     def handle(self, *args, **kwargs):
-        pass # pragma: no cover
+        pass  # pragma: no cover
