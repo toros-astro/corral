@@ -63,6 +63,17 @@ class TestLazySettings(BaseTest):
         self.assertTrue(self.lazy_settings.has_module("models"))
         self.assertFalse(self.lazy_settings.has_module("___models___"))
 
+    def test_private_name(self):
+        with self.assertRaises(AttributeError):
+            self.lazy_settings._a
+
+    def test_invalid_name(self):
+        with self.assertRaises(AttributeError):
+            self.lazy_settings.foxyroxy
+
+    def test_str_repr(self):
+        self.assertEqual(repr(self.lazy_settings), str(self.lazy_settings))
+
 
 # =============================================================================
 # MAIN
