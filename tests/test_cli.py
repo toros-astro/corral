@@ -106,7 +106,7 @@ class CreateDB(BaseTest):
 
 class Shell(BaseTest):
 
-    def test_shell_command(self):
+    def test_default_shell_command(self):
         mockeable_shell_calls = {
             "ipython": "IPython.start_ipython",
             "bpython": "bpython.embed",
@@ -125,16 +125,19 @@ class Shell(BaseTest):
                 cli.run_from_command_line(["shell"])
                 self.assertTrue(call.called)
 
+    def test_ipython(self):
         with mock.patch("IPython.start_ipython") as start_ipython:
             with mock.patch("corral.core.setup_environment"):
                 cli.run_from_command_line(["shell", "--shell", "ipython"])
                 self.assertTrue(start_ipython.called)
 
+    def test_bpython(self):
         with mock.patch("bpython.embed") as embed:
             with mock.patch("corral.core.setup_environment"):
                 cli.run_from_command_line(["shell", "--shell", "bpython"])
                 self.assertTrue(embed.called)
 
+    def test_plain(self):
         with mock.patch("code.InteractiveConsole.interact") as interact:
             with mock.patch("corral.core.setup_environment"):
                 cli.run_from_command_line(["shell", "--shell", "plain"])
@@ -154,31 +157,35 @@ class Notebook(BaseTest):
 
 class Run(BaseTest):
 
-    def test_run_command(self):
+    def test_run_all_command(self):
         with mock.patch("corral.run.execute_step") as execute_step:
             with mock.patch("corral.core.setup_environment"):
                 cli.run_from_command_line(["run"])
                 expected = map(mock.call, run.load_steps())
                 execute_step.assert_has_calls(expected)
 
+    def test_run_explicit(self):
         with mock.patch("corral.run.execute_step") as execute_step:
             with mock.patch("corral.core.setup_environment"):
                 cli.run_from_command_line(["run", "--steps", "Step1", "Step2"])
                 expected = map(mock.call, run.load_steps())
                 execute_step.assert_has_calls(expected)
 
+    def test_run_first(self):
         with mock.patch("corral.run.execute_step") as execute_step:
             with mock.patch("corral.core.setup_environment"):
                 cli.run_from_command_line(["run", "--steps", "Step1"])
                 expected = [mock.call(Step1)]
                 execute_step.assert_has_calls(expected)
 
+    def test_run_second(self):
         with mock.patch("corral.run.execute_step") as execute_step:
             with mock.patch("corral.core.setup_environment"):
                 cli.run_from_command_line(["run", "--steps", "Step2"])
                 expected = [mock.call(Step2)]
                 execute_step.assert_has_calls(expected)
 
+    def test_run_duplicated(self):
         with mock.patch("corral.run.execute_step") as execute_step:
             with mock.patch("sys.stderr"):
                 with mock.patch("corral.core.setup_environment"):
@@ -186,6 +193,7 @@ class Run(BaseTest):
                         cli.run_from_command_line(
                             ["run", "--steps", "Step2", "Step2"])
 
+    def test_run_invalid_step(self):
         with mock.patch("corral.run.execute_step") as execute_step:
             with mock.patch("sys.stderr"):
                 with mock.patch("corral.core.setup_environment"):
