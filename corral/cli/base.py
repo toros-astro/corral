@@ -24,4 +24,4 @@ class BaseCommand(object):
 
     @abc.abstractmethod
     def handle(self, *args, **kwargs):
-        raise NotImplementedError()
+        pass # pragma: no cover

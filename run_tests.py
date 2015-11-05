@@ -42,15 +42,22 @@ logger = logging.getLogger("CorralTest")
 def create_parser():
     parser = argparse.ArgumentParser(
         description="Run the core test cases for Corral")
-    parser.add_argument(
-        "-v", "--verbose", dest='verbosity',  default=1, const=2,
-        help='Verbose output', action='store_const')
+
     parser.add_argument(
         "-f", "--failfast", dest='failfast', default=False,
         help='Stop on first fail or error', action='store_true')
     parser.add_argument(
         "--settings", dest='settings', default=DEFAULT_SETTINGS,
         help='Settings to run the test cases', action='store')
+
+    group = parser.add_mutually_exclusive_group()
+
+    group.add_argument(
+        "-v", "--verbose", dest='verbosity',  default=1, const=2,
+        help='Verbose output', action='store_const')
+    group.add_argument(
+        "-vv", "--vverbose", dest='verbosity', const=3,
+        help='Verbose output', action='store_const')
 
     return parser
 
@@ -98,6 +105,7 @@ def main(argv):
         conf.settings.DEBUG = False
     core.setup_environment()
     db.create_all()
+    core.logger.setLevel(core.logging.CRITICAL)
 
     # RUN THE TESTS
     result = run_tests(

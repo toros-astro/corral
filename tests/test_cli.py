@@ -16,9 +16,12 @@ import argparse
 
 import mock
 
-from corral import cli, run
+import six
+
+from corral import cli, run, db
 from corral.cli import commands as builtin_commands
 
+from . import commands
 from .steps import Step1, Step2
 from .base import BaseTest
 
@@ -28,6 +31,27 @@ from .base import BaseTest
 # =============================================================================
 
 class TestCli(BaseTest):
+
+    def test_command_ask(self):
+        with mock.patch("six.moves.input") as sinput:
+            cmd = commands.TestAPICommand(mock.Mock())
+            cmd.setup()
+            cmd.ask("foo")
+            sinput.assert_called_once_with("foo")
+
+    def test_load_commands_module(self):
+        actual = cli.load_commands_module()
+        self.assertIs(actual, commands)
+
+        with mock.patch("sys.stderr", new_callable=six.StringIO):
+            with mock.patch("corral.util.dimport", side_effect=ImportError()):
+                actual = cli.load_commands_module()
+                self.assertIsNone(actual)
+
+        with mock.patch("sys.stderr", new_callable=six.StringIO):
+            with mock.patch("corral.util.dimport", side_effect=Exception()):
+                with self.assertRaises(Exception):
+                    cli.load_commands_module()
 
     def test_command_api(self):
 
