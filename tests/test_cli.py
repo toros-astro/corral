@@ -72,7 +72,6 @@ class TestCli(BaseTest):
 
     def test_extract_func(self):
         ns = argparse.Namespace(func="func", foo="foo", faa="faa")
-
         actual = cli.extract_func(ns)
         expected = ("func", {"foo": "foo", "faa": "faa"})
         self.assertEqual(actual, expected)
@@ -244,8 +243,7 @@ class Run(BaseTest):
             with mock.patch("sys.stderr"):
                 with mock.patch("corral.core.setup_environment"):
                     with self.assertRaises(SystemExit):
-                        cli.run_from_command_line(
-                            ["run", "--steps", "FOO"])
+                        cli.run_from_command_line(["run", "--steps", "FOO"])
 
 
 # =============================================================================

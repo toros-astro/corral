@@ -94,13 +94,13 @@ class Shell(BaseCommand):
         try:
             import IPython  # noqa
             self.shells["ipython"] = self.run_ipython
-        except ImportError:
-            pass
+        except ImportError:  # pragma: no cover
+            pass  # pragma: no cover
         try:
             import bpython  # noqa
             self.shells["bpython"] = self.run_bpython
-        except ImportError:
-            pass
+        except ImportError:  # pragma: no cover
+            pass  # pragma: no cover
         self.shells["plain"] = self.run_plain
 
         self.parser.add_argument(
@@ -177,7 +177,6 @@ class Run(BaseCommand):
     def _step_classes(self, class_name):
         if class_name in self.buff:
             self.parser.error("Duplicated step name '{}'".format(class_name))
-            return
         self.buff.add(class_name)
         try:
             return self.mapped_steps[class_name]
