@@ -19,7 +19,7 @@ import mock
 
 import six
 
-from corral import cli, run, db
+from corral import cli, run, db, exceptions
 from corral.cli import commands as builtin_commands
 
 from . import commands
@@ -53,6 +53,13 @@ class TestCli(BaseTest):
             with mock.patch("corral.util.dimport", side_effect=Exception()):
                 with self.assertRaises(Exception):
                     cli.load_commands_module()
+
+    def test_duplicate_title(self):
+        patch = "tests.commands.TestAPICommand.options"
+        with mock.patch.dict(patch, {"title": "exec"}):
+            with mock.patch("corral.core.setup_environment"):
+                with self.assertRaises(exceptions.ImproperlyConfigured):
+                    cli.run_from_command_line([])
 
     def test_command_api(self):
 
@@ -104,6 +111,16 @@ class CreateDB(BaseTest):
                     ask.assert_not_called()
                     self.assertTrue(create_all.called)
 
+        with mock.patch(patch, side_effect=["foo", "no"]) as ask:
+            with mock.patch("corral.db.create_all") as create_all:
+                with mock.patch("corral.core.setup_environment"):
+                    cli.run_from_command_line(["createdb"])
+                    expected = [
+                        mock.call(arg) for arg in
+                        ("Do you want to create the database[Yes/no]? ",
+                         "Please answer 'yes' or 'no': ")]
+                    ask.assert_has_calls(expected)
+                    self.assertFalse(create_all.called)
 
 class Shell(BaseTest):
 

@@ -41,21 +41,21 @@ class Loader(_Processor):
 
     @abc.abstractmethod
     def generate(self):
-        pass
+        pass  # pragma: no cover
 
 
 class Step(_Processor):
 
     @abc.abstractmethod
     def get_objects(self):
-        pass
+        pass  # pragma: no cover
 
     @abc.abstractmethod
     def process(self, obj):
-        raise NotImplementedError()
+        raise NotImplementedError()  # pragma: no cover
 
     def validate(self, obj):
-        pass
+        pass  # pragma: no cover
 
 
 # =============================================================================

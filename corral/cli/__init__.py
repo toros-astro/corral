@@ -6,7 +6,7 @@ import copy
 
 import six
 
-from .. import core, conf, util
+from .. import core, conf, util, exceptions
 from .base import BaseCommand
 
 
@@ -49,7 +49,8 @@ def create_parser():
         options["description"] = options.get("description", cls.__doc__) or ""
 
         if title in command_names:
-            raise ValueError("Duplicate Command '{}'".format(title))
+            msg = "Duplicate Command '{}'".format(title)
+            raise exceptions.ImproperlyConfigured(msg)
         command_names.add(title)
 
         parser = subparsers.add_parser(title, **options)

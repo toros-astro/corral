@@ -26,7 +26,7 @@ from .base import BaseTest
 # BASE CLASS
 # =============================================================================
 
-class TestSteps(BaseTest):
+class TestLoaderFunctions(BaseTest):
 
     def test_load_loader(self):
         actual = run.load_loader()
@@ -36,14 +36,9 @@ class TestSteps(BaseTest):
             with self.assertRaises(exceptions.ImproperlyConfigured):
                 run.load_loader()
 
-    def test_load_steps(self):
-        actual = run.load_steps()
-        expected = (Step1, Step2)
-        self.assertEqual(actual, expected)
-
-        with mock.patch("corral.conf.settings.STEPS", new=["os.open"]):
-            with self.assertRaises(exceptions.ImproperlyConfigured):
-                run.load_steps()
+    def test_execute_no_loader(self):
+        with self.assertRaises(TypeError):
+            run.execute_loader("foo")
 
     def test_execute_loader(self):
         run.execute_loader(TestLoader)
@@ -54,6 +49,27 @@ class TestSteps(BaseTest):
                         return_value=[None]):
                 with self.assertRaises(TypeError):
                     run.execute_loader(TestLoader)
+
+
+class TestExecuteFunction(BaseTest):
+
+    def test_load_steps(self):
+        actual = run.load_steps()
+        expected = (Step1, Step2)
+        self.assertEqual(actual, expected)
+
+        with mock.patch("corral.conf.settings.STEPS", new=["os.open"]):
+            with self.assertRaises(exceptions.ImproperlyConfigured):
+                run.load_steps()
+
+    def test_step_return_no_model(self):
+        with mock.patch("tests.steps.Step1.get_objects", return_value=[None]):
+            with self.assertRaises(TypeError):
+                run.execute_step(Step1)
+
+    def test_execute_no_setp(self):
+        with self.assertRaises(TypeError):
+            run.execute_step("foo")
 
     def test_execute_step(self):
         sample_id = None

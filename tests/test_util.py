@@ -58,6 +58,9 @@ class TestUtil(BaseTest):
         actual = util.dimport("os.open")
         self.assertEqual(actual, os.open)
 
+        with self.assertRaises(ImportError):
+            util.dimport("foo")
+
 
 # =============================================================================
 # MAIN
