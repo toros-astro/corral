@@ -13,6 +13,13 @@ import six
 @six.add_metaclass(abc.ABCMeta)
 class BaseCommand(object):
 
+    @classmethod
+    def get_options(cls):
+        try:
+            return cls.options
+        except AttributeError:
+            return {}
+
     def __init__(self, parser):
         self.parser = parser
 

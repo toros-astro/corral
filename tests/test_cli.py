@@ -59,9 +59,9 @@ class TestCli(BaseTest):
             with mock.patch("tests.commands.TestAPICommand.setup") as setup:
                 with mock.patch("tests.commands.TestAPICommand.handle") as hdl:
                     cli.run_from_command_line(["foo"])
-                    setup_environment.assert_any_call()
-                    setup.assert_any_call()
-                    hdl.assert_any_call()
+                    self.assertTrue(setup_environment.called)
+                    self.assertTrue(setup.called)
+                    self.assertTrue(hdl.called)
 
     def test_extract_func(self):
         ns = argparse.Namespace(func="func", foo="foo", faa="faa")
@@ -69,6 +69,9 @@ class TestCli(BaseTest):
         actual = cli.extract_func(ns)
         expected = ("func", {"foo": "foo", "faa": "faa"})
         self.assertEqual(actual, expected)
+
+
+class CreateDB(BaseTest):
 
     def test_create_db_comand(self):
         patch = "corral.cli.commands.CreateDB.ask"
@@ -99,6 +102,9 @@ class TestCli(BaseTest):
                     cli.run_from_command_line(["createdb", "--noinput"])
                     ask.assert_not_called()
                     self.assertTrue(create_all.called)
+
+
+class Shell(BaseTest):
 
     def test_shell_command(self):
         mockeable_shell_calls = {
@@ -134,6 +140,9 @@ class TestCli(BaseTest):
                 cli.run_from_command_line(["shell", "--shell", "plain"])
                 self.assertTrue(interact.called)
 
+
+class Notebook(BaseTest):
+
     def test_notebook_command(self):
         with mock.patch("IPython.start_ipython") as start_ipython:
             with mock.patch("corral.core.setup_environment"):
@@ -141,6 +150,9 @@ class TestCli(BaseTest):
                 self.assertTrue(start_ipython.called)
                 expected = [mock.call(argv=['notebook'])]
                 start_ipython.assert_has_calls(expected)
+
+
+class Run(BaseTest):
 
     def test_run_command(self):
         with mock.patch("corral.run.execute_step") as execute_step:

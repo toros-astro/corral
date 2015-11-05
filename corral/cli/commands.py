@@ -168,7 +168,7 @@ class Load(BaseCommand):
 class Run(BaseCommand):
     """Excecute the steps in order or one step in particular"""
 
-    options = {"title": "run"}
+    OPTIONS = {"title": "run"}
 
     def _step_classes(self, class_name):
         if class_name in self.buff:

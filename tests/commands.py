@@ -7,8 +7,7 @@ from corral import cli
 
 class TestAPICommand(cli.BaseCommand):
 
-    options = {
-        "title": "foo"}
+    options = {"title": "foo"}
 
     def setup(self):
         pass

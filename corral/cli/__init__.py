@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import copy
 
 import six
 
@@ -42,7 +43,8 @@ def create_parser():
     subparsers = global_parser.add_subparsers(help="command help")
 
     for cls in util.collect_subclasses(BaseCommand):
-        options = getattr(cls, "options", {}) or {}
+        options = copy.deepcopy(cls.get_options())
+
         title = options.pop("title", cls.__name__.lower())
         options["description"] = options.get("description", cls.__doc__) or ""
 
