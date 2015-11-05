@@ -62,7 +62,6 @@ class TestCli(BaseTest):
                     cli.run_from_command_line([])
 
     def test_command_api(self):
-
         with mock.patch("corral.core.setup_environment") as setup_environment:
             with mock.patch("tests.commands.TestAPICommand.setup") as setup:
                 with mock.patch("tests.commands.TestAPICommand.handle") as hdl:
@@ -121,6 +120,7 @@ class CreateDB(BaseTest):
                          "Please answer 'yes' or 'no': ")]
                     ask.assert_has_calls(expected)
                     self.assertFalse(create_all.called)
+
 
 class Shell(BaseTest):
 
