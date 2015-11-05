@@ -10,6 +10,7 @@
 
 import collections
 import code
+import os
 
 import six
 
@@ -152,7 +153,10 @@ class Exec(BaseCommand):
 
     def handle(self, path):
         ns = {}
-        execfile(path, ns, ns)
+        fname = os.path.basename(path)
+        with open(path) as fp:
+            code = compile(fp.read(), fname, 'exec')
+            exec(code, ns, ns)
 
 
 class Load(BaseCommand):

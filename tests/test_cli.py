@@ -13,6 +13,7 @@
 # =============================================================================
 
 import argparse
+import os
 
 import mock
 
@@ -157,10 +158,10 @@ class DBShell(BaseTest):
 class Exec(BaseTest):
 
     def test_execfile(self):
-        with mock.patch("__builtin__.execfile") as execfile:
-            with mock.patch("corral.core.setup_environment"):
-                cli.run_from_command_line(["exec", "foo"])
-                execfile.assert_called_with("foo", {}, {})
+        path = os.path.abspath(os.path.dirname(__file__))
+        script = os.path.join(path, "script.py")
+        with mock.patch("corral.core.setup_environment"):
+            cli.run_from_command_line(["exec", script])
 
 
 class Notebook(BaseTest):
@@ -205,7 +206,7 @@ class Run(BaseTest):
                 execute_step.assert_has_calls(expected)
 
     def test_run_duplicated(self):
-        with mock.patch("corral.run.execute_step") as execute_step:
+        with mock.patch("corral.run.execute_step"):
             with mock.patch("sys.stderr"):
                 with mock.patch("corral.core.setup_environment"):
                     with self.assertRaises(SystemExit):
@@ -213,7 +214,7 @@ class Run(BaseTest):
                             ["run", "--steps", "Step2", "Step2"])
 
     def test_run_invalid_step(self):
-        with mock.patch("corral.run.execute_step") as execute_step:
+        with mock.patch("corral.run.execute_step"):
             with mock.patch("sys.stderr"):
                 with mock.patch("corral.core.setup_environment"):
                     with self.assertRaises(SystemExit):
