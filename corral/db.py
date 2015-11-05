@@ -44,14 +44,15 @@ def load_models_module():
     return util.dimport(MODELS_MODULE)
 
 
-def create_all(*args, **kwargs):
-    return Model.metadata.create_all(*args, **kwargs)
+def create_all(model_cls=None, **kwargs):
+    cls = moel_cls() if model_cls else Model
+    return cls.metadata.create_all(**kwargs)
 
 
 @contextmanager
-def session_scope():
+def session_scope(session_cls=None):
     """Provide a transactional scope around a series of operations."""
-    session = Session()
+    session = session_cls() if session_cls else Session()
     try:
         yield session
         session.commit()
