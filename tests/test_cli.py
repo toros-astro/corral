@@ -23,7 +23,7 @@ from corral import cli, run, db
 from corral.cli import commands as builtin_commands
 
 from . import commands
-from .steps import Step1, Step2
+from .steps import TestLoader, Step1, Step2
 from .base import BaseTest
 
 
@@ -173,6 +173,15 @@ class Notebook(BaseTest):
                 self.assertTrue(start_ipython.called)
                 expected = [mock.call(argv=['notebook'])]
                 start_ipython.assert_has_calls(expected)
+
+
+class Load(BaseTest):
+
+    def test_load(self):
+        with mock.patch("corral.run.execute_loader") as execute_loader:
+            with mock.patch("corral.core.setup_environment"):
+                cli.run_from_command_line(["load"])
+                execute_loader.assert_called_with(TestLoader)
 
 
 class Run(BaseTest):
