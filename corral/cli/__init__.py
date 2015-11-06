@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import argparse
+import sys
 import copy
 
 import six
@@ -37,12 +37,10 @@ def create_parser():
 
     command_names = set()
 
-    global_parser = argparse.ArgumentParser(description=core.get_description())
-    global_parser.add_argument(
-        "--version", action="version", version=core.get_version())
-    subparsers = global_parser.add_subparsers(help="command help")
+    parser = util.CorralCLIParser()
 
     for cls in util.collect_subclasses(BaseCommand):
+
         options = copy.deepcopy(cls.get_options())
 
         title = options.pop("title", cls.__name__.lower())
@@ -53,23 +51,16 @@ def create_parser():
             raise exceptions.ImproperlyConfigured(msg)
         command_names.add(title)
 
-        parser = subparsers.add_parser(title, **options)
-        command = cls(parser)
+        command = cls()
+        sub_parser = parser.add_subparser(title, command.handle, **options)
+        command.configure(sub_parser)
         command.setup()
-        parser.set_defaults(func=command.handle)
 
-    return global_parser
-
-
-def extract_func(ns):
-    kwargs = dict(ns._get_kwargs())
-    func = kwargs.pop("func")
-    return func, kwargs
+    return parser
 
 
-def run_from_command_line(args):
+def run_from_command_line():
     core.setup_environment()
     parser = create_parser()
-    parsed_args = parser.parse_args(args)
-    func, kwargs = extract_func(parsed_args)
+    func, kwargs = parser.parse_args(sys.argv[1:])
     func(**kwargs)

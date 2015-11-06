@@ -25,7 +25,7 @@ from .base import BaseTest
 
 class TestLazySettings(BaseTest):
 
-    def setUp(self):
+    def setup(self):
         self.module_name = conf.CORRAL_SETTINGS_MODULE
         self.lazy_settings = conf.LazySettings(conf.CORRAL_SETTINGS_MODULE)
         self.settings = sys.modules[conf.CORRAL_SETTINGS_MODULE]

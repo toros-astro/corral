@@ -28,7 +28,7 @@ from .base import BaseTest
 
 class TestDB(BaseTest):
 
-    def setUp(self):
+    def setup(self):
         self.tn2model = {
             sc.__tablename__: sc for sc in util.collect_subclasses(db.Model)}
 
@@ -47,6 +47,16 @@ class TestDB(BaseTest):
         for table_name, table in metadata.tables.items():
             model = self.tn2model[table_name]
             self.assertIs(model.__table__, table)
+
+    @mock.patch("corral.db.Model")
+    @mock.patch("corral.db.Session")
+    @mock.patch("corral.db.engine")
+    def test_setup_don_change_engine_model_and_session(self, *args):
+        engine, Session, Model = args
+        db.setup()
+        self.assertIs(db.engine, engine)
+        self.assertIs(db.Session, Session)
+        self.assertIs(db.Model, Model)
 
     def tests_create_all(self):
         with mock.patch("corral.db.Model.metadata.create_all") as m_create_all:

@@ -35,6 +35,8 @@ Model = None
 
 def setup():
     global engine, Session, Model
+    if Model:
+        return
     engine = create_engine(conf.settings.CONNECTION, echo=conf.settings.DEBUG)
     Session = sessionmaker(bind=engine)
     Model = declarative.declarative_base(name="Model", bind=engine)

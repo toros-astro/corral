@@ -20,8 +20,8 @@ class BaseCommand(object):
         except AttributeError:
             return {}
 
-    def __init__(self, parser):
-        self.parser = parser
+    def configure(self, parser):
+        self.__parser = parser
 
     def setup(self):
         pass
@@ -32,3 +32,7 @@ class BaseCommand(object):
     @abc.abstractmethod
     def handle(self, *args, **kwargs):
         pass  # pragma: no cover
+
+    @property
+    def parser(self):
+        return self.__parser
