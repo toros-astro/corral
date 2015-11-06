@@ -7,8 +7,7 @@
 
 import sys
 
-from . import core, util, creator
-
+from . import util, creator
 
 
 # =============================================================================
@@ -32,4 +31,3 @@ def run_from_command_line():
     parser = create_parser()
     func, kwargs = parser.parse_args(sys.argv[1:])
     func(**kwargs)
-

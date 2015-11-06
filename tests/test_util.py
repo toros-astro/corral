@@ -75,12 +75,3 @@ class DImport(BaseTest):
         # https://github.com/toros-astro/corral/issues/11
         with self.assertRaisesRegex(ImportError, "No module named foo"):
             util.dimport("faa")
-
-
-
-# =============================================================================
-# MAIN
-# =============================================================================
-
-if __name__ == "__main__":
-    print(__doc__)

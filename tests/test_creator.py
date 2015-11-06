@@ -19,8 +19,6 @@ import os
 from corral import creator
 from corral.exceptions import ValidationError
 
-import mock
-
 from .base import BaseTest
 
 
@@ -86,11 +84,3 @@ class CreatePipeline(BaseTest):
     def test_directory_exists_failure(self):
         with self.assertRaises(ValidationError):
             creator.create_pipeline(self.path)
-
-
-# =============================================================================
-# MAIN
-# =============================================================================
-
-if __name__ == "__main__":
-    print(__doc__)

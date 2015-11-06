@@ -12,12 +12,9 @@
 # IMPORTS
 # =============================================================================
 
-import argparse
 import os
 
 import mock
-
-import six
 
 from corral import cli, run, db, exceptions
 from corral.cli import commands as builtin_commands
@@ -254,4 +251,3 @@ class Run(BaseTest):
         with mock.patch("corral.run.execute_step"):
             with self.assertRaises(SystemExit):
                 cli.run_from_command_line()
-

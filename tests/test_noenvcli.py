@@ -12,7 +12,7 @@
 # IMPORTS
 # =============================================================================
 
-from corral import core, VERSION
+from corral import noenvcli
 
 import mock
 
@@ -23,16 +23,10 @@ from .base import BaseTest
 # BASE CLASS
 # =============================================================================
 
-class TestCore(BaseTest):
+class Create(BaseTest):
 
-    def test_get_version(self):
-        actual = core.get_version()
-        expected = VERSION
-        self.assertEqual(actual, expected)
-
-    def test_setup_environment(self):
-        with mock.patch("corral.db.setup") as setup:
-            with mock.patch("corral.db.load_models_module") as load_mm:
-                core.setup_environment()
-                self.assertTrue(setup.called)
-                self.assertTrue(load_mm.called)
+    @mock.patch("sys.argv", new=["test", "create", "foo"])
+    @mock.patch("corral.creator.create_pipeline")
+    def test_create_comand(self, create_pipeline):
+        noenvcli.run_from_command_line()
+        create_pipeline.assert_called_with(path="foo")

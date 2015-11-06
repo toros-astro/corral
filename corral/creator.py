@@ -23,8 +23,8 @@ KEYWORDS = frozenset(keyword.kwlist)
 
 BUILTINS = frozenset(dir(six.moves.builtins))
 
-FORBIDEN_WORDS = frozenset(
-    ("True", "False", "None", "corral", "__builtins__", "builtins",
+FORBIDEN_WORDS = frozenset((
+    "True", "False", "None", "corral", "__builtins__", "builtins",
     "models", "tests", "command", "migrations", "in_corral.py", "in_corral",
     "settings", "load", "steps", "__init__"))
 

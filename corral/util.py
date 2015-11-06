@@ -22,7 +22,7 @@ class CorralCLIParser(object):
         self.global_parser = argparse.ArgumentParser(
             description=core.get_description())
         self.global_parser.add_argument(
-            "--version", action="version", version=core.get_version())
+            "--version", "-v", action="version", version=core.get_version())
         self.subparsers = self.global_parser.add_subparsers(
             help="command help")
 
