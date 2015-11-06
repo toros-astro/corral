@@ -69,7 +69,4 @@ def dimport(importpath):
             return getattr(module, cls_name)
         except (ImportError, AttributeError):
             pass
-    try:
-        return importlib.import_module(importpath)
-    except:
-        raise ImportError("No module named {}".format(importpath))
+    return importlib.import_module(importpath)

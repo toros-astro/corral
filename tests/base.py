@@ -42,6 +42,7 @@ class BaseTest(unittest.TestCase):
                 session.query(model).delete()
 
     if six.PY2:
+        assertRaisesRegex = six.assertRaisesRegex
         assertCountEqual = six.assertCountEqual
 
 # =============================================================================

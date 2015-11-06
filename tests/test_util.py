@@ -14,6 +14,8 @@
 
 from corral import util
 
+import mock
+
 from .base import BaseTest
 
 
@@ -21,7 +23,7 @@ from .base import BaseTest
 # BASE CLASS
 # =============================================================================
 
-class TestUtil(BaseTest):
+class ToNamedTuple(BaseTest):
 
     def test_to_namedtuple(self):
         original = {"x": 1, "y": 2}
@@ -30,6 +32,9 @@ class TestUtil(BaseTest):
         actual = util.to_namedtuple(name, original)
         self.assertEqual(dict(actual._asdict()), original)
         self.assertEqual(actual.__class__.__name__, name)
+
+
+class CollectSubclasses(BaseTest):
 
     def test_collect_subclasses(self):
 
@@ -47,7 +52,10 @@ class TestUtil(BaseTest):
 
         self.assertCountEqual(actual, expected)
 
-    def test_ddimport(self):
+
+class DImport(BaseTest):
+
+    def test_dimport(self):
         import os
         actual = util.dimport("os")
         self.assertEqual(actual, os)
@@ -60,6 +68,14 @@ class TestUtil(BaseTest):
 
         with self.assertRaises(ImportError):
             util.dimport("foo")
+
+    @mock.patch("importlib.import_module",
+                side_effect=ImportError("No module named foo"))
+    def test_import_file_with_dead_dependency_show_correct_message(self, ipl):
+        # https://github.com/toros-astro/corral/issues/11
+        with self.assertRaisesRegex(ImportError, "No module named foo"):
+            util.dimport("faa")
+
 
 
 # =============================================================================
