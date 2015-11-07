@@ -158,6 +158,57 @@ class Shell(BaseTest):
             cli.run_from_command_line()
             self.assertTrue(interact.called)
 
+    @mock.patch("sys.argv", new=["test", "shell"])
+    @mock.patch("corral.core.setup_environment")
+    def test_fails_ipython_fails(self, *args):
+        original = builtin_commands.Shell.run_ipython
+        property_mock = mock.PropertyMock(side_effect=ImportError)
+        try:
+            builtin_commands.Shell.run_ipython = property_mock
+            shell_cmd = builtin_commands.Shell()
+            shell_cmd.configure(mock.Mock())
+            shell_cmd.setup()
+            with mock.patch("bpython.embed") as embed:
+                cli.run_from_command_line()
+                self.assertTrue(embed.called)
+        finally:
+            builtin_commands.Shell.run_ipython = original
+
+    @mock.patch("sys.argv", new=["test", "shell"])
+    @mock.patch("corral.core.setup_environment")
+    def test_import_bpython_fails(self, *args):
+        original = builtin_commands.Shell.run_bpython
+        property_mock = mock.PropertyMock(side_effect=ImportError)
+        try:
+            builtin_commands.Shell.run_bpython = property_mock
+            shell_cmd = builtin_commands.Shell()
+            shell_cmd.configure(mock.Mock())
+            shell_cmd.setup()
+            with mock.patch("IPython.start_ipython") as start_ipython:
+                cli.run_from_command_line()
+                self.assertTrue(start_ipython.called)
+        finally:
+            builtin_commands.Shell.run_bpython = original
+
+    @mock.patch("sys.argv", new=["test", "shell"])
+    @mock.patch("corral.core.setup_environment")
+    def test_import_ipython_and_bpython_fails(self, *args):
+        ioriginal = builtin_commands.Shell.run_ipython
+        boriginal = builtin_commands.Shell.run_bpython
+        property_mock = mock.PropertyMock(side_effect=ImportError)
+        try:
+            builtin_commands.Shell.run_ipython = property_mock
+            builtin_commands.Shell.run_bpython = property_mock
+            shell_cmd = builtin_commands.Shell()
+            shell_cmd.configure(mock.Mock())
+            shell_cmd.setup()
+            with mock.patch("code.InteractiveConsole.interact") as interact:
+                cli.run_from_command_line()
+                self.assertTrue(interact.called)
+        finally:
+            builtin_commands.Shell.run_ipython = ioriginal
+            builtin_commands.Shell.run_bpython = boriginal
+
 
 class DBShell(BaseTest):
 

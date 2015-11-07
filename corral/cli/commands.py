@@ -94,13 +94,13 @@ class Shell(BaseCommand):
         try:
             import IPython  # noqa
             self.shells["ipython"] = self.run_ipython
-        except ImportError:  # pragma: no cover
-            pass  # pragma: no cover
+        except ImportError:
+            pass
         try:
             import bpython  # noqa
             self.shells["bpython"] = self.run_bpython
-        except ImportError:  # pragma: no cover
-            pass  # pragma: no cover
+        except ImportError:
+            pass
         self.shells["plain"] = self.run_plain
 
         self.parser.add_argument(
