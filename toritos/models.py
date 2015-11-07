@@ -33,7 +33,8 @@ class CCD(db.Model):
     brand = db.Column(db.String(100), nullable=False)
     model = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
-    xpixsize = db.Column(db.Float, nullable=True)
+    xpixsize = db.Column(db.Integer, nullable=True)
+    ypixsize = db.Column(db.Integer, nullable=True)
 
     def __repr__(self):
         return self.name
