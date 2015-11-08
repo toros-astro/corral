@@ -13,6 +13,8 @@ CONNECTION = 'sqlite:///toritos-dev.db'
 
 LOADER = "toritos.load.Load"
 
+PIPELINE_SETUP = "toritos.pipeline.Toritos"
+
 STEPS = []
 
 PAWPRINTPATH = " "

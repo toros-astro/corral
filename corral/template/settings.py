@@ -19,9 +19,10 @@
 # If debug is in True pipeline sona be much more verbose
 DEBUG = True
 
+PIPELINE_SETUP = "${project_name}.pipeline.Pipeline"
 
 # Database connection string
-CONNECTION = 'sqlite:///${project_name}-dev.db'
+CONNECTION = "sqlite:///${project_name}-dev.db"
 
 
 # Loader class

@@ -11,6 +11,7 @@
 import collections
 import code
 import os
+import logging
 
 import six
 
@@ -134,13 +135,14 @@ class DBShell(BaseCommand):
     options = {"title": "dbshell"}
 
     def handle(self):
-        original_echo = db.engine.echo
+        elogger = logging.getLogger('sqlalchemy.engine')
+        original_level = elogger.level
         try:
-            db.engine.echo = False
+            elogger.setLevel(logging.WARNING)
             print("Connected to: {}".format(db.engine))
             sql_shell.run(db.engine)
         finally:
-            db.engine.echo = original_echo
+            elogger.setLevel(original_level)
 
 
 class Exec(BaseCommand):

@@ -1,6 +1,8 @@
 
 DEBUG = True
 
+PIPELINE_SETUP = "tests.pipeline.Test"
+
 CONNECTION = 'sqlite:///:memory:'
 
 LOADER = "tests.steps.TestLoader"
