@@ -12,7 +12,7 @@ class TestPipeline(PipelineSetup):
     def logger_conf(self):
         logging.basicConfig(format="[Tests @ %(asctime)-15s] %(message)s")
 
-        level = logging.INFO if settings.DEBUG else logging.WARNING
+        level = logging.ERROR
 
         logging.getLogger("Corral").setLevel(level)
 

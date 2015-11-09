@@ -39,6 +39,7 @@ class TestCli(BaseTest):
             sinput.assert_called_once_with("foo")
 
     @mock.patch("sys.stderr")
+    @mock.patch("sys.stdout")
     def test_load_commands_module(self, *args):
         actual = cli.load_commands_module()
         self.assertIs(actual, commands)

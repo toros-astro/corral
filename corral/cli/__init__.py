@@ -26,7 +26,7 @@ def load_commands_module():
         try:
             return util.dimport(COMMANDS_MODULE)
         except ImportError as err:
-            core.logger.error(six.text_type(err))
+            core.logger.info(six.text_type(err))
 
 
 def create_parser():
