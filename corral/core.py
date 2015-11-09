@@ -33,4 +33,3 @@ def setup_environment():
 
     setup_cls = pipeline.load_pipeline_setup()
     pipeline.setup_pipeline(setup_cls)
-

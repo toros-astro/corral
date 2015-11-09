@@ -6,6 +6,7 @@ import logging
 from corral.pipeline import PipelineSetup
 from corral.conf import settings
 
+
 class Test(PipelineSetup):
 
     def logger_conf(self):

@@ -7,7 +7,7 @@ import inspect
 
 import six
 
-from . import conf, util
+from . import conf, util, exceptions
 
 
 # =============================================================================
@@ -26,7 +26,7 @@ class PipelineSetup(object):
 
     @abc.abstractmethod
     def setup(self):
-        pass # pragma: no cover
+        pass  # pragma: no cover
 
     def teardown(self):
         pass
