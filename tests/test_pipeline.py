@@ -54,5 +54,3 @@ class SetupTests(BaseTest):
     def test_setup_pipeline_fail(self):
         with self.assertRaises(TypeError):
             setup.setup_pipeline(None)
-
-
