@@ -3,11 +3,11 @@
 
 import logging
 
-from corral.pipeline import PipelineSetup
+from corral.setup import PipelineSetup
 from corral.conf import settings
 
 
-class Test(PipelineSetup):
+class TestPipeline(PipelineSetup):
 
     def logger_conf(self):
         logging.basicConfig(format="[Tests @ %(asctime)-15s] %(message)s")

@@ -18,7 +18,7 @@
 
 import logging
 
-from corral.pipeline import PipelineSetup
+from corral.setup import PipelineSetup
 from corral.conf import settings
 
 

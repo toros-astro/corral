@@ -1,7 +1,7 @@
 
 DEBUG = True
 
-PIPELINE_SETUP = "tests.pipeline.Test"
+PIPELINE_SETUP = "tests.pipeline.TestPipeline"
 
 CONNECTION = 'sqlite:///:memory:'
 

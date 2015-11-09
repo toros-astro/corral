@@ -19,17 +19,17 @@ class PipelineSetup(object):
 
     @staticmethod
     def __new__(cls, *args, **kwargs):
-        if not hasattr(cls, "__instance"):
-            cls.__instance = super(
+        if not hasattr(cls, "_instance"):
+            cls._instance = super(
                 PipelineSetup, cls).__new__(cls, *args, **kwargs)
-        return cls.__instance
+        return cls._instance
 
     @abc.abstractmethod
     def setup(self):
         pass  # pragma: no cover
 
     def teardown(self):
-        pass
+        pass  # pragma: no cover
 
 
 # =============================================================================
