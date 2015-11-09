@@ -69,7 +69,7 @@ class CreatePipeline(BaseTest):
         creator.create_pipeline(self.pipeline_path)
 
         expected = ['in_corral.py', 'pipeline']
-        self.assertEqual(os.listdir(self.path), expected)
+        self.assertCountEqual(os.listdir(self.path), expected)
 
         self.assertTrue(os.path.isdir(self.pipeline_path))
 
