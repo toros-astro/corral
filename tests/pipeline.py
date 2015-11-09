@@ -4,7 +4,6 @@
 import logging
 
 from corral.setup import PipelineSetup
-from corral.conf import settings
 
 
 class TestPipeline(PipelineSetup):
