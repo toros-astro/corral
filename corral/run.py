@@ -37,7 +37,7 @@ class _Processor(object):
             msg = "{} must be an instance of corral.db.Model"
             raise TypeError(msg.format(obj))
 
-    def add_to_session(self, obj):
+    def save(self, obj):
         self.session.add(obj)
 
     @abc.abstractmethod
@@ -94,7 +94,7 @@ def execute_loader(loader_cls):
         generator = loader.generate()
         for obj in (generator or []):
             loader.validate(obj)
-            loader.add_to_session(obj)
+            loader.save(obj)
 
 
 def execute_step(step_cls):
@@ -110,5 +110,5 @@ def execute_step(step_cls):
                 generator = (generator,)
             for proc_obj in generator:
                 step.validate(proc_obj)
-                step.add_to_session(proc_obj)
-            step.add_to_session(obj)
+                step.save(proc_obj)
+            step.save(obj)
