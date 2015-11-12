@@ -100,6 +100,14 @@ class TestExecuteFunction(BaseTest):
             sample = session.query(SampleModel).get(sample_id)
             self.assertEqual(sample.name, "Step2")
 
+    def test_default_generate_without_model_or_conditions(self):
+        with mock.patch("tests.steps.Step1.model", None):
+            with self.assertRaises(NotImplementedError):
+                run.execute_step(Step1)
+        with mock.patch("tests.steps.Step1.conditions", None):
+            with self.assertRaises(NotImplementedError):
+                run.execute_step(Step1)
+
 
 # =============================================================================
 # MAIN

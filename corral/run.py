@@ -55,6 +55,27 @@ class Loader(_Processor):
 
 class Step(_Processor):
 
+    model = None
+    conditions = None
+
+    ordering = None
+    offset, limit = None, None
+
+    def generate(self):
+        if self.model is None or self.conditions is None:
+            clsname = type(self).__name__
+            raise NotImplementedError(
+                "'{}' subclass with a default generate must redefine "
+                "'model' and 'conditions' class-attributes".format(clsname))
+        query = self.session.query(self.model).filter(*self.conditions)
+        if self.ordering is not None:
+            query = query.order_by(*self.ordering)
+        if self.offset is not None:
+            query = query.offset(self.offset)
+        if self.limit is not None:
+            query = query.limit(self.limit)
+        return query
+
     @abc.abstractmethod
     def process(self, obj):
         raise NotImplementedError()  # pragma: no cover
