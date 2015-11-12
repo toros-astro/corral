@@ -32,6 +32,14 @@ class _Processor(object):
     def teardown(self, type, value, traceback):
         pass
 
+    def validate(self, obj):
+        if not isinstance(obj, db.Model):
+            msg = "{} must be an instance of corral.db.Model"
+            raise TypeError(msg.format(obj))
+
+    def add_to_session(self, obj):
+        self.session.add(obj)
+
     @property
     def session(self):
         return self.__session
@@ -53,9 +61,6 @@ class Step(_Processor):
     @abc.abstractmethod
     def process(self, obj):
         raise NotImplementedError()  # pragma: no cover
-
-    def validate(self, obj):
-        pass  # pragma: no cover
 
 
 # =============================================================================
@@ -91,10 +96,8 @@ def execute_loader(loader_cls):
     with db.session_scope() as session, loader_cls(session) as loader:
         generator = loader.generate()
         for obj in (generator or []):
-            if not isinstance(obj, db.Model):
-                msg = "{} must be an instance of corral.db.Model"
-                raise TypeError(msg.format(obj))
-            session.add(obj)
+            loader.validate(obj)
+            loader.add_to_session(obj)
 
 
 def execute_step(step_cls):
