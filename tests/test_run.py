@@ -63,7 +63,7 @@ class TestExecuteFunction(BaseTest):
                 run.load_steps()
 
     def test_step_return_no_model(self):
-        with mock.patch("tests.steps.Step1.get_objects", return_value=[None]):
+        with mock.patch("tests.steps.Step1.generate", return_value=[None]):
             with self.assertRaises(TypeError):
                 run.execute_step(Step1)
 

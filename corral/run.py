@@ -40,23 +40,20 @@ class _Processor(object):
     def add_to_session(self, obj):
         self.session.add(obj)
 
+    @abc.abstractmethod
+    def generate(self):
+        pass  # pragma: no cover
+
     @property
     def session(self):
         return self.__session
 
 
 class Loader(_Processor):
-
-    @abc.abstractmethod
-    def generate(self):
-        pass  # pragma: no cover
+    pass
 
 
 class Step(_Processor):
-
-    @abc.abstractmethod
-    def get_objects(self):
-        pass  # pragma: no cover
 
     @abc.abstractmethod
     def process(self, obj):
@@ -106,14 +103,12 @@ def execute_step(step_cls):
         raise TypeError(msg.format(step_cls))
 
     with db.session_scope() as session, step_cls(session) as step:
-        for obj in step.get_objects():
-            if not isinstance(obj, db.Model):
-                msg = "{} must be an instance of corral.db.Model"
-                raise TypeError(msg.format(obj))
+        for obj in step.generate():
+            step.validate(obj)
             generator = step.process(obj) or []
             if not hasattr(generator, "__iter__"):
                 generator = (generator,)
             for proc_obj in generator:
                 step.validate(proc_obj)
-                session.add(proc_obj)
-            session.add(obj)
+                step.add_to_session(proc_obj)
+            step.add_to_session(obj)

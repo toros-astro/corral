@@ -14,7 +14,7 @@ class TestLoader(run.Loader):
 
 class Step1(run.Step):
 
-    def get_objects(self):
+    def generate(self):
         return self.session.query(
             SampleModel).filter(SampleModel.name == None)  # noqa
 
@@ -24,7 +24,7 @@ class Step1(run.Step):
 
 class Step2(run.Step):
 
-    def get_objects(self):
+    def generate(self):
         return self.session.query(SampleModel).filter(
             SampleModel.name == "Step1")
 
