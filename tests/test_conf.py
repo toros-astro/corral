@@ -13,6 +13,8 @@
 # =============================================================================
 
 import sys
+import string
+import random
 
 from corral import conf
 
@@ -73,6 +75,20 @@ class TestLazySettings(BaseTest):
 
     def test_str_repr(self):
         self.assertEqual(repr(self.lazy_settings), str(self.lazy_settings))
+
+    def test_get(self):
+        self.assertEqual(
+            self.lazy_settings.get("CONNECTION", "x"),
+            self.settings.CONNECTION)
+
+        letters = list(string.digits + string.ascii_letters)
+        random.shuffle(letters)
+        non_existing_attr = "attr_" + str(letters[:5])
+        while hasattr(self.settings, non_existing_attr):
+            random.shuffle(letters)
+            non_existing_attr += str(letters[:2])
+
+        self.assertEqual(self.lazy_settings.get(non_existing_attr, "x"), "x")
 
 
 # =============================================================================

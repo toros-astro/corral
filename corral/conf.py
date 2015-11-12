@@ -65,6 +65,9 @@ class LazySettings(object):
             os.path.isfile(full_path + ".py") or
             os.path.isfile(full_path + ".pyc"))
 
+    def get(self, name, d=None):
+        return getattr(self._settings, name, d)
+
 
 # =============================================================================
 # LOAD
