@@ -29,8 +29,7 @@ from corral.conf import settings
 class Pipeline(PipelineSetup):
 
     def logger_conf(self):
-        logging.basicConfig(
-            format="[${project_name} @ %(asctime)-15s] %(message)s")
+        logging.basicConfig(format=settings.LOGGER_FORMAT)
 
         level = logging.INFO if settings.DEBUG else logging.WARNING
 

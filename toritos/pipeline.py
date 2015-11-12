@@ -9,7 +9,7 @@ from corral.conf import settings
 class Toritos(PipelineSetup):
 
     def logger_conf(self):
-        logging.basicConfig(format="[Toritos @ %(asctime)-15s] %(message)s")
+        logging.basicConfig(format=settings.LOGGER_FORMAT)
 
         level = logging.INFO if settings.DEBUG else logging.WARNING
 

@@ -16,8 +16,10 @@
 # CONFIGURATIONS
 # =============================================================================
 
-# If debug is in True pipeline sona be much more verbose
+# If debug is in True pipeline gona be much more verbose
 DEBUG = True
+
+LOGGER_FORMAT = "[${project_name}-%(levelname)s @ %(asctime)-15s] %(message)s"
 
 PIPELINE_SETUP = "${project_name}.pipeline.Pipeline"
 

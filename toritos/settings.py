@@ -9,6 +9,8 @@ import numpy as np
 
 DEBUG = True
 
+LOGGER_FORMAT = "[Toritos-%(levelname)s @ %(asctime)-15s] %(message)s"
+
 CONNECTION = 'sqlite:///toritos-dev.db'
 
 LOADER = "toritos.load.Load"

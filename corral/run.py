@@ -7,6 +7,7 @@ import inspect
 import six
 
 from . import conf, db, util, exceptions
+from .core import logger
 
 
 # =============================================================================
@@ -86,6 +87,7 @@ class Step(_Processor):
 # =============================================================================
 
 def load_loader():
+    logger.debug("Loading Loader Class")
     import_string = conf.settings.LOADER
     cls = util.dimport(import_string)
     if not (inspect.isclass(cls) and issubclass(cls, Loader)):
@@ -96,6 +98,7 @@ def load_loader():
 
 def load_steps():
     steps = []
+    logger.debug("Loading Steps Classes")
     for import_string in conf.settings.STEPS:
         cls = util.dimport(import_string)
         if not (inspect.isclass(cls) and issubclass(cls, Step)):
@@ -111,11 +114,13 @@ def execute_loader(loader_cls):
         msg = "loader_cls '{}' must be subclass of 'corral.run.Loader'"
         raise TypeError(msg.format(loader_cls))
 
+    logger.info("Executing loader '{}'".format(loader_cls))
     with db.session_scope() as session, loader_cls(session) as loader:
         generator = loader.generate()
         for obj in (generator or []):
             loader.validate(obj)
             loader.save(obj)
+    logger.info("Done!")
 
 
 def execute_step(step_cls):
@@ -123,6 +128,7 @@ def execute_step(step_cls):
         msg = "step_cls '{}' must be subclass of 'corral.run.Step'"
         raise TypeError(msg.format(step_cls))
 
+    logger.info("Executing step '{}'".format(step_cls))
     with db.session_scope() as session, step_cls(session) as step:
         for obj in step.generate():
             step.validate(obj)
@@ -133,3 +139,4 @@ def execute_step(step_cls):
                 step.validate(proc_obj)
                 step.save(proc_obj)
             step.save(obj)
+    logger.info("Done!")

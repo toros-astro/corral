@@ -9,7 +9,8 @@ from corral.setup import PipelineSetup
 class TestPipeline(PipelineSetup):
 
     def logger_conf(self):
-        logging.basicConfig(format="[Tests @ %(asctime)-15s] %(message)s")
+        logging.basicConfig(
+            format="[Tests-%(levelname)s @ %(asctime)-15s] %(message)s")
 
         level = logging.ERROR
 
