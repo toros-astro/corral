@@ -26,7 +26,7 @@ class PipelineSetup(object):
                 PipelineSetup, cls).__new__(cls, *args, **kwargs)
         return cls._instance
 
-    def setup(self):
+    def default_setup(self):
         logging.basicConfig(format=settings.LOG_FORMAT)
 
         level = settings.LOG_LEVEL
@@ -35,6 +35,9 @@ class PipelineSetup(object):
 
         # http://docs.sqlalchemy.org/en/rel_1_0/core/engines.html
         logging.getLogger('sqlalchemy.engine').setLevel(level)
+
+    def setup(self):
+        self.default_setup()
 
     def teardown(self):
         pass  # pragma: no cover

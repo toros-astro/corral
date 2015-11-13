@@ -41,7 +41,7 @@ class CreateDB(BaseCommand):
             answer = "yes"
         else:
             answer = self.ask(
-                "Do you want to create the database[Yes/no]? ").lower()
+                "Do you want to create the database [Yes/no]? ").lower()
         while answer.lower() not in ("yes", "no"):
             answer = self.ask("Please answer 'yes' or 'no': ").lower()
         if answer == "yes":
