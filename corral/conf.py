@@ -20,9 +20,8 @@ PACKAGE = CORRAL_SETTINGS_MODULE.rsplit(".", 1)[0]
 
 DEFAULT_SETTINGS = util.to_namedtuple(
     'DefaultSettings', {
-        "DEBUG": True,
-        "CONNECTION": 'sqlite:///corral-dev.db',
-        "LOGGER_FORMAT": '[%(levelname)s] %(message)s'})
+        "LOG_LEVEL": True,
+        "LOG_FORMAT": '[%(levelname)s] %(message)s'})
 
 
 # =============================================================================

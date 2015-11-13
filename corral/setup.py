@@ -4,10 +4,12 @@
 import abc
 import atexit
 import inspect
+import logging
 
 import six
 
-from . import conf, util, exceptions
+from .conf import settings
+from . import util, exceptions
 
 
 # =============================================================================
@@ -24,9 +26,15 @@ class PipelineSetup(object):
                 PipelineSetup, cls).__new__(cls, *args, **kwargs)
         return cls._instance
 
-    @abc.abstractmethod
     def setup(self):
-        pass  # pragma: no cover
+        logging.basicConfig(format=settings.LOG_FORMAT)
+
+        level = settings.LOG_LEVEL
+
+        logging.getLogger("Corral").setLevel(level)
+
+        # http://docs.sqlalchemy.org/en/rel_1_0/core/engines.html
+        logging.getLogger('sqlalchemy.engine').setLevel(level)
 
     def teardown(self):
         pass  # pragma: no cover
@@ -37,7 +45,7 @@ class PipelineSetup(object):
 # =============================================================================
 
 def load_pipeline_setup():
-    import_string = conf.settings.PIPELINE_SETUP
+    import_string = settings.PIPELINE_SETUP
     cls = util.dimport(import_string)
     if not (inspect.isclass(cls) and issubclass(cls, PipelineSetup)):
         msg = (
