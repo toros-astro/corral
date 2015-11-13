@@ -93,7 +93,7 @@ class CreateDB(BaseTest):
                 cli.run_from_command_line()
                 expected = [
                     mock.call(arg) for arg in
-                    ("Do you want to create the database[Yes/no]? ",
+                    ("Do you want to create the database [Yes/no]? ",
                      "Please answer 'yes' or 'no': ")]
                 ask.assert_has_calls(expected)
                 self.assertFalse(create_all.called)
