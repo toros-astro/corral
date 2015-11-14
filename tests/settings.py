@@ -12,7 +12,7 @@ import logging
 # CONF
 # =============================================================================
 
-LOG_LEVEL = logging.ERROR
+LOG_LEVEL = logging.WARNING
 
 PIPELINE_SETUP = "tests.pipeline.TestPipeline"
 

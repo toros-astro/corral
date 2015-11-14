@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import abc
 import atexit
 import inspect
 import logging
-
-import six
 
 from .conf import settings
 from . import util, exceptions
@@ -16,7 +13,6 @@ from . import util, exceptions
 # CONFIGURATION
 # =============================================================================
 
-@six.add_metaclass(abc.ABCMeta)
 class PipelineSetup(object):
 
     @staticmethod

@@ -3,6 +3,7 @@
 
 import abc
 import inspect
+import multiprocessing
 
 import six
 
@@ -11,11 +12,13 @@ from .core import logger
 
 
 # =============================================================================
-# CLASSESS
+# ABSTRACT CLASS
 # =============================================================================
 
 @six.add_metaclass(abc.ABCMeta)
 class _Processor(object):
+
+    runner_class = None
 
     def __init__(self, session):
         self.__session = session
@@ -43,18 +46,85 @@ class _Processor(object):
 
     @abc.abstractmethod
     def generate(self):
-        pass  # pragma: no cover
+        raise NotImplementedError  # pragma: no cover
 
     @property
     def session(self):
         return self.__session
 
 
+@six.add_metaclass(abc.ABCMeta)
+class Runner(object):
+
+    @abc.abstractmethod
+    def setup(self, *args, **kwargs):
+        raise NotImplementedError  # pragma: no cover
+
+    @abc.abstractmethod
+    def run(self):
+        raise NotImplementedError  # pragma: no cover
+
+
+# =============================================================================
+# LOADER CLASSES
+# =============================================================================
+
+class LoaderRunner(multiprocessing.Process, Runner):
+
+    def setup(self, loader_cls):
+        if not (inspect.isclass(loader_cls) and
+                issubclass(loader_cls, Loader)):
+            msg = "loader_cls '{}' must be subclass of 'corral.run.Loader'"
+            raise TypeError(msg.format(loader_cls))
+        self.loader_cls = loader_cls
+
+    def run(self):
+        loader_cls = self.loader_cls
+        logger.info("Executing loader '{}'".format(loader_cls))
+        with db.session_scope() as session, loader_cls(session) as loader:
+            generator = loader.generate()
+            for obj in (generator or []):
+                loader.validate(obj)
+                loader.save(obj)
+        logger.info("Done!")
+
+
 class Loader(_Processor):
-    pass
+
+    runner_class = LoaderRunner
+
+
+# =============================================================================
+# STEP CLASSES
+# =============================================================================
+
+class StepRunner(multiprocessing.Process, Runner):
+
+    def setup(self, step_cls):
+        if not (inspect.isclass(step_cls) and issubclass(step_cls, Step)):
+            msg = "step_cls '{}' must be subclass of 'corral.run.Step'"
+            raise TypeError(msg.format(step_cls))
+        self.step_cls = step_cls
+
+    def run(self):
+        step_cls = self.step_cls
+        logger.info("Executing step '{}'".format(step_cls))
+        with db.session_scope() as session, step_cls(session) as step:
+            for obj in step.generate():
+                step.validate(obj)
+                generator = step.process(obj) or []
+                if not hasattr(generator, "__iter__"):
+                    generator = (generator,)
+                for proc_obj in generator:
+                    step.validate(proc_obj)
+                    step.save(proc_obj)
+                step.save(obj)
+        logger.info("Done!")
 
 
 class Step(_Processor):
+
+    runner_class = StepRunner
 
     model = None
     conditions = None
@@ -108,35 +178,28 @@ def load_steps():
     return tuple(steps)
 
 
-def execute_loader(loader_cls):
+def execute_loader(loader_cls, sync=False):
 
     if not (inspect.isclass(loader_cls) and issubclass(loader_cls, Loader)):
         msg = "loader_cls '{}' must be subclass of 'corral.run.Loader'"
         raise TypeError(msg.format(loader_cls))
 
-    logger.info("Executing loader '{}'".format(loader_cls))
-    with db.session_scope() as session, loader_cls(session) as loader:
-        generator = loader.generate()
-        for obj in (generator or []):
-            loader.validate(obj)
-            loader.save(obj)
-    logger.info("Done!")
+    runner = loader_cls.runner_class()
+    runner.setup(loader_cls)
+    runner.start()
+    if sync:
+        runner.join()
+    return runner
 
 
-def execute_step(step_cls):
+def execute_step(step_cls, sync=False):
     if not (inspect.isclass(step_cls) and issubclass(step_cls, Step)):
         msg = "step_cls '{}' must be subclass of 'corral.run.Step'"
         raise TypeError(msg.format(step_cls))
 
-    logger.info("Executing step '{}'".format(step_cls))
-    with db.session_scope() as session, step_cls(session) as step:
-        for obj in step.generate():
-            step.validate(obj)
-            generator = step.process(obj) or []
-            if not hasattr(generator, "__iter__"):
-                generator = (generator,)
-            for proc_obj in generator:
-                step.validate(proc_obj)
-                step.save(proc_obj)
-            step.save(obj)
-    logger.info("Done!")
+    runner = step_cls.runner_class()
+    runner.setup(step_cls)
+    runner.start()
+    if sync:
+        runner.join()
+    return runner
