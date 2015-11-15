@@ -23,6 +23,9 @@ class CorralCLIParser(object):
             description=core.get_description())
         self.global_parser.add_argument(
             "--version", "-v", action="version", version=core.get_version())
+        self.global_parser.add_argument(
+            "--stacktrace", dest="stacktrace",
+            action="store_true", default=False)
         self.subparsers = self.global_parser.add_subparsers(
             help="command help")
 
@@ -34,7 +37,13 @@ class CorralCLIParser(object):
     def extract_func(self, ns):
         kwargs = dict(ns._get_kwargs())
         func = kwargs.pop("func")
-        return func, kwargs
+        func_kwargs, global_kwargs = {}, {}
+        for k, v in kwargs.items():
+            if k in ("stacktrace",):
+                global_kwargs[k] = v
+            else:
+                func_kwargs[k] = v
+        return func, func_kwargs, global_kwargs
 
     def parse_args(self, argv):
         parsed_args = self.global_parser.parse_args(argv)

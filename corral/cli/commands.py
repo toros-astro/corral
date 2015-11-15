@@ -37,7 +37,7 @@ class CreateDB(BaseCommand):
             "--noinput", dest="noinput", action="store_true", default=False,
             help="Create the database without asking")
 
-    def handle(self, noinput):
+    def handle(self, noinput, **kwargs):
         if noinput:
             answer = "yes"
         else:
@@ -169,8 +169,7 @@ class Load(BaseCommand):
 
     def handle(self):
         cls = run.load_loader()
-        proc = run.execute_loader(cls, sync=True)
-        sys.exit(proc.exitcode)
+        run.execute_loader(cls, sync=True)
 
 
 class Run(BaseCommand):
@@ -203,12 +202,12 @@ class Run(BaseCommand):
     def handle(self, step_classes, sync):
         procs = []
         for step_cls in step_classes:
-            proc = run.execute_step(step_cls, sync)
+            proc = run.execute_step(step_cls, sync=sync)
             procs.append(proc)
         if not sync:
             for proc in procs:
                 proc.join()
-        exitcodes = [proc.exitcode for proc in procs]
+            exitcodes = [proc.exitcode for proc in procs]
 
-        status = sum(exitcodes)
-        sys.exit(status)
+            status = sum(exitcodes)
+            sys.exit(status)

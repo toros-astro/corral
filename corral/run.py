@@ -186,9 +186,10 @@ def execute_loader(loader_cls, sync=False):
 
     runner = loader_cls.runner_class()
     runner.setup(loader_cls)
-    runner.start()
     if sync:
-        runner.join()
+        runner.run()
+    else:
+        runner.start()
     return runner
 
 
@@ -199,7 +200,8 @@ def execute_step(step_cls, sync=False):
 
     runner = step_cls.runner_class()
     runner.setup(step_cls)
-    runner.start()
     if sync:
-        runner.join()
+        runner.run()
+    else:
+        runner.start()
     return runner
