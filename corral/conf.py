@@ -20,8 +20,8 @@ PACKAGE = CORRAL_SETTINGS_MODULE.rsplit(".", 1)[0]
 
 DEFAULT_SETTINGS = util.to_namedtuple(
     'DefaultSettings', {
-        "DEBUG": True,
-        "CONNECTION": 'sqlite:///corral-dev.db'})
+        "LOG_LEVEL": True,
+        "LOG_FORMAT": '[%(levelname)s] %(message)s'})
 
 
 # =============================================================================
@@ -64,6 +64,9 @@ class LazySettings(object):
         return (
             os.path.isfile(full_path + ".py") or
             os.path.isfile(full_path + ".pyc"))
+
+    def get(self, name, d=None):
+        return getattr(self._settings, name, d)
 
 
 # =============================================================================

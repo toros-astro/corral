@@ -26,13 +26,20 @@ def get_query():
         prompt = ''
 
     while True:
-        input_line = six.moves.input(prompt).strip()
-        if len(input_line) == 0 and len(lines) == 0:
-            return None
-        lines.append(input_line)
-        if input_line.endswith(';'):
-            break
-        prompt = '...> '
+        try:
+            input_line = six.moves.input(prompt).strip()
+            if len(input_line) == 0 and len(lines) == 0:
+                return None
+            lines.append(input_line)
+            if input_line.endswith(';'):
+                break
+            prompt = '...> '
+        except KeyboardInterrupt:
+            lines = []
+            prompt = 'SQL> '
+            sys.stdout.write("\n")
+            continue
+
 
     return '\n'.join(lines)
 
@@ -64,7 +71,7 @@ def process_query(conn, query):
 def run(engine):
 
     conn = engine.connect()
-
+    sys.stdout.write("Type 'exit;' or '<CTRL> + <D>' for exit the shell\n\n")
     while True:
         try:
             query = get_query()
@@ -73,5 +80,8 @@ def run(engine):
             sys.stdout.write("\n")
             break
 
+        if query == "exit;":
+            sys.stdout.write("\n")
+            break
         if query:
             process_query(conn, query)

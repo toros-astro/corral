@@ -69,6 +69,16 @@ class TestCli(BaseTest):
                     self.assertTrue(setup.called)
                     self.assertTrue(hdl.called)
 
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("tests.commands.TestAPICommand.handle", side_effect=Exception)
+    @mock.patch("sys.stderr")
+    def test_stack_trace_option(self, *args):
+        with mock.patch("sys.argv", new=["test",  "--stacktrace", "foo"]):
+            with self.assertRaises(Exception):
+                cli.run_from_command_line()
+        with mock.patch("sys.argv", new=["test", "foo"]):
+            cli.run_from_command_line()
+
 
 class CreateDB(BaseTest):
 
@@ -93,7 +103,7 @@ class CreateDB(BaseTest):
                 cli.run_from_command_line()
                 expected = [
                     mock.call(arg) for arg in
-                    ("Do you want to create the database[Yes/no]? ",
+                    ("Do you want to create the database [Yes/no]? ",
                      "Please answer 'yes' or 'no': ")]
                 ask.assert_has_calls(expected)
                 self.assertFalse(create_all.called)
@@ -251,44 +261,46 @@ class Load(BaseTest):
     def test_load(self, *args):
         with mock.patch("corral.run.execute_loader") as execute_loader:
             cli.run_from_command_line()
-            execute_loader.assert_called_with(TestLoader)
+            execute_loader.assert_called_with(TestLoader, sync=True)
 
 
 class Run(BaseTest):
 
-    @mock.patch("sys.argv", new=["test", "run"])
+    @mock.patch("sys.argv", new=["test", "run", "--sync"])
     @mock.patch("corral.core.setup_environment")
     def test_run_all_command(self, *args):
         with mock.patch("corral.run.execute_step") as execute_step:
             cli.run_from_command_line()
-            expected = map(mock.call, run.load_steps())
+            expected = map(lambda s: mock.call(s, sync=True), run.load_steps())
             execute_step.assert_has_calls(expected)
 
-    @mock.patch("sys.argv", new=["test", "run", "--steps", "Step1", "Step2"])
+    @mock.patch("sys.argv",
+                new=["test", "run", "--steps", "Step1", "Step2", "--sync"])
     @mock.patch("corral.core.setup_environment")
     def test_run_explicit(self, *args):
         with mock.patch("corral.run.execute_step") as execute_step:
             cli.run_from_command_line()
-            expected = map(mock.call, run.load_steps())
+            expected = map(lambda s: mock.call(s, sync=True), run.load_steps())
             execute_step.assert_has_calls(expected)
 
-    @mock.patch("sys.argv", new=["test", "run", "--steps", "Step1"])
+    @mock.patch("sys.argv", new=["test", "run", "--steps", "Step1", "--sync"])
     @mock.patch("corral.core.setup_environment")
     def test_run_first(self, *args):
         with mock.patch("corral.run.execute_step") as execute_step:
             cli.run_from_command_line()
-            expected = [mock.call(Step1)]
+            expected = [mock.call(Step1, sync=True)]
             execute_step.assert_has_calls(expected)
 
-    @mock.patch("sys.argv", new=["test", "run", "--steps", "Step2"])
+    @mock.patch("sys.argv", new=["test", "run", "--steps", "Step2", "--sync"])
     @mock.patch("corral.core.setup_environment")
     def test_run_second(self, *args):
         with mock.patch("corral.run.execute_step") as execute_step:
             cli.run_from_command_line()
-            expected = [mock.call(Step2)]
+            expected = [mock.call(Step2, sync=True)]
             execute_step.assert_has_calls(expected)
 
-    @mock.patch("sys.argv", new=["test", "run", "--steps", "Step2", "Step2"])
+    @mock.patch("sys.argv",
+                new=["test", "run", "--steps", "Step2", "Step2", "--sync"])
     @mock.patch("corral.core.setup_environment")
     @mock.patch("sys.stderr")
     def test_run_duplicated(self, *args):
@@ -296,7 +308,7 @@ class Run(BaseTest):
             with self.assertRaises(SystemExit):
                 cli.run_from_command_line()
 
-    @mock.patch("sys.argv", new=["test", "run", "--steps", "FOO"])
+    @mock.patch("sys.argv", new=["test", "run", "--steps", "FOO", "--sync"])
     @mock.patch("corral.core.setup_environment")
     @mock.patch("sys.stderr")
     def test_run_invalid_step(self, *args):

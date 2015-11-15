@@ -12,6 +12,7 @@ import collections
 import code
 import os
 import logging
+import sys
 
 import six
 
@@ -36,12 +37,12 @@ class CreateDB(BaseCommand):
             "--noinput", dest="noinput", action="store_true", default=False,
             help="Create the database without asking")
 
-    def handle(self, noinput):
+    def handle(self, noinput, **kwargs):
         if noinput:
             answer = "yes"
         else:
             answer = self.ask(
-                "Do you want to create the database[Yes/no]? ").lower()
+                "Do you want to create the database [Yes/no]? ").lower()
         while answer.lower() not in ("yes", "no"):
             answer = self.ask("Please answer 'yes' or 'no': ").lower()
         if answer == "yes":
@@ -168,7 +169,7 @@ class Load(BaseCommand):
 
     def handle(self):
         cls = run.load_loader()
-        run.execute_loader(cls)
+        run.execute_loader(cls, sync=True)
 
 
 class Run(BaseCommand):
@@ -194,7 +195,19 @@ class Run(BaseCommand):
             "--steps", dest="step_classes", action="store", nargs="+",
             help="Step class name", default=self.all_steps,
             type=self._step_classes)
+        self.parser.add_argument(
+            "--sync", dest="sync", action="store_true",
+            help="Execute every step synchronous", default=False)
 
-    def handle(self, step_classes):
+    def handle(self, step_classes, sync):
+        procs = []
         for step_cls in step_classes:
-            run.execute_step(step_cls)
+            proc = run.execute_step(step_cls, sync=sync)
+            procs.append(proc)
+        if not sync:
+            for proc in procs:
+                proc.join()
+            exitcodes = [proc.exitcode for proc in procs]
+
+            status = sum(exitcodes)
+            sys.exit(status)

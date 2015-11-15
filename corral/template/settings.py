@@ -12,16 +12,32 @@
 
 """
 
+
+# =============================================================================
+# IMPORTS
+# =============================================================================
+
+import logging
+
+
 # =============================================================================
 # CONFIGURATIONS
 # =============================================================================
 
-# If debug is in True pipeline sona be much more verbose
-DEBUG = True
+#: Sets the threshold for this logger to lvl. Logging messages which are less
+#: severe than lvl will be ignored
+LOG_LEVEL = logging.INFO
+
+#: Template of string representation of every log of ${project_name} format
+#: see: https://docs.python.org/2/library/logging.html#logrecord-attributes
+LOG_FORMAT = "[${project_name}-%(levelname)s @ %(asctime)-15s] %(message)s"
+
 
 PIPELINE_SETUP = "${project_name}.pipeline.Pipeline"
 
-# Database connection string
+
+#: Database connection string formated ad the URL is an RFC-1738-style string.
+#: See: http://docs.sqlalchemy.org/en/latest/core/engines.html
 CONNECTION = "sqlite:///${project_name}-dev.db"
 
 

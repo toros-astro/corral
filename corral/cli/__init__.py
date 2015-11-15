@@ -62,5 +62,12 @@ def create_parser():
 def run_from_command_line():
     core.setup_environment()
     parser = create_parser()
-    func, kwargs = parser.parse_args(sys.argv[1:])
-    func(**kwargs)
+    func, kwargs, gkwargs = parser.parse_args(sys.argv[1:])
+    try:
+        func(**kwargs)
+    except BaseException as err:
+        sys.stderr.write("{}\n".format(err))
+        if gkwargs.get("stacktrace"):
+            six.reraise(type(err), err, six.sys.exc_traceback)
+
+

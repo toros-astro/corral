@@ -5,9 +5,16 @@
 
 """
 
+
+import logging
+
 import numpy as np
 
-DEBUG = True
+
+
+LOG_LEVEL = logging.INFO
+
+LOG_FORMAT = "[Toritos-%(levelname)s @ %(asctime)-15s] %(message)s"
 
 CONNECTION = 'sqlite:///toritos-dev.db'
 

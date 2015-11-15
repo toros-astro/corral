@@ -38,17 +38,16 @@ class TestLoaderFunctions(BaseTest):
 
     def test_execute_no_loader(self):
         with self.assertRaises(TypeError):
-            run.execute_loader("foo")
+            run.execute_loader("foo", sync=True)
 
     def test_execute_loader(self):
-        run.execute_loader(TestLoader)
+        run.execute_loader(TestLoader, sync=True)
         with db.session_scope() as session:
             self.assertEqual(session.query(SampleModel).count(), 1)
-
         with mock.patch("tests.steps.TestLoader.generate",
                         return_value=[None]):
                 with self.assertRaises(TypeError):
-                    run.execute_loader(TestLoader)
+                    run.execute_loader(TestLoader, sync=True)
 
 
 class TestExecuteFunction(BaseTest):
@@ -63,13 +62,13 @@ class TestExecuteFunction(BaseTest):
                 run.load_steps()
 
     def test_step_return_no_model(self):
-        with mock.patch("tests.steps.Step1.get_objects", return_value=[None]):
+        with mock.patch("tests.steps.Step1.generate", return_value=[None]):
             with self.assertRaises(TypeError):
-                run.execute_step(Step1)
+                run.execute_step(Step1, sync=True)
 
-    def test_execute_no_setp(self):
+    def test_execute_no_step(self):
         with self.assertRaises(TypeError):
-            run.execute_step("foo")
+            run.execute_step("foo", sync=True)
 
     def test_execute_step(self):
         sample_id = None
@@ -79,26 +78,34 @@ class TestExecuteFunction(BaseTest):
             session.commit()
             sample_id = sample.id
 
-        run.execute_step(Step1)
+        run.execute_step(Step1, sync=True)
         with db.session_scope() as session:
             query = session.query(SampleModel)
             self.assertEqual(query.count(), 1)
             sample = session.query(SampleModel).get(sample_id)
             self.assertEqual(sample.name, "Step1")
 
-        run.execute_step(Step2)
+        run.execute_step(Step2, sync=True)
         with db.session_scope() as session:
             query = session.query(SampleModel)
             self.assertEqual(query.count(), 2)
             sample = session.query(SampleModel).get(sample_id)
             self.assertEqual(sample.name, "Step2")
 
-        run.execute_step(Step1)
+        run.execute_step(Step1, sync=True)
         with db.session_scope() as session:
             query = session.query(SampleModel)
             self.assertEqual(query.count(), 2)
             sample = session.query(SampleModel).get(sample_id)
             self.assertEqual(sample.name, "Step2")
+
+    def test_default_generate_without_model_or_conditions(self):
+        with mock.patch("tests.steps.Step1.model", None):
+            with self.assertRaises(NotImplementedError):
+                run.execute_step(Step1, sync=True)
+        with mock.patch("tests.steps.Step1.conditions", None):
+            with self.assertRaises(NotImplementedError):
+                run.execute_step(Step1, sync=True)
 
 
 # =============================================================================

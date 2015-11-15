@@ -11,7 +11,7 @@ import glob
 
 import six
 
-from . import core
+from .core import logger, get_version
 from .exceptions import ValidationError
 
 
@@ -45,13 +45,6 @@ IN_CORRAL_TEMPLATE = os.path.join(PIPELINE_TEMPLATE_PATH, "in_corral.py")
 
 
 # =============================================================================
-# LOGGER
-# =============================================================================
-
-logger = core.logger
-
-
-# =============================================================================
 # FUNCTIONS
 # =============================================================================
 
@@ -82,7 +75,7 @@ def create_pipeline(path):
     context = {
         "project_name": basename,
         "timestamp": datetime.datetime.now().isoformat(),
-        "version": core.get_version()}
+        "version": get_version()}
 
     for tpl_name, tpl_path in TEMPLATES:
         logger.info("Creating file '{}'...".format(tpl_name))

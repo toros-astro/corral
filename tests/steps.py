@@ -14,9 +14,11 @@ class TestLoader(run.Loader):
 
 class Step1(run.Step):
 
-    def get_objects(self):
-        return self.session.query(
-            SampleModel).filter(SampleModel.name == None)  # noqa
+    model = SampleModel
+    conditions = [SampleModel.name == None]  # noqa
+    ordering = [SampleModel.name]
+    offset = 0
+    limit = -1
 
     def process(self, obj):
         obj.name = "Step1"
@@ -28,9 +30,8 @@ class Step1(run.Step):
 
 class Step2(run.Step):
 
-    def get_objects(self):
-        return self.session.query(SampleModel).filter(
-            SampleModel.name == "Step1")
+    model = SampleModel
+    conditions = [SampleModel.name == "Step1"]
 
     def process(self, obj):
         obj.name = "Step2"
