@@ -69,6 +69,16 @@ class TestCli(BaseTest):
                     self.assertTrue(setup.called)
                     self.assertTrue(hdl.called)
 
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("tests.commands.TestAPICommand.handle", side_effect=Exception)
+    @mock.patch("sys.stderr")
+    def test_stack_trace_option(self, *args):
+        with mock.patch("sys.argv", new=["test",  "--stacktrace", "foo"]):
+            with self.assertRaises(Exception):
+                cli.run_from_command_line()
+        with mock.patch("sys.argv", new=["test", "foo"]):
+            cli.run_from_command_line()
+
 
 class CreateDB(BaseTest):
 
