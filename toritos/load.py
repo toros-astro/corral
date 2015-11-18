@@ -8,6 +8,7 @@ from toritos import models, util
 
 class Load(run.Loader):
     def setup(self):
+        self.rawstate = self.session.query(models.State).filter(models.State.name == "raw_data").first()
         self.session.autocommit = True
 
     def generate(self):
@@ -16,4 +17,5 @@ class Load(run.Loader):
             data = util.fitsparser(afile)
             print data
             paw = models.Pawprint(**data)
+            paw.state_id = self.rawstate.id
             yield paw

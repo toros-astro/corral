@@ -7,11 +7,12 @@ import datetime
 from sqlalchemy.orm import sessionmaker
 from astropy.io import fits
 
-from corral import db, settings
+from corral import db
+from corral.conf import settings
 from toritos import models
 
 
-observationsdir = settings.OBSERVATIONSDIR
+observationsdir = settings.PAWPRINTPATH
 
 Session = sessionmaker()
 Session.configure(bind=db.engine)
@@ -27,7 +28,7 @@ macon.description = 'Observatory located in macon ridge'
 campaign = models.Campaign()
 campaign.name = '2nd run toritos'
 campaign.description = 'The second run, after roof failure'
-campaign.observatory_id = macon
+campaign.observatory_id = macon.id
 
 cameraA = models.CCD()
 cameraA.name = 'Azulcito'
@@ -37,7 +38,7 @@ cameraA.description = 'Camera bought by mario'
 cameraA.ypixsize = 4096
 cameraA.xpixsize = 4096
 
-campaign.ccd_id = cameraA
+campaign.ccd_id = cameraA.id
 
 
 # -----------------------------------------------------------------------------
@@ -64,7 +65,7 @@ failed_preprocess.is_error = True
 
 astrometried = models.State()
 astrometried.name = 'wcs_solved'
-astrometried.folder = settins.ASTROMETRIED_PATH
+astrometried.folder = settings.ASTROMETRIED_PATH
 astrometried.order = 4
 astrometried.is_error = False
 
@@ -83,6 +84,11 @@ failed_astrometry.is_error = True
 session.add(macon)
 session.add(campaign)
 session.add(cameraA)
+session.add(rawstate)
+session.add(preprocessed)
+session.add(failed_preprocess)
+session.add(astrometried)
+session.add(failed_astrometry)
 
 session.commit()
 
