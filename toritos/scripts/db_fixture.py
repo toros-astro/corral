@@ -8,14 +8,15 @@ from sqlalchemy.orm import sessionmaker
 from astropy.io import fits
 
 from corral import db
-from toritos import models
+from toritos import models, local_settings
+
+
+observationsdir = local_settings.OBSERVATIONSDIR
 
 Session = sessionmaker()
 Session.configure(bind=db.engine)
 
 session = Session()
-
-observationsdir = '/home/bruno/Devel/toros-astro/src/corral/toritos/data/'
 
 macon = models.Observatory()
 macon.name = 'Macon ridge'
@@ -40,8 +41,18 @@ campaign.ccd_id = cameraA
 
 
 # -----------------------------------------------------------------------------
-# PAWPRINTS
+# STATES
 # -----------------------------------------------------------------------------
+
+rawstate = models.State()
+rawsate.name = "Raw data"
+rawstate.folder = local_settings.PAWPRINTPATH
+rawstate.order = 1
+rawstate.is_error = False
+
+# =============================================================================
+#
+# =============================================================================
 
 
 session.add(macon)
