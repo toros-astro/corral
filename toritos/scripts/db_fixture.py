@@ -45,31 +45,31 @@ campaign.ccd_id = cameraA
 # -----------------------------------------------------------------------------
 
 rawstate = models.State()
-rawstate.name = 'Raw data'
+rawstate.name = 'raw_data'
 rawstate.folder = settings.PAWPRINTPATH
 rawstate.order = 1
 rawstate.is_error = False
 
 preprocessed = models.State()
-preprocessed.name = 'Preprocessed data'
+preprocessed.name = 'preprocessed_data'
 preprocessed.folder = settings.PREPROCESSED_PATH
 preprocessed.order = 2
 preprocessed.is_error = False
 
 failed_preprocess = models.State()
-failed_preprocess.name = 'Failed to preprocess'
+failed_preprocess.name = 'failed_to_preprocess'
 failed_preprocess.folder = settings.FAILED_PREPROCESS_PATH
 failed_preprocess.order = 3
 failed_preprocess.is_error = True
 
 astrometried = models.State()
-astrometried.name = 'WCS astrometry solved'
+astrometried.name = 'wcs_solved'
 astrometried.folder = settins.ASTROMETRIED_PATH
 astrometried.order = 4
 astrometried.is_error = False
 
 failed_astrometry = models.State()
-failed_astrometry.name = 'Failed to solve WCS astrometry'
+failed_astrometry.name = 'failed_wcs_solve'
 failed_astrometry.folder = settings.FAILED_ASTROMETRIED_PATH
 failed_astrometry.order = 5
 failed_astrometry.is_error = True
