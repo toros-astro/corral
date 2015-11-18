@@ -26,26 +26,24 @@ macon.description = 'Observatory located in macon ridge'
 campaign = models.Campaign()
 campaign.name = '2nd run toritos'
 campaign.description = 'The second run, after roof failure'
-campaign.observatory_id = macon.id
+campaign.observatory_id = macon
 
 cameraA = models.CCD()
 cameraA.name = 'Azulcito'
 cameraA.brand = 'Apogee'
 cameraA.model = 'Alta U16'
 cameraA.description = 'Camera bought by mario'
+cameraA.ypixsize = 4096
+cameraA.xpixsize = 4096
 
-campaign.ccd_id = cameraA.id
+campaign.ccd_id = cameraA
 
 
 # -----------------------------------------------------------------------------
 # PAWPRINTS
 # -----------------------------------------------------------------------------
 
-pawpath = os.path.join(observationsdir, 'M22.fit')
-paw = pawprint_load(pawpath)
 
-session.add(paw)
-session.add(macon)
 session.add(macon)
 session.add(campaign)
 session.add(cameraA)

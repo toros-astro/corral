@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""This module contains all the buil in cli commands of corral"""
+"""This module contains all the built in cli commands of corral"""
 
 
 # =============================================================================
