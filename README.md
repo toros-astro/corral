@@ -16,15 +16,14 @@ Corral will solve your pipeline needs by merging a database full connection inte
 ##Installation 
 
 Install project by cloning from Corral github: https://github.com/toros-astro/corral.git and by making  
-`pip install -e .`,  
-or by giving the github link directly to pip:  
+`pip install -e .`, or by giving the github link directly to pip:  
 `pip install -e git+https://github.com/toros-astro/corral.git`.
 
-#Support 
+##Support 
 
 If you have issues pleas report them as a issue ticket in our github. Thanks!
 
-#License
+##License
 
 I guess a BSD will do.
 
