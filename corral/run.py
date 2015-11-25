@@ -69,7 +69,7 @@ class Runner(object):
 # LOADER CLASSES
 # =============================================================================
 
-class LoaderRunner(multiprocessing.Process, Runner):
+class LoaderRunnerBase(multiprocessing.Process, Runner):
 
     def setup(self, loader_cls):
         if not (inspect.isclass(loader_cls) and
@@ -89,6 +89,10 @@ class LoaderRunner(multiprocessing.Process, Runner):
         logger.info("Done!")
 
 
+class LoaderRunner(LoaderRunnerBase, multiprocessing.Process):
+    pass
+
+
 class Loader(_Processor):
 
     runner_class = LoaderRunner
@@ -98,7 +102,7 @@ class Loader(_Processor):
 # STEP CLASSES
 # =============================================================================
 
-class StepRunner(multiprocessing.Process, Runner):
+class StepRunnerBase(Runner):
 
     def setup(self, step_cls):
         if not (inspect.isclass(step_cls) and issubclass(step_cls, Step)):
@@ -122,9 +126,13 @@ class StepRunner(multiprocessing.Process, Runner):
         logger.info("Done!")
 
 
+class StepRunner(StepRunnerBase, multiprocessing.Process):
+    pass
+
+
 class Step(_Processor):
 
-    runner_class = StepRunner
+    runner_class = StepRunnerBase
 
     model = None
     conditions = None

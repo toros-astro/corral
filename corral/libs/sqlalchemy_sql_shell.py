@@ -40,7 +40,6 @@ def get_query():
             sys.stdout.write("\n")
             continue
 
-
     return '\n'.join(lines)
 
 
