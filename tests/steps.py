@@ -22,6 +22,10 @@ class Step1(run.Step):
 
     def process(self, obj):
         obj.name = "Step1"
+        return obj
+
+    def validate(self, obj):
+        assert obj.name == "Step1"
 
 
 class Step2(run.Step):

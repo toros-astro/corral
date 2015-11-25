@@ -8,14 +8,16 @@ from sqlalchemy.orm import sessionmaker
 from astropy.io import fits
 
 from corral import db
+from corral.conf import settings
 from toritos import models
+
+
+observationsdir = settings.PAWPRINTPATH
 
 Session = sessionmaker()
 Session.configure(bind=db.engine)
 
 session = Session()
-
-observationsdir = '/home/bruno/Devel/toros-astro/src/corral/toritos/data/'
 
 macon = models.Observatory()
 macon.name = 'Macon ridge'
@@ -33,22 +35,60 @@ cameraA.name = 'Azulcito'
 cameraA.brand = 'Apogee'
 cameraA.model = 'Alta U16'
 cameraA.description = 'Camera bought by mario'
+cameraA.ypixsize = 4096
+cameraA.xpixsize = 4096
 
 campaign.ccd_id = cameraA.id
 
 
 # -----------------------------------------------------------------------------
-# PAWPRINTS
+# STATES
 # -----------------------------------------------------------------------------
 
-pawpath = os.path.join(observationsdir, 'M22.fit')
-paw = pawprint_load(pawpath)
+rawstate = models.State()
+rawstate.name = 'raw_data'
+rawstate.folder = settings.PAWPRINTPATH
+rawstate.order = 1
+rawstate.is_error = False
 
-session.add(paw)
-session.add(macon)
+preprocessed = models.State()
+preprocessed.name = 'preprocessed_data'
+preprocessed.folder = settings.PREPROCESSED_PATH
+preprocessed.order = 2
+preprocessed.is_error = False
+
+failed_preprocess = models.State()
+failed_preprocess.name = 'failed_to_preprocess'
+failed_preprocess.folder = settings.FAILED_PREPROCESS_PATH
+failed_preprocess.order = 3
+failed_preprocess.is_error = True
+
+astrometried = models.State()
+astrometried.name = 'wcs_solved'
+astrometried.folder = settings.ASTROMETRIED_PATH
+astrometried.order = 4
+astrometried.is_error = False
+
+failed_astrometry = models.State()
+failed_astrometry.name = 'failed_wcs_solve'
+failed_astrometry.folder = settings.FAILED_ASTROMETRIED_PATH
+failed_astrometry.order = 5
+failed_astrometry.is_error = True
+
+
+# =============================================================================
+#
+# =============================================================================
+
+
 session.add(macon)
 session.add(campaign)
 session.add(cameraA)
+session.add(rawstate)
+session.add(preprocessed)
+session.add(failed_preprocess)
+session.add(astrometried)
+session.add(failed_astrometry)
 
 session.commit()
 
