@@ -45,7 +45,7 @@ class StepRunner(StepRunnerBase, multiprocessing.Process):
 
 class Step(Processor):
 
-    runner_class = StepRunnerBase
+    runner_class = StepRunner
 
     model = None
     conditions = None
