@@ -8,6 +8,7 @@
 # IMPORTS
 # =============================================================================
 
+import inspect
 import collections
 import code
 import os
@@ -58,7 +59,8 @@ class Shell(BaseCommand):
     def _get_locals(self):
         slocals = {}
         slocals.update({
-            cls.__name__: cls for cls in db.Model.__subclasses__()})
+            k: v for k, v in vars(db.load_models_module()).items()
+            if inspect.isclass(v) and issubclass(v, db.Model)})
         if hasattr(conf.settings, "SHELL_LOCALS"):
             slocals.update(conf.settings.SHELL_LOCALS)
         return slocals
