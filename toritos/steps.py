@@ -3,17 +3,17 @@
 
 from corral import run
 
-import .models
-
+import models
 
 class StepPreprocess(run.Step):
 
     model = models.Pawprint
-    conditions = [model.state == 'raw_data']  # noqa
-    ordering = [model.name]
+    conditions = [model.state.has(name='raw')]
+    ordering = [model.id]
 
-    def process(self, obj):
-        print obj
+    def process(self, pwp):
+        path = pwp.get_path()
+
 
 #    def validate(self, obj):
 #        assert obj.name == "Step1"

@@ -22,7 +22,7 @@ LOADER = "toritos.load.Load"
 
 PIPELINE_SETUP = "toritos.pipeline.Toritos"
 
-STEPS = []
+STEPS = ["toritos.steps.StepPreprocess"]
 
 PAWPRINTPATH = " "
 

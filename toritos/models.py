@@ -4,9 +4,11 @@
 # This module contains the table model definitions for toritos database.
 # It uses the sqlalchemy orm to define the column structures
 
+import os
+import shutil
 
 from corral import db
-
+from corral.conf import settings
 
 class Observatory(db.Model):
     """Model for observatories. SQLAlchemy Model object.
@@ -65,7 +67,6 @@ class State(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False, unique=True)
-    folder = db.Column(db.Text, nullable=True)
     order = db.Column(db.Integer, nullable=False)
     is_error = db.Column(db.Boolean, nullable=False)
 
@@ -82,7 +83,6 @@ class StateChange(db.Model):
     created_at = db.Column(db.DateTime(timezone=True))
     modified_at = db.Column(db.DateTime(timezone=True))
     count = db.Column(db.Integer)
-    path = db.Column(db.Text, nullable=True)
 
     state_id = db.Column(db.Integer, db.ForeignKey('State.id'))
     state = db.relationship(
@@ -228,7 +228,24 @@ class Pawprint(db.Model):
         "Campaign", backref=db.backref('pawprints', order_by=id))
 
     def __repr__(self):
-        return self.id
+        return str(self.id)
+
+    def get_path(self, state=None):
+        if state is None:
+            state = self.state
+        root = settings.DATA_PATH
+        yearmonth = self.observation_date.strftime("%Y%m")
+        day = self.observation_date.strftime("%d")
+        pwp_fld = "pwp_{}".format(self.id)
+        filename = "{}_{}.fits".format(state.name, self.id)
+        return os.path.join(root, yearmonth, day, pwp_fld, filename)
+
+    def writefile(self, fpath, state):
+        dest_path = self.get_path(state)
+        dest_dir = os.path.dirname(dest_path)
+        if not os.path.isdir(dest_dir):
+            os.makedirs(dest_dir)
+        shutil.copyfile(fpath, dest_path)
 
 
 class Stack(db.Model):
@@ -241,7 +258,7 @@ class Stack(db.Model):
     path = db.Column(db.Text, nullable=True)
 
     def __repr__(self):
-        return self.id
+        return str(self.id)
 
 
 class MasterCal(db.Model):
