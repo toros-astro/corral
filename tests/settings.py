@@ -22,4 +22,13 @@ LOADER = "tests.steps.TestLoader"
 
 STEPS = ["tests.steps.Step1", "tests.steps.Step2"]
 
+ALERTS = ["tests.alerts.Alert1"]
+
 SHELL_LOCALS = {"foo": 1}
+
+EMAIL = {
+    "server": "smtp.foo.com:587",
+    "tls": True,
+    "user": "foo@foo.com",
+    "password": "secret"
+}
