@@ -29,6 +29,7 @@ def get_description():
 def setup_environment():
     from . import db, setup
     db.setup()
+    db.load_default_models()
     db.load_models_module()
 
     setup_cls = setup.load_pipeline_setup()
