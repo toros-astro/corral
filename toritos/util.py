@@ -11,6 +11,7 @@ import datetime
 
 from astropy.io import fits
 
+from corral.conf import settings
 
 def scandir(path):
     """
@@ -77,3 +78,8 @@ def fitsparser(fitsfile):
         "modified_at": modification_date(fitsfile),
         "created_at": creation_date(fitsfile),
     }
+
+def cleaner(key, value):
+    cleaned = settings.CLEANER_ATTR.get(key, {}).get(value)
+    return cleaned
+

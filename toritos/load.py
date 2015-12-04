@@ -9,7 +9,7 @@ from toritos import models, util
 class Load(run.Loader):
     def setup(self):
         self.rawstate = self.session.query(
-            models.State).filter(models.State.name == "raw").first()
+            models.State).filter(models.State.name == "raw_data").first()
         self.session.autocommit = False
         self.buff = []
 

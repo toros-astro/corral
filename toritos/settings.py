@@ -22,7 +22,7 @@ LOADER = "toritos.load.Load"
 
 PIPELINE_SETUP = "toritos.pipeline.Toritos"
 
-STEPS = ["toritos.steps.StepPreprocess"]
+STEPS = ["toritos.steps.StepCleaner", "toritos.steps.StepDarkPreprocess"]
 
 PAWPRINTPATH = " "
 
@@ -31,7 +31,30 @@ SHELL_LOCALS = {
     "np": np
 }
 
+
+CLEANER_ATTR = {
+    'imagetype': {
+        'zero': 'Bias',
+        'bias': 'Bias',
+        'dark': 'Dark',
+        'DARK': 'Dark',
+        'FLAT': 'Flat',
+        'Light Frame': 'Science',
+        'object': 'Science',
+        'flat': 'Flat',
+        'flatdome': 'Flat',
+        'skyflat': 'Flat',
+        'LIGHT': 'Science',
+        'Flat Frame': 'Flat',
+        'Dark Frame': 'Dark',
+        'Bias Frame': 'Bias'
+    }
+}
+
+
+
 try:
     from .local_settings import *  # noqa
 except ImportError:
     pass
+

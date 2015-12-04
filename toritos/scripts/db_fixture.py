@@ -12,7 +12,7 @@ from corral.conf import settings
 from toritos import models
 
 
-observationsdir = settings.PAWPRINTPATH
+observationsdir = settings.DATA_PATH
 
 Session = sessionmaker()
 Session.configure(bind=db.engine)
@@ -47,33 +47,51 @@ campaign.ccd_id = cameraA.id
 
 rawstate = models.State()
 rawstate.name = 'raw_data'
-rawstate.folder = settings.PAWPRINTPATH
+rawstate.folder = settings.PAWPRINT_PATH
 rawstate.order = 1
 rawstate.is_error = False
+
+cleanedstate = models.State()
+cleanedstate.name = 'cleaned_data'
+cleanedstate.folder = settings.DATA_PATH
+cleanedstate.order = 2
+cleanedstate.is_error = False
 
 preprocessed = models.State()
 preprocessed.name = 'preprocessed_data'
 preprocessed.folder = settings.PREPROCESSED_PATH
-preprocessed.order = 2
+preprocessed.order = 3
 preprocessed.is_error = False
 
 failed_preprocess = models.State()
 failed_preprocess.name = 'failed_to_preprocess'
 failed_preprocess.folder = settings.FAILED_PREPROCESS_PATH
-failed_preprocess.order = 3
+failed_preprocess.order = 4
 failed_preprocess.is_error = True
 
 astrometried = models.State()
 astrometried.name = 'wcs_solved'
 astrometried.folder = settings.ASTROMETRIED_PATH
-astrometried.order = 4
+astrometried.order = 5
 astrometried.is_error = False
 
 failed_astrometry = models.State()
 failed_astrometry.name = 'failed_wcs_solve'
 failed_astrometry.folder = settings.FAILED_ASTROMETRIED_PATH
-failed_astrometry.order = 5
+failed_astrometry.order = 6
 failed_astrometry.is_error = True
+
+stackstate = models.State()
+stackstate.name = 'stack'
+stackstate.folder = settings.STACK_PATH
+stackstate.order = 7
+stackstate.is_error = False
+
+failed_stackstate = models.State()
+failed_stackstate.name = 'failed_stack'
+failed_stackstate.folder = settings.FAILED_STACK_PATH
+failed_stackstate.order = 8
+failed_stackstate.is_error = True
 
 
 # =============================================================================
@@ -85,10 +103,13 @@ session.add(macon)
 session.add(campaign)
 session.add(cameraA)
 session.add(rawstate)
+session.add(cleanedstate)
 session.add(preprocessed)
 session.add(failed_preprocess)
 session.add(astrometried)
 session.add(failed_astrometry)
+session.add(stackstate)
+sesson.add(failed_stackstate)
 
 session.commit()
 
