@@ -2,14 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import abc
-import inspect
 import smtplib
 from email.mime.text import MIMEText
 
 import six
 
-from .. import conf, db, util, exceptions
-from ..core import logger
+from .. import conf
 
 
 # =============================================================================
@@ -24,7 +22,7 @@ class EndPoint(object):
 
     @abc.abstractmethod
     def process(self):
-        raise NotImplementedError() # pragma: no cover
+        raise NotImplementedError()  # pragma: no cover
 
     def teardown(self, type, value, traceback):
         pass

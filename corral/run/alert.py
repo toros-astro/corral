@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import abc
 import inspect
-import multiprocessing
 import datetime
 import collections
-import copy
 
 from .. import conf, db, util, exceptions
 from ..db.default_models import Alerted
@@ -81,7 +78,7 @@ class Alert(Processor):
                         grouped_id[k].add(v)
                 exclude = []
                 for k, v in grouped_id.items():
-                    exclude.append(getattr(self.model,k).in_(v))
+                    exclude.append(getattr(self.model, k).in_(v))
                 query = query.filter(~db.and_(*exclude))
 
         if self.ordering is not None:

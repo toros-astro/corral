@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import inspect
-import multiprocessing
 
 from .. import conf, db, util, exceptions
 from ..core import logger
@@ -31,7 +30,6 @@ class LoaderRunner(Runner):
                 loader.validate(obj)
                 loader.save(obj)
         logger.info("Done!")
-
 
 
 class Loader(Processor):

@@ -35,7 +35,8 @@ class Alerted(db.Model):
     def model_to_columns(cls, m):
         table = m.__table__
         instance_as_dict = m._sa_instance_state.dict
-        ids = {c:instance_as_dict[c] for c in table.primary_key.columns.keys()}
+        ids = {
+            c: instance_as_dict[c] for c in table.primary_key.columns.keys()}
         columns = cls.model_class_to_column(type(m))
         columns.update({"model_ids": cls.dumps(ids)})
         return columns
