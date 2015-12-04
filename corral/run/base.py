@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import abc
+import multiprocessing
 
 import six
 
@@ -51,12 +52,16 @@ class Processor(object):
 
 
 @six.add_metaclass(abc.ABCMeta)
-class Runner(object):
+class Runner(multiprocessing.Process):
 
     @abc.abstractmethod
-    def setup(self, *args, **kwargs):
+    def validate_target(self, target):
         raise NotImplementedError  # pragma: no cover
 
     @abc.abstractmethod
     def run(self):
         raise NotImplementedError  # pragma: no cover
+
+    def set_target(self, target):
+        self.validate_target(target)
+        self.target = target

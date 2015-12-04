@@ -3,7 +3,6 @@
 
 import abc
 import inspect
-import multiprocessing
 
 from .. import conf, db, util, exceptions
 from ..core import logger
@@ -15,16 +14,15 @@ from .base import Processor, Runner
 # STEP CLASSES
 # =============================================================================
 
-class StepRunnerBase(Runner):
+class StepRunner(Runner):
 
-    def setup(self, step_cls):
+    def validate_target(self, step_cls):
         if not (inspect.isclass(step_cls) and issubclass(step_cls, Step)):
             msg = "step_cls '{}' must be subclass of 'corral.run.Step'"
             raise TypeError(msg.format(step_cls))
-        self.step_cls = step_cls
 
     def run(self):
-        step_cls = self.step_cls
+        step_cls = self.target
         logger.info("Executing step '{}'".format(step_cls))
         with db.session_scope() as session, step_cls(session) as step:
             for obj in step.generate():
@@ -39,13 +37,9 @@ class StepRunnerBase(Runner):
         logger.info("Done!")
 
 
-class StepRunner(StepRunnerBase, multiprocessing.Process):
-    pass
-
-
 class Step(Processor):
 
-    runner_class = StepRunnerBase
+    runner_class = StepRunner
 
     model = None
     conditions = None
@@ -95,7 +89,7 @@ def execute_step(step_cls, sync=False):
         raise TypeError(msg.format(step_cls))
 
     runner = step_cls.runner_class()
-    runner.setup(step_cls)
+    runner.set_target(step_cls)
     if sync:
         runner.run()
     else:

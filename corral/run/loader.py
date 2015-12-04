@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import inspect
-import multiprocessing
 
 from .. import conf, db, util, exceptions
 from ..core import logger
@@ -14,17 +13,16 @@ from .base import Processor, Runner
 # LOADER CLASSES
 # =============================================================================
 
-class LoaderRunnerBase(multiprocessing.Process, Runner):
+class LoaderRunner(Runner):
 
-    def setup(self, loader_cls):
+    def validate_target(self, loader_cls):
         if not (inspect.isclass(loader_cls) and
                 issubclass(loader_cls, Loader)):
             msg = "loader_cls '{}' must be subclass of 'corral.run.Loader'"
             raise TypeError(msg.format(loader_cls))
-        self.loader_cls = loader_cls
 
     def run(self):
-        loader_cls = self.loader_cls
+        loader_cls = self.target
         logger.info("Executing loader '{}'".format(loader_cls))
         with db.session_scope() as session, loader_cls(session) as loader:
             generator = loader.generate()
@@ -32,10 +30,6 @@ class LoaderRunnerBase(multiprocessing.Process, Runner):
                 loader.validate(obj)
                 loader.save(obj)
         logger.info("Done!")
-
-
-class LoaderRunner(LoaderRunnerBase, multiprocessing.Process):
-    pass
 
 
 class Loader(Processor):
@@ -64,7 +58,7 @@ def execute_loader(loader_cls, sync=False):
         raise TypeError(msg.format(loader_cls))
 
     runner = loader_cls.runner_class()
-    runner.setup(loader_cls)
+    runner.set_target(loader_cls)
     if sync:
         runner.run()
     else:

@@ -8,6 +8,7 @@
 # IMPORTS
 # =============================================================================
 
+import inspect
 import collections
 import code
 import os
@@ -58,7 +59,8 @@ class Shell(BaseCommand):
     def _get_locals(self):
         slocals = {}
         slocals.update({
-            cls.__name__: cls for cls in db.Model.__subclasses__()})
+            k: v for k, v in vars(db.load_models_module()).items()
+            if inspect.isclass(v) and issubclass(v, db.Model)})
         if hasattr(conf.settings, "SHELL_LOCALS"):
             slocals.update(conf.settings.SHELL_LOCALS)
         return slocals
@@ -175,7 +177,7 @@ class Load(BaseCommand):
 class Run(BaseCommand):
     """Excecute the steps in order or one step in particular"""
 
-    OPTIONS = {"title": "run"}
+    options = {"title": "run"}
 
     def _step_classes(self, class_name):
         if class_name in self.buff:
@@ -203,6 +205,47 @@ class Run(BaseCommand):
         procs = []
         for step_cls in step_classes:
             proc = run.execute_step(step_cls, sync=sync)
+            procs.append(proc)
+        if not sync:
+            for proc in procs:
+                proc.join()
+            exitcodes = [proc.exitcode for proc in procs]
+
+            status = sum(exitcodes)
+            sys.exit(status)
+
+
+class CheckAlerts(BaseCommand):
+    """Excecute the steps in order or one step in particular"""
+
+    options = {"title": "check-alerts"}
+
+    def _alert_classes(self, class_name):
+        if class_name in self.buff:
+            self.parser.error("Duplicated alert name '{}'".format(class_name))
+        self.buff.add(class_name)
+        try:
+            return self.mapped_alerts[class_name]
+        except KeyError:
+            self.parser.error("Invalid alert name '{}'".format(class_name))
+
+    def setup(self):
+        self.all_alerts = run.load_alerts()
+        self.mapped_alerts = {cls.__name__: cls for cls in self.all_alerts}
+        self.buff = set()
+
+        self.parser.add_argument(
+            "--alerts", dest="alert_classes", action="store", nargs="+",
+            help="Alert class name", default=self.all_alerts,
+            type=self._alert_classes)
+        self.parser.add_argument(
+            "--sync", dest="sync", action="store_true",
+            help="Execute every alert synchronous", default=False)
+
+    def handle(self, alert_classes, sync):
+        procs = []
+        for alert_cls in alert_classes:
+            proc = run.execute_alert(alert_cls, sync=sync)
             procs.append(proc)
         if not sync:
             for proc in procs:

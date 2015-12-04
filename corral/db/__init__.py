@@ -13,7 +13,7 @@ from sqlalchemy.ext import declarative
 
 from sqlalchemy_utils import *  # noqa
 
-from . import conf, util
+from .. import conf, util
 
 
 # =============================================================================
@@ -44,6 +44,11 @@ def setup():
 
 def load_models_module():
     return util.dimport(MODELS_MODULE)
+
+
+def load_default_models():
+    from . import default_models
+    return default_models
 
 
 def create_all(model_cls=None, **kwargs):

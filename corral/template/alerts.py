@@ -8,7 +8,7 @@
 # DOCS
 # =============================================================================
 
-"""${project_name} main loader
+"""${project_name} alerts
 
 """
 
@@ -18,14 +18,17 @@
 # =============================================================================
 
 from corral import run
+from corral.run import endpoints as ep
+
+from . import models
 
 
 # =============================================================================
-# LOADER
+# ALERTS
 # =============================================================================
 
-class Loader(run.Loader):
+class MyAlert(run.Alert):
 
-    def generate(self):
-        # write your logic here
-        pass
+    model = models.Example
+    conditions = [model.id > 0]
+    alert_to = [ep.File("my_alert.log")]

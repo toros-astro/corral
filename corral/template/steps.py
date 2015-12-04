@@ -8,7 +8,7 @@
 # DOCS
 # =============================================================================
 
-"""${project_name} main loader
+"""${project_name} steps
 
 """
 
@@ -19,13 +19,18 @@
 
 from corral import run
 
+from . import models
+
 
 # =============================================================================
-# LOADER
+# STEPS
 # =============================================================================
 
-class Loader(run.Loader):
+class MyStep1(run.Step):
 
-    def generate(self):
-        # write your logic here
+    model = models.Example
+    conditions = [model.id > 0]
+
+    def process(self, obj):
+        # your logic here
         pass
