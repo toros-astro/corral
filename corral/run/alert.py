@@ -67,19 +67,9 @@ class Alert(Processor):
         query = self.session.query(self.model).filter(*self.conditions)
 
         if self.auto_register:
-            filters = Alerted.alert_to_columns(type(self))
-            filters.update(Alerted.model_class_to_column(self.model))
-            alerteds = self.session.query(
-                Alerted.model_ids).filter_by(**filters)
-            if alerteds.count():
-                grouped_id = collections.defaultdict(set)
-                for d in map(lambda r: Alerted.loads(r[0]), alerteds.all()):
-                    for k, v in d.iteritems():
-                        grouped_id[k].add(v)
-                exclude = []
-                for k, v in grouped_id.items():
-                    exclude.append(getattr(self.model, k).in_(v))
-                query = query.filter(~db.and_(*exclude))
+            query = self._filter_auto_registered(query)
+        else:
+            query = self.filter_registered(query)
 
         if self.ordering is not None:
             query = query.order_by(*self.ordering)
@@ -89,14 +79,40 @@ class Alert(Processor):
             query = query.limit(self.limit)
         return query
 
+    def _filter_auto_registered(self, query):
+        filters = Alerted.alert_to_columns(type(self))
+        filters.update(Alerted.model_class_to_column(self.model))
+        alerteds = self.session.query(Alerted.model_ids).filter_by(**filters)
+        if alerteds.count():
+            grouped_id = collections.defaultdict(set)
+            for d in map(lambda r: Alerted.loads(r[0]), alerteds.all()):
+                for k, v in d.iteritems():
+                    grouped_id[k].add(v)
+            exclude = []
+            for k, v in grouped_id.items():
+                exclude.append(getattr(self.model, k).in_(v))
+            query = query.filter(~db.and_(*exclude))
+        return query
+
+    def _auto_register(self, obj):
+        register = Alerted()
+        register.alert = type(self)
+        register.model = obj
+        register.created_at = datetime.datetime.utcnow()
+        return register
+
+    def filter_registered(self, query):
+        raise NotImplementedError()
+
+    def register(self, obj):
+        raise NotImplementedError()
+
     def process(self, obj):
         map(lambda ep: ep.process(obj), self.alert_to)
         if self.auto_register:
-            register = Alerted()
-            register.alert = type(self)
-            register.model = obj
-            register.created_at = datetime.datetime.utcnow()
-            yield register
+            return self._auto_register(obj)
+        else:
+            return self.register(obj)
 
 
 # =============================================================================

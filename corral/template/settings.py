@@ -46,8 +46,20 @@ LOADER = "${project_name}.load.Load"
 
 
 # Pipeline processor steps
-STEPS = []
+STEPS = ["${project_name}.steps.MyStep"]
 
+
+# The alerts
+ALERTS = ["${project_name}.alerts.MyAlert"]
 
 # This values are autoimported when you open the shell
 SHELL_LOCALS = {}
+
+
+# SMTP server configuration
+EMAIL = {
+    "server": "",
+    "tls": True,
+    "user": "",
+    "password": ""
+}

@@ -2,12 +2,22 @@
 # -*- coding: utf-8 -*-
 
 import abc
+import datetime
 import smtplib
+import codecs
 from email.mime.text import MIMEText
 
 import six
 
 from .. import conf
+
+
+# =============================================================================
+# CONSTANTS
+# =============================================================================
+
+ALERT_TEMPLATE = (
+    "[{project_name}-ALERT @ {now}-15s] Check the object '{obj}'\n")
 
 
 # =============================================================================
@@ -26,6 +36,10 @@ class EndPoint(object):
 
     def teardown(self, type, value, traceback):
         pass
+
+    def render_alert(self, obj, tpl=ALERT_TEMPLATE):
+        now = datetime.datetime.utcnow().isoformat()
+        return tpl.format(project_name=conf.PACKAGE, now=now, obj=obj)
 
 
 # =============================================================================
@@ -75,7 +89,7 @@ class Email(EndPoint):
     def get_message(self, obj):
         if self.message is not None:
             return self.message.format(obj)
-        return "Please Check the object {}".format(obj)
+        return self.render_alert(obj)
 
     def process(self, obj):
         to = self.get_recipients(obj)
@@ -88,3 +102,21 @@ class Email(EndPoint):
         msg['To'] = ",".join(to)
 
         self.server.sendmail(sent_from, to, msg.as_string())
+
+
+class File(EndPoint):
+
+    def __init__(self, path, mode="a", encoding="utf8"):
+        self.path = path
+        self.mode = mode
+        self.encoding = encoding
+
+    def setup(self):
+        self.fp = codecs.open(self.path, self.mode, self.encoding)
+
+    def teardown(self):
+        if self.fp and not self.fp.closed:
+            self.fp.close()
+
+    def process(self, obj):
+        self.fp.write(self.render_alert(obj))

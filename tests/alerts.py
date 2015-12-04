@@ -5,9 +5,11 @@ from corral.run import Alert, endpoints as ep
 
 from .models import SampleModel
 
+import six
+
 
 class Alert1(Alert):
 
     model = SampleModel
     conditions = [SampleModel.name == "foo"]
-    alert_to = [ep.Email(["example@example.com"])]
+    alert_to = [ep.File(six.StringIO())]
