@@ -228,7 +228,7 @@ class Pawprint(db.Model):
         "Campaign", backref=db.backref('pawprints', order_by=id))
 
     def __repr__(self):
-        return str(self.id)
+        return "<Pawprint '{}'>".format(self.id)
 
     def get_path(self, state=None):
         if state is None:
@@ -237,7 +237,8 @@ class Pawprint(db.Model):
         yearmonth = self.observation_date.strftime("%Y%m")
         day = self.observation_date.strftime("%d")
         pwp_fld = "pwp_{}".format(self.id)
-        filename = "{}_{}.fits".format(state.name, self.id)
+        filename = "{}_{}.fits".format(
+            settings.STATES_FNAMES[state.name], self.id)
         return os.path.join(root, yearmonth, day, pwp_fld, filename)
 
     def writefile(self, fpath, state):

@@ -24,13 +24,14 @@ PIPELINE_SETUP = "toritos.pipeline.Toritos"
 
 STEPS = ["toritos.steps.StepCleaner", "toritos.steps.StepDarkPreprocess"]
 
+ALERTS = []
+
 PAWPRINTPATH = " "
 
 # This values are autoimported when you open the shell
 SHELL_LOCALS = {
     "np": np
 }
-
 
 CLEANER_ATTR = {
     'imagetype': {
@@ -51,6 +52,16 @@ CLEANER_ATTR = {
     }
 }
 
+STATES_FNAMES = {
+'raw_data': 'raw_data',
+'cleaned_data': 'raw_data',
+'preprocessed_data': 'preprocessed_data',
+'failed_to_preprocess': 'failed_to_preprocess',
+'wcs_solved': 'wcs_solved',
+'failed_wcs_solved': 'failed_wcs_solved',
+'stack': 'stack',
+'failed_stack': 'failed_stack'
+}
 
 
 try:

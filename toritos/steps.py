@@ -28,14 +28,22 @@ class StepCleaner(run.Step):
 
 class StepDarkPreprocess(run.Step):
 
-    model = models.Pawprint
-    conditions = [model.state.has(name='raw_data'), model.imagetype == 'Science']
-    ordering = [model.id]
+    def generate(self):
+        query = self.session.query(
+            models.Pawprint
+        ).filter(
+            models.Pawprint.state.has(name='cleaned_data'),
+            models.Pawprint.imagetype == 'Dark'
+        )
+        pwps = tuple(query)
+        return [pwps]
 
-    def process(self, pwp):
-        path = pwp.get_path()
-        print path
+    def validate(self, pwps):
+        assert isinstance(pwps, tuple)
 
+    def process(self, pwps):
+        paths = [pwp.get_path() for pwp in pwps]
+        darkmaster = util.combineDarks(paths)
 
-#    def validate(self, obj):
-#        assert obj.name == "Step1"
+        import ipdb; ipdb.set_trace()
+

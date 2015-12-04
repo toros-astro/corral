@@ -109,7 +109,7 @@ session.add(failed_preprocess)
 session.add(astrometried)
 session.add(failed_astrometry)
 session.add(stackstate)
-sesson.add(failed_stackstate)
+session.add(failed_stackstate)
 
 session.commit()
 
