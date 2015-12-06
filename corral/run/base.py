@@ -40,7 +40,8 @@ class Processor(object):
             raise TypeError(msg.format(obj))
 
     def save(self, obj):
-        self.session.add(obj)
+        if isinstance(obj, db.Model):
+            self.session.add(obj)
 
     @abc.abstractmethod
     def generate(self):
