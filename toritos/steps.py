@@ -61,8 +61,11 @@ class StepDarkPreprocess(run.Step):
         assert isinstance(cals, tuple)
 
     def process(self, cals):
+        metadata = util.meta_dark(cals)
+
         paths = [cal.get_path() for cal in cals]
+        import ipdb; ipdb.set_trace()
         #darkmaster = util.combineDarks(paths)
-        #darkmaster.to_hdu()
+        #darkmaster.header = metadata
 
 

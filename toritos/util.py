@@ -120,3 +120,12 @@ def combineFlats(flatlist, dark=None, bias=None):
     flatComb.scaling = lambda arr: 1./np.ma.average(arr)
     flatmaster = flatComb.average_combine()
     return flatmaster
+
+def meta_dark(cals):
+    metadata = ([], {})
+    cals = list(cals)
+    for cal in cals:
+        if not cal.ccdtemp > -14.:
+            metadata[0].append(cal)
+        metadata[1]['jd'] = cal.jd
+    return metadata
