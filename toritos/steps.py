@@ -44,6 +44,6 @@ class StepDarkPreprocess(run.Step):
     def process(self, pwps):
         paths = [pwp.get_path() for pwp in pwps]
         darkmaster = util.combineDarks(paths)
+        darkmaster.to_hdu()
 
-        import ipdb; ipdb.set_trace()
 

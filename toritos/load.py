@@ -9,7 +9,7 @@ from toritos import models, util
 class Load(run.Loader):
     def setup(self):
         self.rawstate = self.session.query(
-            models.State).filter(models.State.name == "raw_data").first()
+            models.State).filter(models.State.name == 'raw_data').first()
         self.session.autocommit = False
         self.buff = []
 
@@ -17,14 +17,21 @@ class Load(run.Loader):
         pawprints = util.scandir(settings.PAWPRINT_PATH)
         for afile in pawprints:
             data = util.fitsparser(afile)
-            print data
-            paw = models.Pawprint(**data)
-            paw.state_id = self.rawstate.id
-            self.buff.append((afile, paw))
-            yield paw
+            cleaned = util.cleaner('imagetype', data['imagetype'])
+            print cleaned
+            if cleaned == 'Science':
+                paw = models.Pawprint(**data)
+                paw.state_id = self.rawstate.id
+                self.buff.append((afile, paw))
+                yield paw
+            else:
+                cal = models.CalFile(**data)
+                cal.state_id = self.rawstate.id
+                self.buff.append((afile, cal))
+                yield cal
 
     def teardown(self, type, value, traceback):
         if not type:
             self.session.commit()
-            for afile, paw in self.buff:
-                paw.writefile(afile, self.rawstate)
+            for afile, row in self.buff:
+                row.writefile(afile, self.rawstate)
