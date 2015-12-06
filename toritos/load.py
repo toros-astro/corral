@@ -18,7 +18,6 @@ class Load(run.Loader):
         for afile in pawprints:
             data = util.fitsparser(afile)
             cleaned = util.cleaner('imagetype', data['imagetype'])
-            print cleaned
             if cleaned == 'Science':
                 paw = models.Pawprint(**data)
                 paw.state_id = self.rawstate.id

@@ -6,7 +6,7 @@ from corral import run
 import models, util
 
 
-class StepCleaner(run.Step):
+class StepPawCleaner(run.Step):
 
     model = models.Pawprint
     conditions = [model.state.has(name='raw_data')]
@@ -25,25 +25,44 @@ class StepCleaner(run.Step):
         # Here we change the state of the pawprints
         pwp.state_id = self.cleanstate.id
 
+class StepCalCleaner(run.Step):
+
+    model = models.CalFile
+    conditions = [model.state.has(name='raw_data')]
+
+    def setup(self):
+        self.cleanstate = self.session.query(
+            models.State).filter(models.State.name == 'cleaned_data').first()
+
+    def process(self, cal):
+        # Correct imagetype
+        correct = util.cleaner('imagetype', cal.imagetype)
+        if correct is not None:
+            cal.imagetype = correct
+        # Correct anything you want here
+
+        # Here we change the state of the calfiles
+        cal.state_id = self.cleanstate.id
+
 
 class StepDarkPreprocess(run.Step):
 
     def generate(self):
         query = self.session.query(
-            models.Pawprint
+            models.CalFile
         ).filter(
-            models.Pawprint.state.has(name='cleaned_data'),
-            models.Pawprint.imagetype == 'Dark'
+            models.CalFile.state.has(name='cleaned_data'),
+            models.CalFile.imagetype == 'Dark'
         )
-        pwps = tuple(query)
-        return [pwps]
+        cals = tuple(query)
+        return [cals]
 
-    def validate(self, pwps):
-        assert isinstance(pwps, tuple)
+    def validate(self, cals):
+        assert isinstance(cals, tuple)
 
-    def process(self, pwps):
-        paths = [pwp.get_path() for pwp in pwps]
-        darkmaster = util.combineDarks(paths)
-        darkmaster.to_hdu()
+    def process(self, cals):
+        paths = [cal.get_path() for cal in cals]
+        #darkmaster = util.combineDarks(paths)
+        #darkmaster.to_hdu()
 
 

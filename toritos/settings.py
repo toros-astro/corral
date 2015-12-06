@@ -22,7 +22,11 @@ LOADER = "toritos.load.Load"
 
 PIPELINE_SETUP = "toritos.pipeline.Toritos"
 
-STEPS = ["toritos.steps.StepCleaner", "toritos.steps.StepDarkPreprocess"]
+STEPS = [
+        "toritos.steps.StepCalCleaner",
+        "toritos.steps.StepPawCleaner",
+        "toritos.steps.StepDarkPreprocess"
+        ]
 
 ALERTS = []
 
