@@ -26,7 +26,7 @@ from . import models
 # STEPS
 # =============================================================================
 
-class MyStep1(run.Step):
+class MyStep(run.Step):
 
     model = models.Example
     conditions = [model.id > 0]
