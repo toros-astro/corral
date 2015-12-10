@@ -1,22 +1,26 @@
-.. Corral documentation master file, created by
-   sphinx-quickstart on Wed Nov 18 17:22:43 2015.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. _index:
 
-Welcome to Corral's documentation!
-==================================
+====================
+Corral documentation
+====================
+
+.. rubric:: Everything you need to know about Corral.
+
+Corral will solve your pipeline needs by merging a database full connection
+interface with a MVC_ model, by making you able of editing your custom schemas
+and adding the possibility of writting specific processing steps following a
+intuitive data handling model.
+
 
 Contents:
+---------
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
 
+    intro/index.rst
 
+    cli.rst
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+    glossary.rst
 

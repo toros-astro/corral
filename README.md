@@ -2,24 +2,26 @@
 
 #The Powerful Pipeline Framework
 
-Corral will solve your pipeline needs by merging a database full connection interface witha MVC model, by making you able of editing your custom schemas and adding the possibility of writting specific processing steps following a ETL formal data handling model.
+Corral will solve your pipeline needs by merging a database full connection
+interface witha MVC_ model, by making you able of editing your custom schemas
+and adding the possibility of writting specific processing steps following a
+intuitive data handling model.
 
 ##Features
 
 * Command line interface with standard utilities
 * Editable commands on your application
 * Completely built on SQLAlchemy ORM
-* Allows the introduction of Steps 
-* Data handling model by ETL (Extract Transform Load)
+* Allows the introduction of Steps
 * Follows the MVC (Model View Controller) pattern
 
-##Installation 
+##Installation
 
-Install project by cloning from Corral github: https://github.com/toros-astro/corral.git and by making  
-`pip install -e .`, or by giving the github link directly to pip:  
+Install project by cloning from Corral github: https://github.com/toros-astro/corral.git and by making
+`pip install -e .`, or by giving the github link directly to pip:
 `pip install -e git+https://github.com/toros-astro/corral.git`.
 
-##Support 
+##Support
 
 If you have issues pleas report them as a issue ticket in our github. Thanks!
 
