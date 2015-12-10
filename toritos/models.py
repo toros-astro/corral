@@ -228,7 +228,7 @@ class Pawprint(db.Model):
         "Campaign", backref=db.backref('pawprints', order_by=id))
 
     def __repr__(self):
-        return str(self.id)
+        return "<Pawprint '{}'>".format(self.id)
 
     def get_path(self, state=None):
         if state is None:
@@ -237,7 +237,8 @@ class Pawprint(db.Model):
         yearmonth = self.observation_date.strftime("%Y%m")
         day = self.observation_date.strftime("%d")
         pwp_fld = "pwp_{}".format(self.id)
-        filename = "{}_{}.fits".format(state.name, self.id)
+        filename = "{}_{}.fits".format(
+            settings.STATES_FNAMES[state.name], self.id)
         return os.path.join(root, yearmonth, day, pwp_fld, filename)
 
     def writefile(self, fpath, state):
@@ -297,11 +298,56 @@ class CalFile(db.Model):
     __tablename__ = 'CalFile'
 
     id = db.Column(db.Integer, primary_key=True)
-    path = db.Column(db.Text, nullable=True)
-    observation_date = db.Column(db.DateTime(timezone=True))
-    exptime = db.Column(db.Integer, nullable=False)
+    jd = db.Column(db.Float, nullable=False)
     created_at = db.Column(db.DateTime(timezone=True))
-    imagetype = db.Column(db.String(16), nullable=False)
+    observation_date = db.Column(db.DateTime(timezone=True))
+    modified_at = db.Column(db.DateTime(timezone=True))
+    simple = db.Column(db.String(8), nullable=True)
+    bitpix = db.Column(db.Integer, nullable=True)
+    naxis = db.Column(db.Integer, nullable=True)
+    naxis1 = db.Column(db.Integer, nullable=True)
+    naxis2 = db.Column(db.Integer, nullable=True)
+    bscale = db.Column(db.Float, nullable=True)
+    bzero = db.Column(db.Float, nullable=True)
+    exposure = db.Column(db.Float, nullable=True)
+    set_temp = db.Column(db.Float, nullable=True)
+    xpixsz = db.Column(db.Float, nullable=True)
+    ypixsz = db.Column(db.Float, nullable=True)
+    exptime = db.Column(db.Integer, nullable=False)
+    ccdtemp = db.Column(db.Float, nullable=True)
+    imagetype = db.Column(db.String(32), nullable=False)
+    targname = db.Column(db.String(40), nullable=True)
+    xbinning = db.Column(db.Integer, nullable=False)
+    ybinning = db.Column(db.Integer, nullable=False)
+    readoutm = db.Column(db.String(24), nullable=True)
+    object_ = db.Column(db.String(24), nullable=True)
+    observer = db.Column(db.String(48), nullable=True)
+
+    state_id = db.Column(db.Integer, db.ForeignKey('State.id'))
+    state = db.relationship(
+        "State", backref=db.backref('calfiles', order_by=id))
+    campaign_id = db.Column(db.Integer, db.ForeignKey('Campaign.id'))
+    campaign = db.relationship(
+        "Campaign", backref=db.backref('calfiles', order_by=id))
 
     def __repr__(self):
-        return self.id
+        return "<Calibration image '{}'>".format(self.id)
+
+    def get_path(self, state=None):
+        if state is None:
+            state = self.state
+        root = settings.DATA_PATH
+        yearmonth = self.observation_date.strftime("%Y%m")
+        day = self.observation_date.strftime("%d")
+        pwp_fld = "cal_{}".format(self.id)
+        filename = "{}_{}.fits".format(
+            settings.STATES_FNAMES[state.name], self.id)
+        return os.path.join(root, yearmonth, day, pwp_fld, filename)
+
+    def writefile(self, fpath, state):
+        dest_path = self.get_path(state)
+        dest_dir = os.path.dirname(dest_path)
+        if not os.path.isdir(dest_dir):
+            os.makedirs(dest_dir)
+        shutil.copyfile(fpath, dest_path)
+
