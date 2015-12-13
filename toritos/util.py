@@ -22,6 +22,8 @@ def scandir(path):
     """
     Tool for scanning dirs and returning
     all the fits files located on them.
+
+    Returns a generator, with a path for every file.
     """
 
     for root, dirs, files in os.walk(path):
@@ -32,16 +34,25 @@ def scandir(path):
 
 
 def creation_date(filename):
+    """Tool for getting the cration time of a file,
+    in datetime format.
+    """
     t = os.path.getctime(filename)
     return datetime.datetime.fromtimestamp(t)
 
 
 def modification_date(filename):
+    """Tool for getting the modification time of a file,
+    in datetime format.
+    """
     t = os.path.getmtime(filename)
     return datetime.datetime.fromtimestamp(t)
 
 
 def obs_date(obsdate):
+    """Tool for getting the creation time of a file,
+    in datetime format.
+    """
     if obsdate is not None:
         try:
             return datetime.datetime.strptime(obsdate, '%Y-%m-%dT%H:%M:%S')
@@ -54,6 +65,9 @@ def fitsparser(fitsfile):
     """
     Parse a fits file, translating its metadata to column values
     in the paw_object row element, from table pawprint.
+
+    Returns a dictionary type object, giving the data present in header
+    expressed as key-values for creating a pawprint or calfile table row.
     """
 
     header = fits.getheader(fitsfile)
@@ -85,6 +99,10 @@ def fitsparser(fitsfile):
     }
 
 def cleaner(key, value):
+    """Tool for healing datarows from pawprints or calfiles,
+    it uses the dictionary declared in the settings file, to
+    correctly translate values to healed info values.
+    """
     cleaned = settings.CLEANER_ATTR.get(key, {}).get(value)
     return cleaned
 
@@ -123,15 +141,6 @@ def combineFlats(flatlist, dark=None, bias=None):
     flatmaster = flatComb.average_combine()
     return flatmaster
 
-def meta_dark(cals):
-    metadata = ([], {})
-    cals = list(cals)
-    for cal in cals:
-        if not cal.ccdtemp > -14.:
-            metadata[0].append(cal)
-        metadata[1]['jd'] = cal.jd
-    return metadata
-
 def change_of_state(session, pwp, newstate_id):
     statechange = models.StateChange()
     statechange.updated_at = datetime.datetime.now()
@@ -143,3 +152,12 @@ def change_of_state(session, pwp, newstate_id):
     pwp.state_id = newstate_id
 
     session.add(statechange)
+
+def meta_dark(cals):
+    metadata = ([], {})
+    cals = list(cals)
+    for cal in cals:
+        if not cal.ccdtemp > -14.:
+            metadata[0].append(cal)
+        metadata[1]['jd'] = cal.jd
+    return metadata

@@ -65,8 +65,7 @@ class StepDarkPreprocess(run.Step):
         metadata = util.meta_dark(cals)
 
         paths = [cal.get_path() for cal in cals]
-        import ipdb; ipdb.set_trace()
-        #darkmaster = util.combineDarks(paths)
+        darkmaster = util.combineDarks(paths)
         #darkmaster.header = metadata
 
 
