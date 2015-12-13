@@ -125,7 +125,8 @@ def combineBias(biaslist):
 
 
 def combineFlats(flatlist, dark=None, bias=None):
-    """Combine all flat files into a flat master. Subtract dark or bias if provided."""
+    """Combine all flat files into a flat master.
+    Subtract dark or bias if provided."""
     ccdflatlist = [ccdproc.CCDData.read(aflat, unit="adu") for aflat in flatlist]
     if dark is not None and bias is None:
         flat_sub = [ccdproc.subtract_dark(aflat, dark, exposure_time='exptime',
@@ -142,6 +143,8 @@ def combineFlats(flatlist, dark=None, bias=None):
     return flatmaster
 
 def change_of_state(session, pwp, newstate_id):
+    """Tool for insert entries in statechanges table
+    """
     statechange = models.StateChange()
     statechange.updated_at = datetime.datetime.now()
     statechange.count = pwp.state_count + 1
@@ -156,8 +159,10 @@ def change_of_state(session, pwp, newstate_id):
 def meta_dark(cals):
     metadata = ([], {})
     cals = list(cals)
+    exptimesum = 0
     for cal in cals:
         if not cal.ccdtemp > -14.:
             metadata[0].append(cal)
-        metadata[1]['jd'] = cal.jd
+            exptimesum += cal.exptime
+        metadata[1]['mean_exptime'] = exptimesum/float(len(metadata[0]))
     return metadata

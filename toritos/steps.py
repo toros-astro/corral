@@ -56,7 +56,7 @@ class StepDarkPreprocess(run.Step):
             models.CalFile.imagetype == 'Dark'
         )
         cals = tuple(query)
-        return [cals]
+        yield cals
 
     def validate(self, cals):
         assert isinstance(cals, tuple)
@@ -66,6 +66,7 @@ class StepDarkPreprocess(run.Step):
 
         paths = [cal.get_path() for cal in cals]
         darkmaster = util.combineDarks(paths)
+        print metadata
         #darkmaster.header = metadata
 
 
