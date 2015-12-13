@@ -19,17 +19,19 @@ Session.configure(bind=db.engine)
 
 session = Session()
 
+# =============================================================================
+# OBSERVATORY
+# =============================================================================
 macon = models.Observatory()
 macon.name = 'Macon ridge'
 macon.latitude = -24.623
 macon.longitude = -67.328
 macon.description = 'Observatory located in macon ridge'
+session.add(macon)
 
-campaign = models.Campaign()
-campaign.name = '2nd run toritos'
-campaign.description = 'The second run, after roof failure'
-campaign.observatory_id = macon.id
-
+# =============================================================================
+# CCD CAMERAS
+# =============================================================================
 cameraA = models.CCD()
 cameraA.name = 'Azulcito'
 cameraA.brand = 'Apogee'
@@ -37,14 +39,21 @@ cameraA.model = 'Alta U16'
 cameraA.description = 'Camera bought by mario'
 cameraA.ypixsize = 4096
 cameraA.xpixsize = 4096
+session.add(cameraA)
 
+# =============================================================================
+# CAMPAIGN
+# =============================================================================
+campaign = models.Campaign()
+campaign.name = '2nd run toritos'
+campaign.description = 'The second run, after roof failure'
+campaign.observatory_id = macon.id
 campaign.ccd_id = cameraA.id
+session.add(campaign)
 
-
-# -----------------------------------------------------------------------------
+# =============================================================================
 # STATES
-# -----------------------------------------------------------------------------
-
+# =============================================================================
 rawstate = models.State()
 rawstate.name = 'raw_data'
 rawstate.folder = settings.PAWPRINT_PATH
@@ -81,27 +90,18 @@ failed_astrometry.folder = settings.FAILED_ASTROMETRIED_PATH
 failed_astrometry.order = 6
 failed_astrometry.is_error = True
 
-stackstate = models.State()
-stackstate.name = 'stack'
+stackstate = models.StackState()
+stackstate.name = 'stacked'
 stackstate.folder = settings.STACK_PATH
 stackstate.order = 7
 stackstate.is_error = False
 
-failed_stackstate = models.State()
+failed_stackstate = models.StackState()
 failed_stackstate.name = 'failed_stack'
 failed_stackstate.folder = settings.FAILED_STACK_PATH
 failed_stackstate.order = 8
 failed_stackstate.is_error = True
 
-
-# =============================================================================
-#
-# =============================================================================
-
-
-session.add(macon)
-session.add(campaign)
-session.add(cameraA)
 session.add(rawstate)
 session.add(cleanedstate)
 session.add(preprocessed)
@@ -111,6 +111,10 @@ session.add(failed_astrometry)
 session.add(stackstate)
 session.add(failed_stackstate)
 
+
+# =============================================================================
+# COMMIT
+# =============================================================================
 session.commit()
 
 

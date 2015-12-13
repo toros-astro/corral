@@ -20,11 +20,13 @@ class Load(run.Loader):
             cleaned = util.cleaner('imagetype', data['imagetype'])
             if cleaned == 'Science':
                 paw = models.Pawprint(**data)
+                paw.state_count = 0
                 paw.state_id = self.rawstate.id
                 self.buff.append((afile, paw))
                 yield paw
             else:
                 cal = models.CalFile(**data)
+                cal.state_count = 0
                 cal.state_id = self.rawstate.id
                 self.buff.append((afile, cal))
                 yield cal

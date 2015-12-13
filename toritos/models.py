@@ -80,11 +80,12 @@ class StateChange(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    created_at = db.Column(db.DateTime(timezone=True))
-    modified_at = db.Column(db.DateTime(timezone=True))
+    created_at = db.Column(db.DateTime(timezone=True), nullable=True)
+    modified_at = db.Column(db.DateTime(timezone=True), nullable=True)
+    updated_at = db.Column(db.DateTime(timezone=True), nullable=False)
     count = db.Column(db.Integer)
 
-    state_id = db.Column(db.Integer, db.ForeignKey('State.id'))
+    nw_state_id = db.Column(db.Integer, db.ForeignKey('State.id'))
     state = db.relationship(
         "State", backref=db.backref('statechanges', order_by=id))
     pawprint_id = db.Column(db.Integer, db.ForeignKey('Pawprint.id'))
@@ -220,6 +221,8 @@ class Pawprint(db.Model):
     object_ = db.Column(db.String(24), nullable=True)
     observer = db.Column(db.String(48), nullable=True)
 
+    state_count = db.Column(db.Integer, nullable = False)
+
     state_id = db.Column(db.Integer, db.ForeignKey('State.id'))
     state = db.relationship(
         "State", backref=db.backref('pawprints', order_by=id))
@@ -322,6 +325,8 @@ class CalFile(db.Model):
     readoutm = db.Column(db.String(24), nullable=True)
     object_ = db.Column(db.String(24), nullable=True)
     observer = db.Column(db.String(48), nullable=True)
+
+    state_count = db.Column(db.Integer, nullable=False)
 
     state_id = db.Column(db.Integer, db.ForeignKey('State.id'))
     state = db.relationship(

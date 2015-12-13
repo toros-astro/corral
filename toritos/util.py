@@ -16,6 +16,7 @@ from astropy.io import fits
 
 from corral.conf import settings
 
+import models
 
 def scandir(path):
     """
@@ -109,7 +110,8 @@ def combineFlats(flatlist, dark=None, bias=None):
     """Combine all flat files into a flat master. Subtract dark or bias if provided."""
     ccdflatlist = [ccdproc.CCDData.read(aflat, unit="adu") for aflat in flatlist]
     if dark is not None and bias is None:
-        flat_sub = [ccdproc.subtract_dark(aflat, dark, exposure_time='exptime', exposure_unit=u.second) for aflat in ccdflatlist]
+        flat_sub = [ccdproc.subtract_dark(aflat, dark, exposure_time='exptime',
+            exposure_unit=u.second) for aflat in ccdflatlist]
     elif dark is None and bias is not None:
         flat_sub = [ccdproc.subtract_bias(aflat, bias) for aflat in ccdflatlist]
     else:
@@ -129,3 +131,15 @@ def meta_dark(cals):
             metadata[0].append(cal)
         metadata[1]['jd'] = cal.jd
     return metadata
+
+def change_of_state(session, pwp, newstate_id):
+    statechange = models.StateChange()
+    statechange.updated_at = datetime.datetime.now()
+    statechange.count = pwp.state_count + 1
+    pwp.state_count += 1
+    statechange.nw_state_id = newstate_id
+    statechange.pawprint_id = pwp.id
+    statechange.modification_date = modification_date(pwp.get_path())
+    pwp.state_id = newstate_id
+
+    session.add(statechange)

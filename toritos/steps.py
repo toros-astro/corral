@@ -23,7 +23,8 @@ class StepPawCleaner(run.Step):
         # Correct anything you want here
 
         # Here we change the state of the pawprints
-        pwp.state_id = self.cleanstate.id
+        util.change_of_state(self.session, pwp, self.cleanstate.id)
+
 
 class StepCalCleaner(run.Step):
 
@@ -42,7 +43,7 @@ class StepCalCleaner(run.Step):
         # Correct anything you want here
 
         # Here we change the state of the calfiles
-        cal.state_id = self.cleanstate.id
+        util.change_of_state(self.session, cal, self.cleanstate.id)
 
 
 class StepDarkPreprocess(run.Step):
