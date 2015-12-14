@@ -42,7 +42,7 @@ CONNECTION = "sqlite:///${project_name}-dev.db"
 
 
 # Loader class
-LOADER = "${project_name}.load.Load"
+LOADER = "${project_name}.load.Loader"
 
 
 # Pipeline processor steps
