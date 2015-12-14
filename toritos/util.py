@@ -16,7 +16,7 @@ from astropy.io import fits
 
 from corral.conf import settings
 
-import models
+from . import models
 
 def scandir(path):
     """

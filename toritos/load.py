@@ -3,7 +3,7 @@
 
 from corral import run
 from corral.conf import settings
-from toritos import models, util
+from . import models, util
 
 
 class Load(run.Loader):

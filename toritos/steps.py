@@ -3,7 +3,7 @@
 
 from corral import run
 
-import models, util
+from . import models, util
 
 
 class StepPawCleaner(run.Step):
