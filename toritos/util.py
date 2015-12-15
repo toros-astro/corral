@@ -13,6 +13,8 @@ import numpy as np
 import ccdproc
 
 from astropy.io import fits
+import astropy.stats as astrostats
+import scipy.stats as stats
 
 from corral.conf import settings
 
@@ -164,5 +166,41 @@ def meta_dark(cals):
         if not cal.ccdtemp > -14.:
             metadata[0].append(cal)
             exptimesum += cal.exptime
-        metadata[1]['mean_exptime'] = exptimesum/float(len(metadata[0]))
+    metadata[1]['mean_exptime'] = exptimesum/float(len(metadata[0]))
+
     return metadata
+
+class ImageStats:
+    def __init__(self, image_obj, dataformat):
+        self._attached_to = repr(image_obj)
+
+        if dataformat is None:
+            raise InputError('Dataformat not set')
+
+        if dataformat not in ('CCDData', 'fits_file', 'numpy_array', 'hdu'):
+            raise InputError('Dataformat not recognized, try one of these: \n CCDData, fits_file, numpy_array, hdu')
+
+        if dataformat == 'CCCData':
+            self.pixmatrix = image_obj.data
+            assert isinstance(pixmatrix, np.array)
+        elif dataformat == 'fits_file':
+            self.pixmatrix = fits.open(image_obj)[0].data
+        elif dataformat == 'numpy_array':
+            self.pixmatrix = image_obj
+        else:
+            self.pixmatrix = image_obj[0].data
+
+    def __repr__(self):
+        print 'ImageStats instance for {}'.format(self._attached_to)
+
+    def pix_sd(self):
+        return self.pixmatrix.std()
+
+    def sky_level(self):
+        return np.median(self.pixmatrix)
+
+    def count_hist(self):
+        return astrostats.histogram(self.pixmatrix, bins = 30)
+
+    def summary(self):
+        return stats(self.pixmatrix)
