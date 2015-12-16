@@ -170,6 +170,7 @@ def meta_dark(cals):
 
     return metadata
 
+
 class ImageStats:
     def __init__(self, image_obj, dataformat):
         self._attached_to = repr(image_obj)
@@ -202,5 +203,13 @@ class ImageStats:
     def count_hist(self):
         return astrostats.histogram(self.pixmatrix, bins = 30)
 
+    def to1d(self):
+        self._oneDdata = np.reshape(self.pixmatrix, self.pixmatrix.shape[0]*self.pixmatrix.shape[1])
+        return
+
     def summary(self):
-        return stats(self.pixmatrix)
+        self.to1d()
+        self.summ = stats.describe(self._oneDdata)
+        print self.summ
+        return
+
