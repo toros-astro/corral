@@ -20,6 +20,9 @@ class BaseCommand(object):
         except AttributeError:
             return {}
 
+    def get_procno(self):
+        return self.procno
+
     def configure(self, parser):
         self.__parser = parser
 

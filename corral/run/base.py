@@ -17,9 +17,11 @@ from .. import db
 class Processor(object):
 
     runner_class = None
+    procno = 1
 
-    def __init__(self, session):
+    def __init__(self, session, proc):
         self.__session = session
+        self.__current_proc = proc
 
     def __enter__(self):
         self.setup()
@@ -51,6 +53,10 @@ class Processor(object):
     def session(self):
         return self.__session
 
+    @property
+    def current_proc(self):
+        return self.__current_proc
+
 
 @six.add_metaclass(abc.ABCMeta)
 class Runner(multiprocessing.Process):
@@ -63,6 +69,7 @@ class Runner(multiprocessing.Process):
     def run(self):
         raise NotImplementedError  # pragma: no cover
 
-    def set_target(self, target):
+    def setup(self, target, proc):
         self.validate_target(target)
         self.target = target
+        self.current_proc = proc

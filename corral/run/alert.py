@@ -5,6 +5,8 @@ import inspect
 import datetime
 import collections
 
+import six
+
 from .. import conf, db, util, exceptions
 from ..db.default_models import Alerted
 from ..core import logger
@@ -24,9 +26,9 @@ class AlertRunner(Runner):
             raise TypeError(msg.format(alert_cls))
 
     def run(self):
-        alert_cls = self.target
+        alert_cls, proc = self.target, self.current_proc
         logger.info("Executing alert '{}'".format(alert_cls))
-        with db.session_scope() as session, alert_cls(session) as alert:
+        with db.session_scope() as session, alert_cls(session, proc) as alert:
             for obj in alert.generate():
                 alert.validate(obj)
 
@@ -136,10 +138,15 @@ def execute_alert(alert_cls, sync=False):
         msg = "alert_cls '{}' must be subclass of 'corral.run.Alert'"
         raise TypeError(msg.format(alert_cls))
 
-    runner = alert_cls.runner_class()
-    runner.set_target(alert_cls)
-    if sync:
-        runner.run()
-    else:
-        runner.start()
-    return runner
+    procno = 1 if sync else alert_cls.procno
+
+    procs = []
+    for proc in six.moves.range(procno):
+        runner = alert_cls.runner_class()
+        runner.setup(alert_cls, proc)
+        if sync:
+            runner.run()
+        else:
+            runner.start()
+        procs.append(runner)
+    return tuple(procs)

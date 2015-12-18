@@ -3,6 +3,8 @@
 
 import inspect
 
+import six
+
 from .. import conf, db, util, exceptions
 from ..core import logger
 
@@ -22,9 +24,9 @@ class LoaderRunner(Runner):
             raise TypeError(msg.format(loader_cls))
 
     def run(self):
-        loader_cls = self.target
+        loader_cls, proc = self.target, self.current_proc
         logger.info("Executing loader '{}'".format(loader_cls))
-        with db.session_scope() as session, loader_cls(session) as loader:
+        with db.session_scope() as session, loader_cls(session, proc) as loader:
             generator = loader.generate()
             for obj in (generator or []):
                 loader.validate(obj)
@@ -57,10 +59,15 @@ def execute_loader(loader_cls, sync=False):
         msg = "loader_cls '{}' must be subclass of 'corral.run.Loader'"
         raise TypeError(msg.format(loader_cls))
 
-    runner = loader_cls.runner_class()
-    runner.set_target(loader_cls)
-    if sync:
-        runner.run()
-    else:
-        runner.start()
-    return runner
+    procno = 1 if sync else loader_cls.procno
+
+    procs = []
+    for proc in six.moves.range(procno):
+        runner = loader_cls.runner_class()
+        runner.setup(loader_cls, proc)
+        if sync:
+            runner.run()
+        else:
+            runner.start()
+        procs.append(runner)
+    return tuple(procs)

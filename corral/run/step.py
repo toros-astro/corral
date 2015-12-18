@@ -4,6 +4,8 @@
 import abc
 import inspect
 
+import six
+
 from .. import conf, db, util, exceptions
 from ..core import logger
 
@@ -22,9 +24,9 @@ class StepRunner(Runner):
             raise TypeError(msg.format(step_cls))
 
     def run(self):
-        step_cls = self.target
+        step_cls, proc = self.target, self.current_proc
         logger.info("Executing step '{}'".format(step_cls))
-        with db.session_scope() as session, step_cls(session) as step:
+        with db.session_scope() as session, step_cls(session, proc) as step:
             for obj in step.generate():
                 step.validate(obj)
                 generator = step.process(obj) or []
@@ -88,10 +90,15 @@ def execute_step(step_cls, sync=False):
         msg = "step_cls '{}' must be subclass of 'corral.run.Step'"
         raise TypeError(msg.format(step_cls))
 
-    runner = step_cls.runner_class()
-    runner.set_target(step_cls)
-    if sync:
-        runner.run()
-    else:
-        runner.start()
-    return runner
+    procno = 1 if sync else step_cls.procno
+
+    procs = []
+    for proc in six.moves.range(procno):
+        runner = step_cls.runner_class()
+        runner.setup(step_cls, proc)
+        if sync:
+            runner.run()
+        else:
+            runner.start()
+        procs.append(runner)
+    return tuple(procs)
