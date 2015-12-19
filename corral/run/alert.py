@@ -141,6 +141,7 @@ def execute_alert(alert_cls, sync=False):
     procno = 1 if sync else alert_cls.procno
 
     procs = []
+    alert_cls.class_setup()
     for proc in six.moves.range(procno):
         runner = alert_cls.runner_class()
         runner.setup(alert_cls, proc)

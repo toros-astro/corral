@@ -19,6 +19,10 @@ class Processor(object):
     runner_class = None
     procno = 1
 
+    @classmethod
+    def class_setup(cls):
+        pass
+
     def __init__(self, session, proc):
         self.__session = session
         self.__current_proc = proc

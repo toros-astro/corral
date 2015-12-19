@@ -93,6 +93,7 @@ def execute_step(step_cls, sync=False):
     procno = 1 if sync else step_cls.procno
 
     procs = []
+    step_cls.class_setup()
     for proc in six.moves.range(procno):
         runner = step_cls.runner_class()
         runner.setup(step_cls, proc)
