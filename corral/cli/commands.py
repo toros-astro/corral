@@ -205,7 +205,7 @@ class Run(BaseCommand):
         procs = []
         for step_cls in step_classes:
             proc = run.execute_step(step_cls, sync=sync)
-            procs.append(proc)
+            procs.extend(proc)
         if not sync:
             for proc in procs:
                 proc.join()
@@ -246,7 +246,7 @@ class CheckAlerts(BaseCommand):
         procs = []
         for alert_cls in alert_classes:
             proc = run.execute_alert(alert_cls, sync=sync)
-            procs.append(proc)
+            procs.extend(proc)
         if not sync:
             for proc in procs:
                 proc.join()

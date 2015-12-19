@@ -269,7 +269,9 @@ class Run(BaseTest):
     @mock.patch("sys.argv", new=["test", "run", "--sync"])
     @mock.patch("corral.core.setup_environment")
     def test_run_all_command(self, *args):
-        with mock.patch("corral.run.execute_step") as execute_step:
+        with mock.patch(
+            "corral.run.execute_step", return_value=[]
+        ) as execute_step:
             cli.run_from_command_line()
             expected = map(lambda s: mock.call(s, sync=True), run.load_steps())
             execute_step.assert_has_calls(expected)
@@ -278,7 +280,9 @@ class Run(BaseTest):
                 new=["test", "run", "--steps", "Step1", "Step2", "--sync"])
     @mock.patch("corral.core.setup_environment")
     def test_run_explicit(self, *args):
-        with mock.patch("corral.run.execute_step") as execute_step:
+        with mock.patch(
+            "corral.run.execute_step", return_value=[]
+        ) as execute_step:
             cli.run_from_command_line()
             expected = map(lambda s: mock.call(s, sync=True), run.load_steps())
             execute_step.assert_has_calls(expected)

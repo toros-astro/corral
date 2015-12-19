@@ -26,11 +26,11 @@ class LoaderRunner(Runner):
     def run(self):
         loader_cls, proc = self.target, self.current_proc
         logger.info("Executing loader '{}'".format(loader_cls))
-        with db.session_scope() as session, loader_cls(session, proc) as loader:
-            generator = loader.generate()
+        with db.session_scope() as session, loader_cls(session, proc) as ldr:
+            generator = ldr.generate()
             for obj in (generator or []):
-                loader.validate(obj)
-                loader.save(obj)
+                ldr.validate(obj)
+                ldr.save(obj)
         logger.info("Done!")
 
 
@@ -67,6 +67,7 @@ def execute_loader(loader_cls, sync=False):
         if sync:
             runner.run()
         else:
+            db.engine.dispose()
             runner.start()
         procs.append(runner)
     return tuple(procs)

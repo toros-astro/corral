@@ -146,6 +146,7 @@ def execute_alert(alert_cls, sync=False):
         if sync:
             runner.run()
         else:
+            db.engine.dispose()
             runner.start()
         procs.append(runner)
     return tuple(procs)

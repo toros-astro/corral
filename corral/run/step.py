@@ -98,6 +98,7 @@ def execute_step(step_cls, sync=False):
         if sync:
             runner.run()
         else:
+            db.engine.dispose()
             runner.start()
         procs.append(runner)
     return tuple(procs)
