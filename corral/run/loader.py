@@ -59,11 +59,9 @@ def execute_loader(loader_cls, sync=False):
         msg = "loader_cls '{}' must be subclass of 'corral.run.Loader'"
         raise TypeError(msg.format(loader_cls))
 
-    procno = 1 if sync else loader_cls.procno
-
     procs = []
     loader_cls.class_setup()
-    for proc in six.moves.range(procno):
+    for proc in six.moves.range(loader_cls.procno):
         runner = loader_cls.runner_class()
         runner.setup(loader_cls, proc)
         if sync:

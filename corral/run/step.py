@@ -90,11 +90,9 @@ def execute_step(step_cls, sync=False):
         msg = "step_cls '{}' must be subclass of 'corral.run.Step'"
         raise TypeError(msg.format(step_cls))
 
-    procno = 1 if sync else step_cls.procno
-
     procs = []
     step_cls.class_setup()
-    for proc in six.moves.range(procno):
+    for proc in six.moves.range(step_cls.procno):
         runner = step_cls.runner_class()
         runner.setup(step_cls, proc)
         if sync:

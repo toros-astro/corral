@@ -138,11 +138,9 @@ def execute_alert(alert_cls, sync=False):
         msg = "alert_cls '{}' must be subclass of 'corral.run.Alert'"
         raise TypeError(msg.format(alert_cls))
 
-    procno = 1 if sync else alert_cls.procno
-
     procs = []
     alert_cls.class_setup()
-    for proc in six.moves.range(procno):
+    for proc in six.moves.range(alert_cls.procno):
         runner = alert_cls.runner_class()
         runner.setup(alert_cls, proc)
         if sync:
