@@ -25,7 +25,7 @@ class StepRunner(Runner):
 
     def run(self):
         step_cls, proc = self.target, self.current_proc
-        logger.info("Executing step '{}'".format(step_cls))
+        logger.info("Executing step '{}' #{}".format(step_cls, proc))
         with db.session_scope() as session, step_cls(session, proc) as step:
             for obj in step.generate():
                 step.validate(obj)
@@ -36,7 +36,7 @@ class StepRunner(Runner):
                     step.validate(proc_obj)
                     step.save(proc_obj)
                 step.save(obj)
-        logger.info("Done!")
+        logger.info("Step '{}' #{} Done!".format(step_cls, proc))
 
 
 class Step(Processor):

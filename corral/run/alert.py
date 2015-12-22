@@ -27,7 +27,7 @@ class AlertRunner(Runner):
 
     def run(self):
         alert_cls, proc = self.target, self.current_proc
-        logger.info("Executing alert '{}'".format(alert_cls))
+        logger.info("Executing alert '{}' #{}".format(alert_cls, proc))
         with db.session_scope() as session, alert_cls(session, proc) as alert:
             for obj in alert.generate():
                 alert.validate(obj)
@@ -38,7 +38,7 @@ class AlertRunner(Runner):
                 for proc_obj in generator:
                     alert.validate(proc_obj)
                     alert.save(proc_obj)
-        logger.info("Done!")
+        logger.info("Alert '{}' #{} Done!".format(alert_cls, proc))
 
 
 class Alert(Processor):
