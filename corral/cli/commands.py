@@ -174,6 +174,16 @@ class Load(BaseCommand):
         run.execute_loader(cls, sync=True)
 
 
+class LSSteps(BaseCommand):
+    """List all available step classes"""
+
+    def handle(self):
+        print("Steps")
+        for cls in run.load_steps() or ["NO STEPS FOUND"]:
+            print("  - " + getattr(cls, "__name__", cls))
+        print("")
+
+
 class Run(BaseCommand):
     """Excecute the steps in order or one step in particular"""
 
@@ -213,6 +223,16 @@ class Run(BaseCommand):
 
             status = sum(exitcodes)
             sys.exit(status)
+
+
+class LSAlerts(BaseCommand):
+    """List all available alert classes"""
+
+    def handle(self):
+        print("Alerts")
+        for cls in run.load_alerts() or ["NO ALERTS FOUND"]:
+            print("  - " + getattr(cls, "__name__", cls))
+        print("")
 
 
 class CheckAlerts(BaseCommand):

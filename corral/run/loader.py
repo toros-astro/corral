@@ -25,13 +25,13 @@ class LoaderRunner(Runner):
 
     def run(self):
         loader_cls, proc = self.target, self.current_proc
-        logger.info("Executing loader '{}' #{}".format(loader_cls, proc))
+        logger.info("Executing loader '{}' #{}".format(loader_cls, proc+1))
         with db.session_scope() as session, loader_cls(session, proc) as ldr:
             generator = ldr.generate()
             for obj in (generator or []):
                 ldr.validate(obj)
                 ldr.save(obj)
-        logger.info("Loader '{}' #{} Done!".format(loader_cls, proc))
+        logger.info("Done Loader '{}' #{}".format(loader_cls, proc+1))
 
 
 class Loader(Processor):

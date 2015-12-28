@@ -8,6 +8,7 @@
 import collections
 import importlib
 import argparse
+import sys
 
 from . import core
 
@@ -26,8 +27,11 @@ class CorralCLIParser(object):
         self.global_parser.add_argument(
             "--stacktrace", dest="stacktrace",
             action="store_true", default=False)
-        self.subparsers = self.global_parser.add_subparsers(
-            help="command help")
+        
+        cmd_help = (
+            "For more information olease run 'python {} <COMMAND> --help'"
+        ).format(sys.argv[0])
+        self.subparsers = self.global_parser.add_subparsers(help=cmd_help)
 
     def add_subparser(self, title, func, **kwargs):
         parser = self.subparsers.add_parser(title, **kwargs)
