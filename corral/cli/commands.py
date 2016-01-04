@@ -17,6 +17,8 @@ import sys
 
 import six
 
+from texttable import Texttable
+
 from .. import db, conf, run
 from ..libs import sqlalchemy_sql_shell as sql_shell
 
@@ -178,11 +180,22 @@ class LSSteps(BaseCommand):
     """List all available step classes"""
 
     def handle(self):
-        print("Steps")
-        for cls in run.load_steps() or ["NO STEPS FOUND"]:
-            print("  - " + getattr(cls, "__name__", cls))
-        print("")
+        steps = run.load_steps()
+        if steps:
+            table = Texttable(max_width=0)
+            table.set_deco(
+                Texttable.BORDER | Texttable.HEADER | Texttable.VLINES)
+        
+            table.add_rows(
+                [("Step Class", "Process")] +
+                [(cls.__name__, cls.procno) for cls in steps])
+            print(table.draw())
 
+            procs = sum(cls.procno for cls in steps)
+            print("  TOTAL PROCESSES: {}\n".format(procs))
+        else:
+            print("  NO STEPS FOUND\n")
+            
 
 class Run(BaseCommand):
     """Excecute the steps in order or one step in particular"""
@@ -229,10 +242,21 @@ class LSAlerts(BaseCommand):
     """List all available alert classes"""
 
     def handle(self):
-        print("Alerts")
-        for cls in run.load_alerts() or ["NO ALERTS FOUND"]:
-            print("  - " + getattr(cls, "__name__", cls))
-        print("")
+        alerts = run.load_alerts()
+        if alerts:
+            table = Texttable(max_width=0)
+            table.set_deco(
+                Texttable.BORDER | Texttable.HEADER | Texttable.VLINES)
+        
+            table.add_rows(
+                [("Alert Class", "Process")] +
+                [(cls.__name__, cls.procno) for cls in alerts])
+            print(table.draw())
+
+            procs = sum(cls.procno for cls in alerts)
+            print("  TOTAL PROCESSES: {}\n".format(procs))
+        else:
+            print("  NO ALERTS FOUND\n")
 
 
 class CheckAlerts(BaseCommand):
