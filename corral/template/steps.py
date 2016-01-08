@@ -28,8 +28,8 @@ from . import models
 
 class MyStep(run.Step):
 
-    model = models.Example
-    conditions = [model.id > 0]
+    model = None
+    conditions = []
 
     def process(self, obj):
         # your logic here

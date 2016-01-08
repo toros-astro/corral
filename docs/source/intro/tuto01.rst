@@ -65,14 +65,41 @@ Let's look at what ``create`` created::
     in_corral.py
     pipeline/
     ├── __init__.py
-    ├── alerts.py
-    ├── commands.py
-    ├── load.py
-    ├── models.py
-    ├── pipeline.py
     ├── settings.py
-    └── steps.py
+    ├── pipeline.py
+    ├── models.py
+    ├── load.py
+    ├── steps.py
+    ├── alerts.py
+    └── commands.py
 
 These files are:
+
+- ``in_corral.py``: Es el punto de acceso de tu pipeline, permite ejecutar
+  commandos dentro del entorno condigurado para el pipeline.
+- The inner ``pipeline/`` directory is the actual Python package for your
+  project. Its name is the Python package name you’ll need to use to import
+  anything inside it (e.g. ``pipeline.models``).
+- ``pipeline/__init__.py``: An empty file that tells Python that this directory
+  should be considered a Python package. (Read more about packages in the
+  official Python docs if you’re a Python beginner.)
+- ``pipeline/settings.py``:  Settings/configuration for this Corral project.
+- ``pipeline/models.py``: Contiene todas las entidades (tablas) que seran
+  persistidas en la base de datos del pipeline
+- ``pipeline/pipeline.py``: Es el archivo sugerido para para llevar adelante
+  configuraciones globales "en tiempo de ejecucion".
+- ``pipeline/load.py``: Este módulo es el sugerido para contener el Loader
+  del pipeline. Esto es el punto de entrada donde se alimenta el stream de
+  datos al los sucecivos steps definidos.
+- ``pipeline/steps.py``: Este modulo es el cual contiene todos los steps que
+  manejan el stream de datos del pipeline.
+- ``pipeline/alerts.py``: Modulo que contiene las alertas (anuncios para
+  los usuarios) de algun estado esperado del pipeline (por ejemplo enviar un
+  email cuando un proceso falle)
+- ``pipeline/commands.py``: Sirve para agregar comandos de consola especificos
+  para el pipeline.
+
+
+
 
 

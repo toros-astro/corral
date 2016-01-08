@@ -29,6 +29,6 @@ from . import models
 
 class MyAlert(run.Alert):
 
-    model = models.Example
-    conditions = [model.id > 0]
+    model = None
+    conditions = []
     alert_to = [ep.File("my_alert.log")]

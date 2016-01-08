@@ -8,6 +8,7 @@ Contents:
 
     install.rst
     tuto01.rst
+    tuto02.rst
 
 
 .. seealso::
