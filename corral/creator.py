@@ -26,7 +26,7 @@ BUILTINS = frozenset(dir(six.moves.builtins))
 FORBIDEN_WORDS = frozenset((
     "True", "False", "None", "corral", "__builtins__", "builtins",
     "models", "tests", "command", "migrations", "in_corral.py", "in_corral",
-    "settings", "load", "steps", "__init__"))
+    "settings", "load", "steps", "__init__", "test"))
 
 IDENTIFIER = re.compile(r"^[^\d\W]\w*\Z", re.UNICODE)
 
@@ -43,21 +43,26 @@ TEMPLATES = [
 
 IN_CORRAL_TEMPLATE = os.path.join(PIPELINE_TEMPLATE_PATH, "in_corral.py")
 
+UNSUGESTED_NAMES = [os.path.splitext(t[0])[0] for t in TEMPLATES]
+
 
 # =============================================================================
 # FUNCTIONS
 # =============================================================================
 
 def validate_name(name):
-    msg = "'{}' is a {}"
+    msg = "'{}' {}"
     if name in KEYWORDS:
-        raise ValidationError(msg.format(name, "keyword"))
+        raise ValidationError(msg.format(name, "is a keyword"))
     elif name in BUILTINS:
-        raise ValidationError(msg.format(name, "builtin"))
+        raise ValidationError(msg.format(name, "is a builtin"))
     elif name in FORBIDEN_WORDS:
-        raise ValidationError(msg.format(name, "forbiden word"))
+        raise ValidationError(msg.format(name, "is a forbiden word"))
     elif not re.match(IDENTIFIER, name):
         raise ValidationError("Invalid identifier '{}'".format(name))
+    elif name in UNSUGESTED_NAMES:
+        raise ValidationError(
+            msg.format(name, "has a conflict with default pipeline names"))
 
 
 def create_pipeline(path):
