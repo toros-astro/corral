@@ -25,11 +25,11 @@ alimentaremos el pipeline. Puede descargar desde:
 
 https://github.com/toros-astro/corral/raw/master/datasets/iris.csv
 
-Y ubicarlo dentro del directorio ``pipeline``. Nuestra estructura en este punto
-tiene la forma::
+Y ubicarlo dentro del directorio ``my_pipeline``. Nuestra estructura en este
+punto tiene la forma::
 
     in_corral.py
-    pipeline/
+    my_pipeline/
     ├── __init__.py
     ├── iris.csv
     ├── settings.py
@@ -39,9 +39,6 @@ tiene la forma::
     ├── steps.py
     ├── alerts.py
     └── commands.py
-
-.. _fisher iris dataset: https://en.wikipedia.org/wiki/Iris_flower_data_set
-.. _csv: https://en.wikipedia.org/wiki/Comma-separated_values
 
 
 Configuración Básica
@@ -65,7 +62,7 @@ defecto deberia decir algo como:
 
 .. code-block:: python
 
-    CONNECTION = "sqlite:///pipeline-dev.db"
+    CONNECTION = "sqlite:///my_pipeline-dev.db"
 
 Con esto se creara un archivo ``pipeline-dev.db`` en la misma carpeta donde se
 encuentra ``in_corral.py`` que contendra la base de datos SQLite_.
@@ -95,7 +92,7 @@ Los modelos
 Ahora nuestro pipeline necesita una defeinicion de como seran los datos
 que guardaran la información sobre cada uno de los campos del iris data set.
 
-Dentro del archivo ``pipeline/models.py`` borraremos la clase ahi definida
+Dentro del archivo ``my_pipeline/models.py`` borraremos la clase ahi definida
 como ``Example``. Luego modificaremos el arhivo para que se vea de la siguiente
 forma nueva para que se vea de la siguiente forma:
 
@@ -174,15 +171,15 @@ Luego de una confirmación la salida deberia verse asi:
 .. code-block:: bash
 
     Do you want to create the database [Yes/no]? yes
-    [pipeline-INFO @ 2016-01-08 01:44:01,027] SELECT CAST('test plain returns' AS VARCHAR(60)) AS anon_1
-    [pipeline-INFO @ 2016-01-08 01:44:01,028] ()
-    [pipeline-INFO @ 2016-01-08 01:44:01,029] SELECT CAST('test unicode returns' AS VARCHAR(60)) AS anon_1
-    [pipeline-INFO @ 2016-01-08 01:44:01,029] ()
-    [pipeline-INFO @ 2016-01-08 01:44:01,031] PRAGMA table_info("Observation")
-    [pipeline-INFO @ 2016-01-08 01:44:01,031] ()
-    [pipeline-INFO @ 2016-01-08 01:44:01,060] PRAGMA table_info("Name")
-    [pipeline-INFO @ 2016-01-08 01:44:01,060] ()
-    [pipeline-INFO @ 2016-01-08 01:44:01,061]
+    [my_pipeline-INFO @ 2016-01-08 01:44:01,027] SELECT CAST('test plain returns' AS VARCHAR(60)) AS anon_1
+    [my_pipeline-INFO @ 2016-01-08 01:44:01,028] ()
+    [my_pipeline-INFO @ 2016-01-08 01:44:01,029] SELECT CAST('test unicode returns' AS VARCHAR(60)) AS anon_1
+    [my_pipeline-INFO @ 2016-01-08 01:44:01,029] ()
+    [my_pipeline-INFO @ 2016-01-08 01:44:01,031] PRAGMA table_info("Observation")
+    [my_pipeline-INFO @ 2016-01-08 01:44:01,031] ()
+    [my_pipeline-INFO @ 2016-01-08 01:44:01,060] PRAGMA table_info("Name")
+    [my_pipeline-INFO @ 2016-01-08 01:44:01,060] ()
+    [my_pipeline-INFO @ 2016-01-08 01:44:01,061]
     CREATE TABLE "Name" (
         id INTEGER NOT NULL,
         name VARCHAR(50),
@@ -190,9 +187,9 @@ Luego de una confirmación la salida deberia verse asi:
         UNIQUE (name)
     )
 
-    [pipeline-INFO @ 2016-01-08 01:44:01,201] ()
-    [pipeline-INFO @ 2016-01-08 01:44:01,333] COMMIT
-    [pipeline-INFO @ 2016-01-08 01:44:01,334]
+    [my_pipeline-INFO @ 2016-01-08 01:44:01,201] ()
+    [my_pipeline-INFO @ 2016-01-08 01:44:01,333] COMMIT
+    [my_pipeline-INFO @ 2016-01-08 01:44:01,334]
     CREATE TABLE "Observation" (
         id INTEGER NOT NULL,
         name_id INTEGER NOT NULL,
@@ -204,8 +201,8 @@ Luego de una confirmación la salida deberia verse asi:
         FOREIGN KEY(name_id) REFERENCES "Name" (id)
     )
 
-    [pipeline-INFO @ 2016-01-08 01:44:01,334] ()
-    [pipeline-INFO @ 2016-01-08 01:44:01,467] COMMIT
+    [my_pipeline-INFO @ 2016-01-08 01:44:01,334] ()
+    [my_pipeline-INFO @ 2016-01-08 01:44:01,467] COMMIT
 
 En la salida podran ver las sentencias sql que crearon las tablas para persistir
 nuestros modelos mas algunas tablas de soporte utilizadas por corral como
@@ -218,7 +215,7 @@ el comando ``python in_corral.py dbshell``
 .. code-block:: console
 
     $ python in_corral.py dbshell
-    Connected to: Engine(sqlite:///pipeline-dev.db)
+    Connected to: Engine(sqlite:///my_pipeline-dev.db)
     Type 'exit;' or '<CTRL> + <D>' for exit the shell
 
     SQL> select * from sqlite_master where type = 'table' and name != '__corral_alerted__';
@@ -243,11 +240,3 @@ el comando ``python in_corral.py dbshell``
     |       |             |             |          | )                                                   |
     +-------+-------------+-------------+----------+-----------------------------------------------------+
     SQL>
-
-
-
-.. _references: http://docs.sqlalchemy.org/en/rel_1_1/orm/tutorial.html#building-a-relationship
-.. _declarative_base: http://docs.sqlalchemy.org/en/rel_1_1/orm/extensions/declarative/api.html#sqlalchemy.ext.declarative.declarative_base
-
-
-

@@ -9,7 +9,7 @@ Contents:
     install.rst
     tuto01.rst
     tuto02.rst
-
+    tuto03.rst
 
 .. seealso::
 
@@ -23,9 +23,3 @@ Contents:
     If you already know a few other languages and want to get up to speed with
     Python quickly, we recommend `Dive Into Python`_. If that's not quite your
     style, there are many other `books about Python`_.
-
-    .. _python: https://python.org/
-    .. _list of Python resources for non-programmers: https://wiki.python.org/moin/BeginnersGuide/NonProgrammers
-    .. _Dive Into Python: http://www.diveintopython3.net/
-    .. _books about Python: https://wiki.python.org/moin/PythonBooks
-
