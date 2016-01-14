@@ -185,7 +185,7 @@ class LSSteps(BaseCommand):
             table = Texttable(max_width=0)
             table.set_deco(
                 Texttable.BORDER | Texttable.HEADER | Texttable.VLINES)
-        
+
             table.add_rows(
                 [("Step Class", "Process")] +
                 [(cls.__name__, cls.procno) for cls in steps])
@@ -195,7 +195,7 @@ class LSSteps(BaseCommand):
             print("  TOTAL PROCESSES: {}\n".format(procs))
         else:
             print("  NO STEPS FOUND\n")
-            
+
 
 class Run(BaseCommand):
     """Excecute the steps in order or one step in particular"""
@@ -247,7 +247,7 @@ class LSAlerts(BaseCommand):
             table = Texttable(max_width=0)
             table.set_deco(
                 Texttable.BORDER | Texttable.HEADER | Texttable.VLINES)
-        
+
             table.add_rows(
                 [("Alert Class", "Process")] +
                 [(cls.__name__, cls.procno) for cls in alerts])
