@@ -52,12 +52,18 @@ class ValidateName(BaseTest):
         with self.assertRaises(ValidationError):
             creator.validate_name("1a")
 
+        with self.assertRaises(ValidationError):
+            creator.validate_name("pipeline")
+
+        with self.assertRaises(ValidationError):
+            creator.validate_name("load")
+
 
 class CreatePipeline(BaseTest):
 
     def setup(self):
         self.path = tempfile.mkdtemp("_corral_tests")
-        self.pipeline_path = os.path.join(self.path, "pipeline")
+        self.pipeline_path = os.path.join(self.path, "example")
 
     def teardown(self):
         if os.path.isdir(self.path):
@@ -68,7 +74,7 @@ class CreatePipeline(BaseTest):
 
         creator.create_pipeline(self.pipeline_path)
 
-        expected = ['in_corral.py', 'pipeline']
+        expected = ['in_corral.py', 'example']
         self.assertCountEqual(os.listdir(self.path), expected)
 
         self.assertTrue(os.path.isdir(self.pipeline_path))
