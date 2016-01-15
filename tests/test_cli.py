@@ -264,17 +264,62 @@ class Load(BaseTest):
             execute_loader.assert_called_with(TestLoader, sync=True)
 
 
+class LSSteps(BaseTest):
+
+    @mock.patch("sys.argv", new=["test", "lssteps"])
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("sys.stdout")
+    def test_lssteps(self, *args):
+        with mock.patch("corral.run.load_steps") as load_steps:
+            with mock.patch("texttable.Texttable.add_rows") as add_rows:
+                cli.run_from_command_line()
+                add_rows.assert_called_with([('Step Class', 'Process')])
+                load_steps.assert_any_call()
+
+    @mock.patch("sys.argv", new=["test", "lssteps"])
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("sys.stdout")
+    def test_lssteps_none(self, *args):
+        with mock.patch("corral.run.load_steps",
+                        return_value=()) as load_steps:
+            with mock.patch("texttable.Texttable.add_rows") as add_rows:
+                cli.run_from_command_line()
+                add_rows.assert_not_called()
+                load_steps.assert_any_call()
+
+
 class Run(BaseTest):
 
     @mock.patch("sys.argv", new=["test", "run", "--sync"])
     @mock.patch("corral.core.setup_environment")
-    def test_run_all_command(self, *args):
+    def test_run_all(self, *args):
         with mock.patch(
             "corral.run.execute_step", return_value=[]
         ) as execute_step:
             cli.run_from_command_line()
             expected = map(lambda s: mock.call(s, sync=True), run.load_steps())
             execute_step.assert_has_calls(expected)
+
+    @mock.patch("sys.argv", new=["test", "run"])
+    @mock.patch("corral.core.setup_environment")
+    def test_run_all_async(self, *args):
+        call_count = len(run.load_steps())
+        with mock.patch("corral.run.step.StepRunner.start") as proc_start:
+            with mock.patch("corral.run.step.StepRunner.join") as proc_join:
+                with mock.patch("sys.exit") as sys_exit:
+                    with mock.patch("corral.run.step.StepRunner.exitcode", 0):
+                        cli.run_from_command_line()
+                        self.assertEquals(proc_start.call_count, call_count)
+                        self.assertEquals(proc_join.call_count, call_count)
+                        sys_exit.assert_not_called()
+        with mock.patch("corral.run.step.StepRunner.start") as proc_start:
+            with mock.patch("corral.run.step.StepRunner.join") as proc_join:
+                with mock.patch("sys.exit") as sys_exit:
+                    with mock.patch("corral.run.step.StepRunner.exitcode", 1):
+                        cli.run_from_command_line()
+                        self.assertEquals(proc_start.call_count, call_count)
+                        self.assertEquals(proc_join.call_count, call_count)
+                        sys_exit.assert_called_with(call_count)
 
     @mock.patch("sys.argv",
                 new=["test", "run", "--steps", "Step1", "Step2", "--sync"])
@@ -319,3 +364,95 @@ class Run(BaseTest):
         with mock.patch("corral.run.execute_step"):
             with self.assertRaises(SystemExit):
                 cli.run_from_command_line()
+
+
+class LSAlerts(BaseTest):
+
+    @mock.patch("sys.argv", new=["test", "lsalerts"])
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("sys.stdout")
+    def test_lsalerts(self, *args):
+        with mock.patch("corral.run.load_alerts") as load_alerts:
+            with mock.patch("texttable.Texttable.add_rows") as add_rows:
+                cli.run_from_command_line()
+                add_rows.assert_called_with([('Alert Class', 'Process')])
+                load_alerts.assert_any_call()
+
+    @mock.patch("sys.argv", new=["test", "lsalerts"])
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("sys.stdout")
+    def test_lsalerts_none(self, *args):
+        with mock.patch("corral.run.load_alerts",
+                        return_value=()) as load_alerts:
+            with mock.patch("texttable.Texttable.add_rows") as add_rows:
+                cli.run_from_command_line()
+                add_rows.assert_not_called()
+                load_alerts.assert_any_call()
+
+
+class CheckAlerts(BaseTest):
+
+    @mock.patch("sys.argv", new=["test", "check-alerts", "--sync"])
+    @mock.patch("corral.core.setup_environment")
+    def test_check_alerts_all(self, *args):
+        with mock.patch(
+            "corral.run.execute_alert", return_value=[]
+        ) as execute_step:
+            cli.run_from_command_line()
+            expected = map(lambda s: mock.call(s, sync=True), run.load_alerts())
+            execute_step.assert_has_calls(expected)
+
+    @mock.patch("sys.argv", new=["test", "check-alerts"])
+    @mock.patch("corral.core.setup_environment")
+    def test_check_alerts_all_async(self, *args):
+        call_count = len(run.load_alerts())
+        with mock.patch("corral.run.alert.AlertRunner.start") as proc_start:
+            with mock.patch("corral.run.alert.AlertRunner.join") as proc_join:
+                with mock.patch("corral.run.alert.AlertRunner.exitcode", 0):
+                    with mock.patch("sys.exit") as sys_exit:
+                        cli.run_from_command_line()
+                        self.assertEquals(proc_start.call_count, call_count)
+                        self.assertEquals(proc_join.call_count, call_count)
+                        sys_exit.assert_not_called()
+        with mock.patch("corral.run.alert.AlertRunner.start") as proc_start:
+            with mock.patch("corral.run.alert.AlertRunner.join") as proc_join:
+                with mock.patch("corral.run.alert.AlertRunner.exitcode", 1):
+                    with mock.patch("sys.exit") as sys_exit:
+                        cli.run_from_command_line()
+                        self.assertEquals(proc_start.call_count, call_count)
+                        self.assertEquals(proc_join.call_count, call_count)
+                        sys_exit.assert_called_once_with(call_count)
+
+    @mock.patch("sys.argv",
+                new=["test", "check-alerts", "--alerts", "Alert1", "--sync"])
+    @mock.patch("corral.core.setup_environment")
+    def test_check_alerts_explicit(self, *args):
+        with mock.patch(
+            "corral.run.execute_alert", return_value=[]
+        ) as execute_alert:
+            cli.run_from_command_line()
+            expected = map(
+                lambda s: mock.call(s, sync=True), run.load_alerts())
+            execute_alert.assert_has_calls(expected)
+
+    @mock.patch(
+        "sys.argv",
+        new=["test", "check-alerts", "--alerts", "Alert1", "Alert1", "--sync"]
+    )
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("sys.stderr")
+    def test_check_alerts_duplicated(self, *args):
+        with mock.patch("corral.run.execute_alert"):
+            with self.assertRaises(SystemExit):
+                cli.run_from_command_line()
+
+    @mock.patch(
+        "sys.argv", new=["test", "check-alerts", "--alerts", "Foo", "--sync"])
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("sys.stderr")
+    def test_check_alerts_invalid(self, *args):
+        with mock.patch("corral.run.execute_alert"):
+            with self.assertRaises(SystemExit):
+                cli.run_from_command_line()
+
+

@@ -235,7 +235,8 @@ class Run(BaseCommand):
             exitcodes = [proc.exitcode for proc in procs]
 
             status = sum(exitcodes)
-            sys.exit(status)
+            if status:
+                sys.exit(status)
 
 
 class LSAlerts(BaseCommand):
@@ -297,4 +298,5 @@ class CheckAlerts(BaseCommand):
             exitcodes = [proc.exitcode for proc in procs]
 
             status = sum(exitcodes)
-            sys.exit(status)
+            if status:
+                sys.exit(status)

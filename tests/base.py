@@ -36,10 +36,13 @@ class BaseTest(unittest.TestCase):
 
     def tearDown(self):
         self.teardown()
-        from corral import util, db
-        with db.session_scope() as session:
-            for model in util.collect_subclasses(db.Model):
-                session.query(model).delete()
+        try:
+            from corral import util, db
+            with db.session_scope() as session:
+                for model in util.collect_subclasses(db.Model):
+                    session.query(model).delete()
+        except:
+            pass
 
     if six.PY2:
         assertRaisesRegex = six.assertRaisesRegex
