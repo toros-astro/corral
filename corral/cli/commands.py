@@ -176,11 +176,30 @@ class Load(BaseCommand):
         run.execute_loader(cls, sync=True)
 
 
+class Groups(BaseCommand):
+    """List all existent groups for Steps and Alerts"""
+
+    def handle(self):
+        table = Texttable(max_width=0)
+        table.set_deco(
+            Texttable.BORDER | Texttable.HEADER | Texttable.VLINES)
+        table.header(("Processor", "Groups"))
+        table.add_row(["Steps", ":".join(run.steps_groups())])
+        table.add_row(["Alerts", ":".join(run.alerts_groups()) or "-"])
+        print(table.draw())
+
+
 class LSSteps(BaseCommand):
     """List all available step classes"""
 
-    def handle(self):
-        steps = run.load_steps()
+    def setup(self):
+        self.groups = run.steps_groups()
+        self.parser.add_argument(
+            "-g", "--groups", dest="groups", action="store", nargs="+",
+            help="Show only steps on given groups", default=self.groups)
+
+    def handle(self, groups):
+        steps = run.load_steps(groups)
         if steps:
             table = Texttable(max_width=0)
             table.set_deco(
@@ -244,8 +263,14 @@ class Run(BaseCommand):
 class LSAlerts(BaseCommand):
     """List all available alert classes"""
 
-    def handle(self):
-        alerts = run.load_alerts()
+    def setup(self):
+        self.groups = run.alerts_groups()
+        self.parser.add_argument(
+            "-g", "--groups", dest="groups", action="store", nargs="+",
+            help="Show only alerts on given groups", default=self.groups)
+
+    def handle(self, groups):
+        alerts = run.load_alerts(groups)
         if alerts:
             table = Texttable(max_width=0)
             table.set_deco(

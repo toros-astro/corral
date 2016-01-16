@@ -80,7 +80,7 @@ def steps_groups():
     return tuple(sorted(groups))
 
 
-def load_steps():
+def load_steps(groups=None):
     steps = []
     logger.debug("Loading Steps Classes")
     for import_string in conf.settings.STEPS:
@@ -88,7 +88,8 @@ def load_steps():
         if not (inspect.isclass(cls) and issubclass(cls, Step)):
             msg = "STEP '{}' must be subclass of 'corral.run.Step'"
             raise exceptions.ImproperlyConfigured(msg.format(import_string))
-        steps.append(cls)
+        if groups is None or set(cls.get_groups()).intersection(groups):
+            steps.append(cls)
     steps.sort(key=lambda cls: cls.__name__)
     return tuple(steps)
 
