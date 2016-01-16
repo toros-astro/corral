@@ -144,15 +144,16 @@ def alerts_groups():
 
 
 def load_alerts():
-    steps = []
+    alerts = []
     logger.debug("Loading Alert Classes")
     for import_string in conf.settings.ALERTS:
         cls = util.dimport(import_string)
         if not (inspect.isclass(cls) and issubclass(cls, Alert)):
             msg = "STEP '{}' must be subclass of 'corral.run.Alert'"
             raise exceptions.ImproperlyConfigured(msg.format(import_string))
-        steps.append(cls)
-    return tuple(steps)
+        alerts.append(cls)
+    alerts.sort(key=lambda cls: cls.__name__)
+    return tuple(alerts)
 
 
 def execute_alert(alert_cls, sync=False):

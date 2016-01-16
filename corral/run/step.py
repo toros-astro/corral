@@ -89,6 +89,7 @@ def load_steps():
             msg = "STEP '{}' must be subclass of 'corral.run.Step'"
             raise exceptions.ImproperlyConfigured(msg.format(import_string))
         steps.append(cls)
+    steps.sort(key=lambda cls: cls.__name__)
     return tuple(steps)
 
 
