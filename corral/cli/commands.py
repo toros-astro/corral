@@ -214,10 +214,13 @@ class LSSteps(BaseCommand):
 
             print(table.draw())
 
-            procs = sum(cls.procno for cls in steps)
-            print("  TOTAL PROCESSES: {}\n".format(procs))
+            procs = sum(cls.get_procno() for cls in steps)
+            print("  TOTAL PROCESSES: {}".format(procs))
         else:
-            print("  NO STEPS FOUND\n")
+            print("  NO STEPS FOUND")
+        procs_status = (
+            "Enabled" if conf.settings.DEBUG_PROCESS else "Disabled")
+        print("  DEBUG PROCESS: {}\n".format(procs_status))
 
 
 class Run(BaseCommand):
@@ -294,10 +297,13 @@ class LSAlerts(BaseCommand):
 
             print(table.draw())
 
-            procs = sum(cls.procno for cls in alerts)
-            print("  TOTAL PROCESSES: {}\n".format(procs))
+            procs = sum(cls.get_procno() for cls in alerts)
+            print("  TOTAL PROCESSES: {}".format(procs))
         else:
-            print("  NO ALERTS FOUND\n")
+            print("  NO ALERTS FOUND")
+        procs_status = (
+            "Enabled" if conf.settings.DEBUG_PROCESS else "Disabled")
+        print("  DEBUG PROCESS: {}\n".format(procs_status))
 
 
 class CheckAlerts(BaseCommand):
