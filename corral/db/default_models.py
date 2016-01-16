@@ -59,7 +59,7 @@ class Alerted(db.Model):
         if not hasattr(self, "_m"):
             session = object_session(self)
             Model = self.all_models()[self.model_table]
-            filters = self.loads(self.models_ids)
+            filters = self.loads(self.model_ids)
             self._m = session.query(Model).filter_by(**filters).first()
         return self._m
 

@@ -5,11 +5,12 @@ from corral.run import Alert, endpoints as ep
 
 from .models import SampleModel
 
-import six
-
 
 class Alert1(Alert):
 
     model = SampleModel
-    conditions = [SampleModel.name == "foo"]
-    alert_to = [ep.File(six.StringIO())]
+    conditions = [SampleModel.name == "catch_alert"]
+    alert_to = [ep.File(":memory:")]
+
+    def render_alert(self, utcnow, endpoint, obj):
+        return obj.name

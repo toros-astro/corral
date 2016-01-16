@@ -13,22 +13,14 @@ from .. import conf
 
 
 # =============================================================================
-# CONSTANTS
-# =============================================================================
-
-ALERT_TEMPLATE = (
-    "[{project_name}-ALERT @ {now}-15s] Check the object '{obj}'\n")
-
-
-# =============================================================================
 # BASE CLASS
 # =============================================================================
 
 @six.add_metaclass(abc.ABCMeta)
 class EndPoint(object):
 
-    def setup(self):
-        pass
+    def setup(self, alert):
+        self._alert = alert
 
     @abc.abstractmethod
     def process(self):
@@ -37,10 +29,13 @@ class EndPoint(object):
     def teardown(self, type, value, traceback):
         pass
 
-    def render_alert(self, obj, tpl=ALERT_TEMPLATE):
-        now = datetime.datetime.utcnow().isoformat()
-        return tpl.format(project_name=conf.PACKAGE, now=now, obj=obj)
+    def render_alert(self, obj):
+        now = datetime.datetime.utcnow()
+        return self._alert.render_alert(now, self, obj)
 
+    @property
+    def alert(self):
+        return self._alert
 
 # =============================================================================
 # EMAIL
@@ -56,7 +51,7 @@ class Email(EndPoint):
         self.message = message
 
     def setup(self, alert):
-        self.alert = alert
+        super(Email, self).setup(alert)
         self.server = smtplib.SMTP(conf.settings.EMAIL["server"])
         if conf.settings.EMAIL["tls"]:
             self.server.ehlo()
@@ -106,16 +101,22 @@ class Email(EndPoint):
 
 class File(EndPoint):
 
+    MEMORY = ":memory:"
+
     def __init__(self, path, mode="a", encoding="utf8"):
         self.path = path
         self.mode = mode
         self.encoding = encoding
 
-    def setup(self):
-        self.fp = codecs.open(self.path, self.mode, self.encoding)
+    def setup(self, alert):
+        super(File, self).setup(alert)
+        if self.path == File.MEMORY:
+            self.fp = six.StringIO()
+        else:
+            self.fp = codecs.open(self.path, self.mode, self.encoding)
 
     def teardown(self):
-        if self.fp and not self.fp.closed:
+        if self.path != File.MEMORY and self.fp and not self.fp.closed:
             self.fp.close()
 
     def process(self, obj):

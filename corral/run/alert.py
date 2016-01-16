@@ -15,6 +15,14 @@ from .base import Processor, Runner
 
 
 # =============================================================================
+# CONSTANTS
+# =============================================================================
+
+ALERT_TEMPLATE = (
+    "[{project_name}-ALERT @ {now}-15s] Check the object '{obj}'\n")
+
+
+# =============================================================================
 # ALERT CLASSES
 # =============================================================================
 
@@ -116,6 +124,10 @@ class Alert(Processor):
         else:
             return self.register(obj)
 
+    def render_alert(self, utcnow, endpoint, obj):
+        return ALERT_TEMPLATE.format(
+            project_name=conf.PACKAGE, now=utcnow.isoformat(), obj=obj)
+
 
 # =============================================================================
 # FUNCTIONS
@@ -137,7 +149,6 @@ def execute_alert(alert_cls, sync=False):
     if not (inspect.isclass(alert_cls) and issubclass(alert_cls, Alert)):
         msg = "alert_cls '{}' must be subclass of 'corral.run.Alert'"
         raise TypeError(msg.format(alert_cls))
-
     procs = []
     alert_cls.class_setup()
     for proc in six.moves.range(alert_cls.procno):
