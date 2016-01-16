@@ -207,7 +207,9 @@ class LSSteps(BaseCommand):
 
             table.header(("Step Class", "Process", "Groups"))
             for cls in steps:
-                row = [cls.__name__, cls.procno, ":".join(cls.get_groups())]
+                row = [
+                    cls.__name__, cls.get_procno(),
+                    ":".join(cls.get_groups())]
                 table.add_row(row)
 
             print(table.draw())
@@ -285,7 +287,9 @@ class LSAlerts(BaseCommand):
 
             table.header(("Alert Class", "Process", "Groups"))
             for cls in alerts:
-                row = [cls.__name__, cls.procno, ":".join(cls.get_groups())]
+                row = [
+                    cls.__name__,  cls.get_procno(),
+                    ":".join(cls.get_groups())]
                 table.add_row(row)
 
             print(table.draw())
