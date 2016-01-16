@@ -95,8 +95,8 @@ class Alert(Processor):
         alerteds = self.session.query(Alerted.model_ids).filter_by(**filters)
         if alerteds.count():
             grouped_id = collections.defaultdict(set)
-            for d in map(lambda r: Alerted.loads(r[0]), alerteds.all()):
-                for k, v in d.iteritems():
+            for row in alerteds.all():
+                for k, v in row[0].iteritems():
                     grouped_id[k].add(v)
             exclude = []
             for k, v in grouped_id.items():

@@ -399,7 +399,8 @@ class CheckAlerts(BaseTest):
             "corral.run.execute_alert", return_value=[]
         ) as execute_step:
             cli.run_from_command_line()
-            expected = map(lambda s: mock.call(s, sync=True), run.load_alerts())
+            expected = map(
+                lambda s: mock.call(s, sync=True), run.load_alerts())
             execute_step.assert_has_calls(expected)
 
     @mock.patch("sys.argv", new=["test", "check-alerts"])
@@ -454,5 +455,3 @@ class CheckAlerts(BaseTest):
         with mock.patch("corral.run.execute_alert"):
             with self.assertRaises(SystemExit):
                 cli.run_from_command_line()
-
-

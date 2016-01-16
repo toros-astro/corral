@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import pickle
-
 from sqlalchemy.orm import object_session
 
 from corral import db, util
@@ -15,16 +13,8 @@ class Alerted(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     alert_path = db.Column(db.String(1000))
     model_table = db.Column(db.String(1000))
-    model_ids = db.Column(db.String(1000))
+    model_ids = db.Column(db.PickleType)
     created_at = db.Column(db.DateTime(timezone=True))
-
-    @classmethod
-    def dumps(cls, obj):
-        return pickle.dumps(obj).encode("base64")
-
-    @classmethod
-    def loads(cls, stream):
-        return pickle.loads(stream.decode("base64"))
 
     @classmethod
     def model_class_to_column(cls, mcls):
@@ -38,7 +28,7 @@ class Alerted(db.Model):
         ids = {
             c: instance_as_dict[c] for c in table.primary_key.columns.keys()}
         columns = cls.model_class_to_column(type(m))
-        columns.update({"model_ids": cls.dumps(ids)})
+        columns.update({"model_ids": ids})
         return columns
 
     @classmethod
@@ -59,7 +49,7 @@ class Alerted(db.Model):
         if not hasattr(self, "_m"):
             session = object_session(self)
             Model = self.all_models()[self.model_table]
-            filters = self.loads(self.model_ids)
+            filters = self.model_ids
             self._m = session.query(Model).filter_by(**filters).first()
         return self._m
 
