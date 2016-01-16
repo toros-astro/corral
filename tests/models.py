@@ -14,3 +14,8 @@ class SampleModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=True, unique=True)
+
+    def __eq__(self, obj):
+        return (
+            isinstance(obj, SampleModel) and
+            obj.name == self.name and obj.id == self.id)

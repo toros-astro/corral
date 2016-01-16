@@ -68,14 +68,15 @@ class Email(EndPoint):
     def get_recipients(self, obj):
         return self.to
 
-    def get_set_from(self, obj):
+    def get_sent_from(self, obj):
         if self.sent_from is not None:
             return self.sent_from
         user = conf.settings.EMAIL["user"]
         if "@" in user:
             return conf.settings.EMAIL["user"]
         return "{}@{}".format(
-            conf.settings.EMAIL["user"] + "@" + conf.settings.EMAIL["server"])
+            conf.settings.EMAIL["user"],
+            conf.settings.EMAIL["server"].split(":", 1)[0])
 
     def get_subject(self, obj):
         if self.subject is not None:
@@ -90,7 +91,7 @@ class Email(EndPoint):
 
     def process(self, obj):
         to = self.get_recipients(obj)
-        sent_from = self.get_set_from(obj)
+        sent_from = self.get_sent_from(obj)
         message = self.get_message(obj)
 
         msg = MIMEText(message)
