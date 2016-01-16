@@ -136,6 +136,13 @@ class Alert(Processor):
 # FUNCTIONS
 # =============================================================================
 
+def alerts_groups():
+    groups = set()
+    for cls in load_alerts():
+        groups.update(cls.get_groups())
+    return tuple(sorted(groups))
+
+
 def load_alerts():
     steps = []
     logger.debug("Loading Alert Classes")

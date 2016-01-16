@@ -18,10 +18,15 @@ class Processor(object):
 
     runner_class = None
     procno = 1
+    groups = ["default"]
 
     @classmethod
     def class_setup(cls):
         pass
+
+    @classmethod
+    def get_groups(cls):
+        return cls.groups
 
     def __init__(self, session, proc):
         self.__session = session

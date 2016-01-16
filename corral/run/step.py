@@ -73,6 +73,13 @@ class Step(Processor):
 # FUNCTIONS
 # =============================================================================
 
+def steps_groups():
+    groups = set()
+    for cls in load_steps():
+        groups.update(cls.get_groups())
+    return tuple(sorted(groups))
+
+
 def load_steps():
     steps = []
     logger.debug("Loading Steps Classes")

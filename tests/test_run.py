@@ -67,6 +67,19 @@ class TestLoaderFunctions(BaseTest):
 
 class TestStepFunctions(BaseTest):
 
+    def test_groups(self):
+        groups = run.steps_groups()
+        for group in Step1.groups:
+            self.assertIn(group, groups)
+        for group in Step2.groups:
+            self.assertIn(group, groups)
+
+        patch = ["A", "B", "C"]
+        with mock.patch("tests.steps.Step1.groups", patch, create=True):
+            groups = run.steps_groups()
+            expected = tuple(sorted(Step1.groups + Step2.groups))
+            self.assertEquals(groups, expected)
+
     def test_load_steps(self):
         actual = run.load_steps()
         expected = (Step1, Step2)
@@ -131,6 +144,16 @@ class TestStepFunctions(BaseTest):
 
 
 class TestAlertFunctions(BaseTest):
+
+    def test_groups(self):
+        groups = run.alerts_groups()
+        for group in Alert1.groups:
+            self.assertIn(group, groups)
+
+        expected = ["A", "B", "C"]
+        with mock.patch("tests.alerts.Alert1.groups", expected, create=True):
+            groups = run.alerts_groups()
+            self.assertCountEqual(groups, expected)
 
     def test_load_alerts(self):
         actual = run.load_alerts()
