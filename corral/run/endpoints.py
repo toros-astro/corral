@@ -27,6 +27,7 @@ class EndPoint(object):
         raise NotImplementedError()  # pragma: no cover
 
     def teardown(self, type, value, traceback):
+        self._alert = None
         pass
 
     def render_alert(self, obj):
@@ -60,8 +61,8 @@ class Email(EndPoint):
         self.server.login(
             conf.settings.EMAIL["user"], conf.settings.EMAIL["password"])
 
-    def teardown(self):
-        self.alert = None
+    def teardown(self, *args):
+        super(Email, self).teardown(*args)
         self.server.quit()
 
     def get_recipients(self, obj):
@@ -116,7 +117,8 @@ class File(EndPoint):
         else:
             self.fp = codecs.open(self.path, self.mode, self.encoding)
 
-    def teardown(self):
+    def teardown(self, *args):
+        super(File, self).teardown(*args)
         if self.path != File.MEMORY and self.fp and not self.fp.closed:
             self.fp.close()
 

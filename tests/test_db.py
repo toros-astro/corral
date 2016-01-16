@@ -35,12 +35,12 @@ class TestDB(BaseTest):
     def test_models_subsclasess(self):
         actual = [
             v for k, v in vars(models).items()
-            if inspect.isclass(v) and issubclass(v, db.Model)
-            and not k.startswith("_")]
+            if inspect.isclass(v) and
+            issubclass(v, db.Model) and not k.startswith("_")]
         actual += [
             v for k, v in vars(db.load_default_models()).items()
-            if inspect.isclass(v) and issubclass(v, db.Model)
-            and not k.startswith("_")]
+            if inspect.isclass(v) and
+            issubclass(v, db.Model) and not k.startswith("_")]
         self.assertCountEqual(actual, self.tn2model.values())
 
     def test_model_module_correctly_imported(self):

@@ -62,10 +62,12 @@ class Alert(Processor):
     auto_register = True
 
     def setup(self):
-        map(lambda ep: ep.setup(self), self.alert_to)
+        for ep in self.alert_to:
+            ep.setup(self)
 
     def teardown(self, type, value, traceback):
-        map(lambda ep: ep.teardown(), self.alert_to)
+        for ep in self.alert_to:
+            ep.teardown(type, value, traceback)
 
     def generate(self):
         if self.model is None or self.conditions is None:
@@ -96,7 +98,7 @@ class Alert(Processor):
         if alerteds.count():
             grouped_id = collections.defaultdict(set)
             for row in alerteds.all():
-                for k, v in row[0].iteritems():
+                for k, v in six.iteritems(row[0]):
                     grouped_id[k].add(v)
             exclude = []
             for k, v in grouped_id.items():
@@ -118,7 +120,8 @@ class Alert(Processor):
         raise NotImplementedError()
 
     def process(self, obj):
-        map(lambda ep: ep.process(obj), self.alert_to)
+        for ep in self.alert_to:
+            ep.process(obj)
         if self.auto_register:
             return self._auto_register(obj)
         else:

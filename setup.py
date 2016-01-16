@@ -23,7 +23,7 @@ import sys
 from ez_setup import use_setuptools
 use_setuptools()
 
-from setuptools import setup, find_packages
+import setuptools
 
 import corral
 
@@ -45,7 +45,7 @@ REQUIREMENTS = [
 # =============================================================================
 
 def do_setup():
-    setup(
+    setuptools.setup(
         name=corral.NAME,
         version=corral.VERSION,
         description=corral.DOC,
@@ -69,7 +69,9 @@ def do_setup():
             "Programming Language :: Python :: Implementation :: CPython",
             "Topic :: Scientific/Engineering",
         ),
-        packages=[pkg for pkg in find_packages() if pkg.startswith("corral")],
+        packages=[
+            pkg for pkg in setuptools.find_packages()
+            if pkg.startswith("corral")],
         py_modules=["ez_setup"],
         install_requires=REQUIREMENTS,
         entry_points={
