@@ -268,14 +268,13 @@ class LSSteps(BaseTest):
 
     @mock.patch("sys.argv", new=["test", "lssteps"])
     @mock.patch("corral.core.setup_environment")
-    @mock.patch("sys.stdout")
     def test_lssteps(self, *args):
         with mock.patch("corral.run.load_steps") as load_steps:
             with mock.patch("texttable.Texttable.header") as header:
                 cli.run_from_command_line()
                 header.assert_called_with(
                     ('Step Class', 'Process', 'Groups'))
-                load_steps.assert_any_call()
+                self.assertTrue(load_steps.called)
 
     @mock.patch("sys.argv", new=["test", "lssteps"])
     @mock.patch("corral.core.setup_environment")
@@ -286,7 +285,7 @@ class LSSteps(BaseTest):
             with mock.patch("texttable.Texttable.add_rows") as add_rows:
                 cli.run_from_command_line()
                 add_rows.assert_not_called()
-                load_steps.assert_any_call()
+                self.assertTrue(load_steps.called)
 
 
 class Run(BaseTest):

@@ -223,31 +223,38 @@ class Run(BaseCommand):
 
     options = {"title": "run"}
 
-    def _step_classes(self, class_name):
-        if class_name in self.buff:
-            self.parser.error("Duplicated step name '{}'".format(class_name))
-        self.buff.add(class_name)
+    def _by_name(self, name):
+        if not hasattr(self, "_buff"):
+            self._buff = set()
+            self._mapped_cls = {cls.__name__: cls for cls in run.load_steps()}
         try:
-            return self.mapped_steps[class_name]
+            cls = self._mapped_cls[name]
+            if cls in self._buff:
+                self.parser.error("Duplicated step name '{}'".format(name))
+            self._buff.add(cls)
         except KeyError:
-            self.parser.error("Invalid step name '{}'".format(class_name))
+            self.parser.error("Invalid step name '{}'".format(name))
+        return cls
 
     def setup(self):
-        self.all_steps = run.load_steps()
-        self.mapped_steps = {cls.__name__: cls for cls in self.all_steps}
-        self.buff = set()
+        group = self.parser.add_mutually_exclusive_group()
+        group.add_argument(
+            "-s", "--steps", dest="steps", action="store", nargs="+",
+            help="Step class name", type=self._by_name)
+        group.add_argument(
+            "-g", "--groups", dest="groups", action="store", nargs="+",
+            help="Groups To Run")
 
-        self.parser.add_argument(
-            "--steps", dest="step_classes", action="store", nargs="+",
-            help="Step class name", default=self.all_steps,
-            type=self._step_classes)
         self.parser.add_argument(
             "--sync", dest="sync", action="store_true",
             help="Execute every step synchronous", default=False)
 
-    def handle(self, step_classes, sync):
+    def handle(self, steps, groups, sync):
+        if not steps:
+            steps = run.load_steps(groups or None)
+
         procs = []
-        for step_cls in step_classes:
+        for step_cls in steps:
             proc = run.execute_step(step_cls, sync=sync)
             procs.extend(proc)
         if not sync:
