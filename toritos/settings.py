@@ -10,7 +10,7 @@ import logging
 
 import numpy as np
 
-
+DEBUG_PROCESS = True
 
 LOG_LEVEL = logging.INFO
 

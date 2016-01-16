@@ -6,6 +6,7 @@
 # =============================================================================
 
 import os
+import logging
 
 from . import util
 
@@ -20,7 +21,7 @@ PACKAGE = CORRAL_SETTINGS_MODULE.rsplit(".", 1)[0]
 
 DEFAULT_SETTINGS = util.to_namedtuple(
     'DefaultSettings', {
-        "LOG_LEVEL": True,
+        "LOG_LEVEL": logging.INFO,
         "LOG_FORMAT": '[%(levelname)s] %(message)s'})
 
 

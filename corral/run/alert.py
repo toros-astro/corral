@@ -163,7 +163,7 @@ def execute_alert(alert_cls, sync=False):
         raise TypeError(msg.format(alert_cls))
     procs = []
     alert_cls.class_setup()
-    for proc in six.moves.range(alert_cls.procno):
+    for proc in six.moves.range(alert_cls.get_procno()):
         runner = alert_cls.runner_class()
         runner.setup(alert_cls, proc)
         if sync:

@@ -24,6 +24,9 @@ import logging
 # CONFIGURATIONS
 # =============================================================================
 
+#: Run the steps and alerts with the debug number of processes
+DEBUG_PROCESS = True
+
 #: Sets the threshold for this logger to lvl. Logging messages which are less
 #: severe than lvl will be ignored
 LOG_LEVEL = logging.INFO

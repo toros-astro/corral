@@ -12,6 +12,8 @@ import logging
 # CONF
 # =============================================================================
 
+DEBUG_PROCESS = True
+
 LOG_LEVEL = logging.WARNING
 
 PIPELINE_SETUP = "tests.pipeline.TestPipeline"

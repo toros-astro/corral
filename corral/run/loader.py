@@ -61,7 +61,7 @@ def execute_loader(loader_cls, sync=False):
 
     procs = []
     loader_cls.class_setup()
-    for proc in six.moves.range(loader_cls.procno):
+    for proc in six.moves.range(loader_cls.get_procno()):
         runner = loader_cls.runner_class()
         runner.setup(loader_cls, proc)
         if sync:
