@@ -268,6 +268,7 @@ class LSSteps(BaseTest):
 
     @mock.patch("sys.argv", new=["test", "lssteps"])
     @mock.patch("corral.core.setup_environment")
+    @mock.patch("sys.stdout")
     def test_lssteps(self, *args):
         with mock.patch("corral.run.load_steps") as load_steps:
             with mock.patch("texttable.Texttable.header") as header:
@@ -377,7 +378,7 @@ class LSAlerts(BaseTest):
                 cli.run_from_command_line()
                 header.assert_called_with(
                     ('Alert Class', 'Process', 'Groups'))
-                load_alerts.assert_any_call()
+                self.assertTrue(load_alerts.called)
 
     @mock.patch("sys.argv", new=["test", "lsalerts"])
     @mock.patch("corral.core.setup_environment")
@@ -388,7 +389,7 @@ class LSAlerts(BaseTest):
             with mock.patch("texttable.Texttable.add_rows") as add_rows:
                 cli.run_from_command_line()
                 add_rows.assert_not_called()
-                load_alerts.assert_any_call()
+                self.assertTrue(load_alerts.called)
 
 
 class CheckAlerts(BaseTest):

@@ -240,7 +240,7 @@ class Run(BaseCommand):
         group = self.parser.add_mutually_exclusive_group()
         group.add_argument(
             "-s", "--steps", dest="steps", action="store", nargs="+",
-            help="Step class name", type=self._by_name)
+            help="Step classes name", type=self._by_name)
         group.add_argument(
             "-g", "--groups", dest="groups", action="store", nargs="+",
             help="Groups To Run")
@@ -251,7 +251,7 @@ class Run(BaseCommand):
 
     def handle(self, steps, groups, sync):
         if not steps:
-            steps = run.load_steps(groups or None)
+            steps = run.load_steps(groups)
 
         procs = []
         for step_cls in steps:
@@ -297,35 +297,42 @@ class LSAlerts(BaseCommand):
 
 
 class CheckAlerts(BaseCommand):
-    """Excecute the steps in order or one step in particular"""
+    """Run the alerts and announce to the endpoint if something is found"""
 
     options = {"title": "check-alerts"}
 
-    def _alert_classes(self, class_name):
-        if class_name in self.buff:
-            self.parser.error("Duplicated alert name '{}'".format(class_name))
-        self.buff.add(class_name)
+    def _by_name(self, name):
+        if not hasattr(self, "_buff"):
+            self._buff = set()
+            self._mapped_cls = {cls.__name__: cls for cls in run.load_alerts()}
         try:
-            return self.mapped_alerts[class_name]
+            cls = self._mapped_cls[name]
+            if cls in self._buff:
+                self.parser.error("Duplicated alert name '{}'".format(name))
+            self._buff.add(cls)
         except KeyError:
-            self.parser.error("Invalid alert name '{}'".format(class_name))
+            self.parser.error("Invalid alert name '{}'".format(name))
+        return cls
 
     def setup(self):
-        self.all_alerts = run.load_alerts()
-        self.mapped_alerts = {cls.__name__: cls for cls in self.all_alerts}
-        self.buff = set()
+        group = self.parser.add_mutually_exclusive_group()
+        group.add_argument(
+            "-a", "--alerts", dest="alerts", action="store", nargs="+",
+            help="Alert classes name", type=self._by_name)
+        group.add_argument(
+            "-g", "--groups", dest="groups", action="store", nargs="+",
+            help="Groups To Run")
 
-        self.parser.add_argument(
-            "--alerts", dest="alert_classes", action="store", nargs="+",
-            help="Alert class name", default=self.all_alerts,
-            type=self._alert_classes)
         self.parser.add_argument(
             "--sync", dest="sync", action="store_true",
             help="Execute every alert synchronous", default=False)
 
-    def handle(self, alert_classes, sync):
+    def handle(self, alerts, groups, sync):
+        if not alerts:
+            alerts = run.load_alerts(groups or None)
+
         procs = []
-        for alert_cls in alert_classes:
+        for alert_cls in alerts:
             proc = run.execute_alert(alert_cls, sync=sync)
             procs.extend(proc)
         if not sync:
