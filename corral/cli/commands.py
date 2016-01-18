@@ -59,7 +59,7 @@ class Shell(BaseCommand):
         "title": "shell"}
 
     def _get_locals(self):
-        slocals = {}
+        slocals = {"db": db, "settings": conf.settings}
         slocals.update({
             k: v for k, v in vars(db.load_models_module()).items()
             if inspect.isclass(v) and issubclass(v, db.Model)})

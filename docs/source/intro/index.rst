@@ -10,6 +10,7 @@ Contents:
     tuto01.rst
     tuto02.rst
     tuto03.rst
+    tuto04.rst
 
 .. seealso::
 
