@@ -65,6 +65,6 @@ class CorralSessionMiddleware(object):
 def no_corral(f):
     """ view decorator, the sole purpose to is 'rename' the function
     '__nocorral_middleware' """
-    def _nocorral_middleware(*args, **kwargs):
+    def __nocorral_middleware(*args, **kwargs):
         return f(*args, **kwargs)
     return __nocorral_middleware
