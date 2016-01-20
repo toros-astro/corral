@@ -35,7 +35,7 @@ class CorralSessionMiddleware(object):
         request.corral_session = db.Session()
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-        if view_func.func_name == "_nocorral_middleware":
+        if view_func.func_name == "__nocorral_middleware":
             try:
                 request.corral_session.close()
                 delattr(request, "corral_session")

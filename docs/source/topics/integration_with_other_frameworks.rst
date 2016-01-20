@@ -11,7 +11,7 @@ Django
 ------
 
 First for isolate every view inside a SqlAlchemy transaction add to your
-middleware list ``corral.lib.django_integration.CorralSessionMiddleware``
+middleware list ``corral.libs.django_integration.CorralSessionMiddleware``
 
 
 Finally edit your ``settings.py`` file and add to the end of the code.
@@ -30,7 +30,8 @@ Example
 
 .. code-block:: python
 
-    from my_pypeline.Models import MyModel
+    # cmodels to avoid django models name
+    from my_pypeline import models as cmodels
 
     def django_view(request):
         session = request.corral_session
