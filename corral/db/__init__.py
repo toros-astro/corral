@@ -24,7 +24,7 @@ from .. import conf, util, exceptions
 
 MODELS_MODULE = "{}.models".format(conf.PACKAGE)
 
-IN_MEMORY = conf.settings.CONNECTION in ("sqlite:///:memory:", "sqlite:///")
+IN_MEMORY_CONNECTIONS = ("sqlite:///:memory:", "sqlite:///")
 
 engine = None
 
@@ -55,14 +55,23 @@ def load_default_models():
     return default_models
 
 
+def db_exists(connection=None):
+    connection = (
+        conf.settings.CONNECTION if connection is None else connection)
+    real_db = connection not in IN_MEMORY_CONNECTIONS
+    return real_db and database_exists(conf.settings.CONNECTION)
+
+
 def create_all(model_cls=None, **kwargs):
-    if not IN_MEMORY and database_exists(conf.settings.CONNECTION):
+    if db_exists():
         raise exceptions.DBError("Database already exists")
-    cls = moel_cls() if model_cls else Model
+    cls = model_cls() if model_cls else Model
     return cls.metadata.create_all(**kwargs)
 
 
 def alembic(*args):
+    if not db_exists():
+        raise exceptions.DBError("Database do not exists")
     aargs = ["--config", conf.settings.MIGRATIONS_SETTINGS] + list(args)
     return alembic_main(aargs, "corral")
 

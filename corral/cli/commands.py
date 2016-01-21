@@ -51,8 +51,6 @@ class CreateDB(BaseCommand):
             answer = self.ask("Please answer 'yes' or 'no': ").lower()
         if answer == "yes":
             db.create_all()
-            db.makemigrations("first")
-            db.migrate()
 
 
 class MakeMigrations(BaseCommand):
