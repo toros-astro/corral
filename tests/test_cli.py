@@ -84,6 +84,7 @@ class CreateDB(BaseTest):
 
     @mock.patch("sys.argv", new=["test", "createdb"])
     @mock.patch("corral.core.setup_environment")
+    @mock.patch("corral.db.alembic")
     def test_create_db_comand(self, *args):
         patch = "corral.cli.commands.CreateDB.ask"
         with mock.patch(patch, return_value="yes") as ask:
@@ -110,6 +111,7 @@ class CreateDB(BaseTest):
 
     @mock.patch("sys.argv", new=["test", "createdb", "--noinput"])
     @mock.patch("corral.core.setup_environment")
+    @mock.patch("corral.db.alembic")
     def test_create_db_comand_noinput(self, *args):
         patch = "corral.cli.commands.CreateDB.ask"
         with mock.patch(patch, return_value="yes") as ask:

@@ -7,7 +7,7 @@ import codecs
 import datetime
 import os
 import re
-import glob
+import shutil
 
 import six
 
@@ -26,7 +26,7 @@ BUILTINS = frozenset(dir(six.moves.builtins))
 FORBIDEN_WORDS = frozenset((
     "True", "False", "None", "corral", "__builtins__", "builtins",
     "models", "tests", "command", "migrations", "in_corral.py", "in_corral",
-    "settings", "load", "steps", "__init__", "test"))
+    "settings", "load", "steps", "__init__", "test", "alembic", "migrations"))
 
 IDENTIFIER = re.compile(r"^[^\d\W]\w*\Z", re.UNICODE)
 
@@ -34,16 +34,17 @@ PATH = os.path.abspath(os.path.dirname(__file__))
 
 PIPELINE_TEMPLATE_PATH = os.path.join(PATH, "template")
 
-PIPELINE_TEMPLATE_GLOB = os.path.join(PIPELINE_TEMPLATE_PATH, "*.py")
+UNSUGESTED_NAMES = set()
 
-TEMPLATES = [
-    (os.path.basename(fn), fn)
-    for fn in glob.glob(PIPELINE_TEMPLATE_GLOB)
-    if os.path.basename(fn) != "in_corral.py"]
+TEMPLATES = []
 
-IN_CORRAL_TEMPLATE = os.path.join(PIPELINE_TEMPLATE_PATH, "in_corral.py")
+for dpath, dnames, fnames in os.walk(PIPELINE_TEMPLATE_PATH):
+    for fname in fnames:
+        TEMPLATES.append(os.path.join(dpath, fname))
+    UNSUGESTED_NAMES.update(os.path.splitext(fn)[0] for fn in fnames)
+    UNSUGESTED_NAMES.update(os.path.splitext(dn)[0] for dn in dnames)
 
-UNSUGESTED_NAMES = [os.path.splitext(t[0])[0] for t in TEMPLATES]
+EXCLUDE_APPLY_CONTEXT = ("script.py.mako",)
 
 
 # =============================================================================
@@ -75,30 +76,40 @@ def create_pipeline(path):
         raise ValidationError("directory '{}' already exists".format(fpath))
 
     logger.info("Creating pipelin in '{}'...".format(fpath))
-    os.makedirs(fpath)
 
     context = {
         "project_name": basename,
         "timestamp": datetime.datetime.now().isoformat(),
-        "version": get_version()}
+        "version": get_version(),
+        "migration_script": os.path.join(basename, "migrations")}
 
-    for tpl_name, tpl_path in TEMPLATES:
-        logger.info("Creating file '{}'...".format(tpl_name))
+    for tpl_path in TEMPLATES:
+
+        rel_path = tpl_path.replace(
+                PIPELINE_TEMPLATE_PATH, "", 1)
+        while rel_path.startswith(os.path.sep):
+            rel_path = rel_path[1:]
+        dest_path = os.path.join(fpath, rel_path)
+
+        dest_dir = os.path.dirname(dest_path)
+        if not os.path.isdir(dest_dir):
+            os.makedirs(dest_dir)
+
+        tpl_name = os.path.basename(tpl_path)
+        if tpl_name in EXCLUDE_APPLY_CONTEXT:
+            shutil.copy(tpl_path, dest_path)
+            continue
+
         with codecs.open(tpl_path, encoding="utf-8") as fp:
-            tpl = string.Template(fp.read())
+                tpl = string.Template(fp.read())
 
         src = tpl.safe_substitute(context)
-        path = os.path.join(fpath, tpl_name)
-        with codecs.open(path, "w", encoding="utf-8") as fp:
+
+        with codecs.open(dest_path, "w", encoding="utf-8") as fp:
             fp.write(src)
 
-    logger.info("Creating manager...")
-    with codecs.open(IN_CORRAL_TEMPLATE, encoding="utf-8") as fp:
-        tpl = string.Template(fp.read())
-
-    src = tpl.safe_substitute(context)
-    path = os.path.join(fpath, "..", "in_corral.py")
-    with codecs.open(path, "w", encoding="utf-8") as fp:
-        fp.write(src)
+    rename_from = os.path.join(fpath, "template")
+    rename_to = os.path.join(fpath, basename)
+    shutil.move(rename_from, rename_to)
 
     logger.info("Success!")

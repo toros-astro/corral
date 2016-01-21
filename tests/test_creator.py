@@ -63,7 +63,9 @@ class CreatePipeline(BaseTest):
 
     def setup(self):
         self.path = tempfile.mkdtemp("_corral_tests")
-        self.pipeline_path = os.path.join(self.path, "example")
+        self.pipeline_name = "example"
+        self.pipeline_path = os.path.join(self.path, self.pipeline_name)
+        self.container_path = os.path.join(self.path, self.pipeline_name)
 
     def teardown(self):
         if os.path.isdir(self.path):
@@ -75,17 +77,12 @@ class CreatePipeline(BaseTest):
         creator.create_pipeline(self.pipeline_path)
 
         expected = ['in_corral.py', 'example']
-        self.assertCountEqual(os.listdir(self.path), expected)
+        self.assertCountEqual(os.listdir(self.container_path), expected)
 
         self.assertTrue(os.path.isdir(self.pipeline_path))
 
-        manager_path = os.path.join(self.path, "in_corral.py")
+        manager_path = os.path.join(self.container_path, "in_corral.py")
         self.assertTrue(os.path.isfile(manager_path))
-
-        template_basenames = [
-            e for e, _ in creator.TEMPLATES if e != "in_corral.py"]
-        self.assertCountEqual(
-            os.listdir(self.pipeline_path), template_basenames)
 
     def test_directory_exists_failure(self):
         with self.assertRaises(ValidationError):

@@ -8,6 +8,7 @@ import unittest
 import glob
 import importlib
 import logging
+import atexit
 
 from corral import util
 
@@ -26,6 +27,10 @@ TESTS_PATH = os.path.join(PATH, "tests")
 
 GLOB_FILTER = os.path.join(TESTS_PATH, "*.py")
 
+VERSIONS_PATH = os.path.join(TESTS_PATH, "migrations", "versions")
+
+VERSIONS_GLOB = os.path.join(VERSIONS_PATH, "*.py")
+
 
 # =============================================================================
 # LOGGING
@@ -38,6 +43,15 @@ logger = logging.getLogger("CorralTest")
 # =============================================================================
 # FUNCTIONS
 # =============================================================================
+
+def delete_versions():
+    for file_path in glob.glob(VERSIONS_GLOB):
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+        except Exception, e:
+            print e
+
 
 def create_parser():
     parser = argparse.ArgumentParser(
@@ -106,6 +120,7 @@ def main(argv):
     core.setup_environment()
     db.create_all()
     core.logger.setLevel(core.logging.CRITICAL)
+    atexit.register(delete_versions)
 
     # RUN THE TESTS
     result = run_tests(

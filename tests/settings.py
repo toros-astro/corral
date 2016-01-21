@@ -6,11 +6,13 @@
 # =============================================================================
 
 import logging
-
+import os
 
 # =============================================================================
 # CONF
 # =============================================================================
+
+PATH = os.path.abspath(os.path.dirname(__file__))
 
 DEBUG_PROCESS = True
 
@@ -34,3 +36,5 @@ EMAIL = {
     "user": "foo@foo.com",
     "password": "secret"
 }
+
+MIGRATIONS_SETTINGS = os.path.join(PATH, "migrations", "alembic.ini")

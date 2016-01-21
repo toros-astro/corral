@@ -25,7 +25,7 @@ class CorralCLIParser(object):
         self.global_parser.add_argument(
             "--version", "-v", action="version", version=core.get_version())
         self.global_parser.add_argument(
-            "--stacktrace", dest="stacktrace",
+            "-x", "--stacktrace", dest="stacktrace",
             action="store_true", default=False)
 
         cmd_help = (

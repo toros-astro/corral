@@ -69,7 +69,7 @@ setuptools-*.zip
 
 toritos/local_settings*
 
-#Fits files 
+#Fits files
 
 *.fit
 *.FIT
@@ -77,3 +77,5 @@ toritos/local_settings*
 *.FITS
 
 freshload
+
+tests/migrations/versions/*.py[cod]

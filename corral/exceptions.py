@@ -8,3 +8,7 @@ class ValidationError(Exception):
 
 class ImproperlyConfigured(ValueError):
     pass
+
+
+class DBError(Exception):
+    pass

@@ -14,6 +14,7 @@ import code
 import os
 import logging
 import sys
+import argparse
 
 import six
 
@@ -50,6 +51,63 @@ class CreateDB(BaseCommand):
             answer = self.ask("Please answer 'yes' or 'no': ").lower()
         if answer == "yes":
             db.create_all()
+            db.makemigrations("first")
+            db.migrate()
+
+
+class MakeMigrations(BaseCommand):
+    """Generate a database migration script for your current pipeline
+
+    """
+    def setup(self):
+        self.parser.add_argument(
+            '-m', "--message", action="store", type=str,
+            help="Message for the new version", dest="message")
+
+    def handle(self, message):
+        db.makemigrations(message)
+
+
+class Migrate(BaseCommand):
+    """Synchronizes the database state with the current
+    set of models and migrations
+
+    """
+
+    def setup(self):
+        self.parser.add_argument(
+            "--noinput", dest="noinput", action="store_true", default=False,
+            help="Create the database without asking")
+
+    def handle(self, noinput):
+        if noinput:
+            answer = "yes"
+        else:
+            answer = self.ask(
+                "Do you want to migrate the database [Yes/no]? ").lower()
+        while answer.lower() not in ("yes", "no"):
+            answer = self.ask("Please answer 'yes' or 'no': ").lower()
+        if answer == "yes":
+            db.migrate()
+
+
+class Alembic(BaseCommand):
+    """Execute all the Alembic migration tool commands
+    under Corral enviroment
+
+    """
+
+    def setup(self):
+        self.parser.add_argument(
+            'arguments', nargs=argparse.REMAINDER,
+            help="Alembic arguments (see alembic help)")
+
+    def handle(self, arguments):
+        if arguments and arguments[0] == "init":
+            script = sys.argv[0]
+            self.parser.error(
+                    "Please use 'python {} createdb' instead".format(script))
+        db.alembic(*arguments)
 
 
 class Shell(BaseCommand):

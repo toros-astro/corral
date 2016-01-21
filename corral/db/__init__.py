@@ -13,7 +13,9 @@ from sqlalchemy.ext import declarative
 
 from sqlalchemy_utils import *  # noqa
 
-from .. import conf, util
+from alembic.config import main as alembic_main
+
+from .. import conf, util, exceptions
 
 
 # =============================================================================
@@ -21,6 +23,8 @@ from .. import conf, util
 # =============================================================================
 
 MODELS_MODULE = "{}.models".format(conf.PACKAGE)
+
+IN_MEMORY = conf.settings.CONNECTION in ("sqlite:///:memory:", "sqlite:///")
 
 engine = None
 
@@ -52,8 +56,24 @@ def load_default_models():
 
 
 def create_all(model_cls=None, **kwargs):
+    if not IN_MEMORY and database_exists(conf.settings.CONNECTION):
+        raise exceptions.DBError("Database already exists")
     cls = moel_cls() if model_cls else Model
     return cls.metadata.create_all(**kwargs)
+
+
+def alembic(*args):
+    aargs = ["--config", conf.settings.MIGRATIONS_SETTINGS] + list(args)
+    return alembic_main(aargs, "corral")
+
+
+def makemigrations(message=None):
+    args = ("-m", message) if message else ()
+    return alembic("revision", "--autogenerate", *args)
+
+
+def migrate():
+    return alembic("upgrade", "head")
 
 
 @contextmanager

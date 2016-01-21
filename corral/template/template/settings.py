@@ -18,11 +18,15 @@
 # =============================================================================
 
 import logging
+import os
 
 
 # =============================================================================
 # CONFIGURATIONS
 # =============================================================================
+
+#: Path where the settings.py lives
+PATH = os.path.abspath(os.path.dirname(__file__))
 
 #: Run the steps and alerts with the debug number of processes
 DEBUG_PROCESS = True
@@ -33,7 +37,8 @@ LOG_LEVEL = logging.INFO
 
 #: Template of string representation of every log of ${project_name} format
 #: see: https://docs.python.org/2/library/logging.html#logrecord-attributes
-LOG_FORMAT = "[${project_name}-%(levelname)s @ %(asctime)-15s] %(message)s"
+LOG_FORMAT = (
+        "[${project_name}-%(name)s-%(levelname)s@%(asctime)-15s] %(message)s")
 
 
 PIPELINE_SETUP = "${project_name}.pipeline.Pipeline"
@@ -66,3 +71,5 @@ EMAIL = {
     "user": "",
     "password": ""
 }
+
+MIGRATIONS_SETTINGS = os.path.join(PATH, "migrations", "alembic.ini")
