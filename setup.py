@@ -36,7 +36,8 @@ REQUIREMENTS = [
     "SQLAlchemy>=1.0.8",
     "SQLAlchemy-Utils>=0.31.0",
     "six>=1.10.0",
-    "texttable>=0.8.3"
+    "texttable>=0.8.3",
+    "alembic>=0.8.4"
 ]
 
 

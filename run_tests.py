@@ -49,8 +49,8 @@ def delete_versions():
         try:
             if os.path.isfile(file_path):
                 os.unlink(file_path)
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(e)
 
 
 def create_parser():
