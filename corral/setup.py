@@ -30,9 +30,10 @@ class PipelineSetup(object):
         logging.getLogger("Corral").setLevel(level)
 
         # http://docs.sqlalchemy.org/en/rel_1_0/core/engines.html
+        logging.getLogger('sqlalchemy.engine').setLevel(level)
         for k, v in logging.Logger.manager.loggerDict.items():
             if isinstance(v, logging.Logger):
-                if k.startswith("alembic") or k.startswith("sqlalchemy"):
+                if k.startswith("alembic"):
                     v.setLevel(level)
 
     def setup(self):

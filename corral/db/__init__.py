@@ -63,8 +63,6 @@ def db_exists(connection=None):
 
 
 def create_all(model_cls=None, **kwargs):
-    if db_exists():
-        raise exceptions.DBError("Database already exists")
     cls = model_cls() if model_cls else Model
     return cls.metadata.create_all(**kwargs)
 
