@@ -65,17 +65,4 @@ setuptools-*.zip
 *.ipynb
 *.db
 
-# local settings
-
-toritos/local_settings*
-
-#Fits files
-
-*.fit
-*.FIT
-*.fits
-*.FITS
-
-freshload
-
 tests/migrations/versions/*.py[cod]
