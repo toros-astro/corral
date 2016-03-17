@@ -77,7 +77,7 @@ def do_setup():
         install_requires=REQUIREMENTS,
         entry_points={
             'console_scripts': [
-                'corral = corral.noenvcli:run_from_command_line']}
+                'corral = corral.cli:run_from_command_line']}
     )
 
 

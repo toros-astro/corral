@@ -26,9 +26,9 @@ def get_description():
     return DOC
 
 
-def setup_environment():
+def setup_environment(test_mode=False):
     from . import db, setup
-    db.setup()
+    db.setup(test_connection=test_mode)
     db.load_default_models()
     db.load_models_module()
 

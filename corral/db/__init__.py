@@ -28,22 +28,28 @@ IN_MEMORY_CONNECTIONS = ("sqlite:///:memory:", "sqlite:///")
 
 engine = None
 
-Session = None
+Session = sessionmaker()
 
-Model = None
+Model = declarative.declarative_base(name="Model")
 
 
 # =============================================================================
 # FUNCTIONS
 # =============================================================================
 
-def setup():
+def setup(test_connection=False):
     global engine, Session, Model
-    if Model:
+    if engine:
         return
-    engine = create_engine(conf.settings.CONNECTION, echo=False)
-    Session = sessionmaker(bind=engine)
-    Model = declarative.declarative_base(name="Model", bind=engine)
+
+    conn = (
+        conf.settings.get("TEST_CONNECTION", "sqlite:///:memory")
+        if test_connection else
+        conf.settings.CONNECTION)
+
+    engine = create_engine(conn, echo=False)
+    Session.configure(bind=engine)
+    Model.metadata.bind = engine
 
 
 def load_models_module():

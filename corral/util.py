@@ -33,21 +33,26 @@ class CorralCLIParser(object):
         ).format(sys.argv[0])
         self.subparsers = self.global_parser.add_subparsers(help=cmd_help)
 
-    def add_subparser(self, title, func, **kwargs):
+    def add_subparser(self, title, command, mode, **kwargs):
+        if mode not in ("in", "test", "out"):
+            msg = "Command mode must be 'in', 'test', or 'out'. Found '{}'"
+            raise ValueError(msg.format(mode))
         parser = self.subparsers.add_parser(title, **kwargs)
-        parser.set_defaults(func=func)
+        parser.set_defaults(command=command)
+        parser.set_defaults(mode=mode)
         return parser
 
     def extract_func(self, ns):
         kwargs = dict(ns._get_kwargs())
-        func = kwargs.pop("func")
+        command = kwargs.pop("command")
+        mode = kwargs.pop("mode")
         func_kwargs, global_kwargs = {}, {}
         for k, v in kwargs.items():
             if k in ("stacktrace",):
                 global_kwargs[k] = v
             else:
                 func_kwargs[k] = v
-        return func, func_kwargs, global_kwargs
+        return command, mode, func_kwargs, global_kwargs
 
     def parse_args(self, argv):
         parsed_args = self.global_parser.parse_args(argv)

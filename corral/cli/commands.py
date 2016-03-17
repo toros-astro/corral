@@ -20,7 +20,7 @@ import six
 
 from texttable import Texttable
 
-from .. import db, conf, run
+from .. import db, conf, run, creator
 from ..libs import sqlalchemy_sql_shell as sql_shell
 
 from .base import BaseCommand
@@ -29,6 +29,19 @@ from .base import BaseCommand
 # =============================================================================
 # BUILT-INS COMMANDS
 # =============================================================================
+
+class Create(BaseCommand):
+
+    options = {
+        "mode": "out"}
+
+    def setup(self):
+        self.parser.add_argument(
+            "path", action="store", help="New Pipeline Path")
+
+    def handle(self, path):
+        creator.create_pipeline(path)
+
 
 class CreateDB(BaseCommand):
     """Create all the database structure"""

@@ -44,6 +44,7 @@ def create_parser():
         options = copy.deepcopy(cls.get_options())
 
         title = options.pop("title", cls.__name__.lower())
+        mode = options.pop("mode", "in")
         options["description"] = options.get("description", cls.__doc__) or ""
 
         if title in command_names:
@@ -52,7 +53,7 @@ def create_parser():
         command_names.add(title)
 
         command = cls()
-        sub_parser = parser.add_subparser(title, command.handle, **options)
+        sub_parser = parser.add_subparser(title, command, mode, **options)
         command.configure(sub_parser)
         command.setup()
 
@@ -60,11 +61,14 @@ def create_parser():
 
 
 def run_from_command_line():
-    core.setup_environment()
     parser = create_parser()
-    func, kwargs, gkwargs = parser.parse_args(sys.argv[1:])
+    command, mode, kwargs, gkwargs = parser.parse_args(sys.argv[1:])
+    if mode == "in":
+        core.setup_environment()
+    elif mode == "test":
+        core.setup_environment(test_mode=True)
     try:
-        func(**kwargs)
+        command.handle(**kwargs)
     except BaseException as err:
         sys.stderr.write("{}\n".format(err))
         if gkwargs.get("stacktrace"):

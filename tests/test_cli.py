@@ -80,6 +80,25 @@ class TestCli(BaseTest):
             cli.run_from_command_line()
 
 
+class Create(BaseTest):
+
+    @mock.patch("sys.argv", new=["test", "create", "foo"])
+    @mock.patch("corral.creator.create_pipeline")
+    def test_create_comand(self, create_pipeline):
+        cli.run_from_command_line()
+        create_pipeline.assert_called_with("foo")
+
+    @mock.patch("corral.creator.create_pipeline", side_effect=Exception)
+    @mock.patch("sys.stderr")
+    def test_stack_trace_option(self, *args):
+        with mock.patch("sys.argv",
+                        new=["test", "--stacktrace", "create", "foo"]):
+            with self.assertRaises(Exception):
+                cli.run_from_command_line()
+        with mock.patch("sys.argv", new=["test", "create", "foo"]):
+            cli.run_from_command_line()
+
+
 class CreateDB(BaseTest):
 
     @mock.patch("sys.argv", new=["test", "createdb"])
