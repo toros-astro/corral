@@ -7,11 +7,22 @@
 
 import abc
 import unittest
+import inspect
+from collections import defaultdict
 
 import six
 
-from .db import database_exists, create_database, drop_database
 from . import util, conf, core
+from .db import database_exists, create_database, drop_database
+from .exceptions import ImproperlyConfigured
+from .run.base import Processor
+
+
+# =============================================================================
+# CONSTANTS
+# =============================================================================
+
+TESTS_MODULE = "{}.tests".format(conf.PACKAGE)
 
 
 # =============================================================================
@@ -20,6 +31,10 @@ from . import util, conf, core
 
 @six.add_metaclass(abc.ABCMeta)
 class TestCase(unittest.TestCase):
+
+    @classmethod
+    def get_subject(cls):
+        return getattr(cls, "subject", None)
 
     def setUp(self):
         self.setup()
@@ -59,9 +74,25 @@ class TestCase(unittest.TestCase):
 # =============================================================================
 
 def get_test_module():
-    import ipdb; ipdb.set_trace()
+    return util.dimport(TESTS_MODULE)
 
 
-def run_tests(processors, failfast, verbosity)
+def get_processors_testcases(processors, test_module):
+    buff = defaultdict(list)
+    for cls in vars(test_module).values():
+        if inspect.isclass(cls) and issubclass(cls, TestCase):
+            subject = cls.get_subject()
+            if not issubclass(subject, Processor):
+                msg = "'{}' subject must be a Processor instance. Found '{}'"
+                raise ImproperlyConfigured(msg.format(subject, type(subject)))
+            buff[subject].append(cls)
+
+    testscases = [(proc, buff[proc]) for proc in processors]
+    return testscases
+
+
+def run_tests(processors, failfast, verbosity):
     test_module = get_test_module()
+    testcases = get_processors_testcases(processors, test_module)
+    import ipdb; ipdb.set_trace()
 
