@@ -20,7 +20,7 @@ import six
 
 from texttable import Texttable
 
-from .. import db, conf, run, creator
+from .. import db, conf, run, creator, qa
 from ..libs import sqlalchemy_sql_shell as sql_shell
 
 from .base import BaseCommand
@@ -248,6 +248,8 @@ class Load(BaseCommand):
 class Groups(BaseCommand):
     """List all existent groups for Steps and Alerts"""
 
+    options = {"mode": "out"}
+
     def handle(self):
         table = Texttable(max_width=0)
         table.set_deco(
@@ -260,6 +262,8 @@ class Groups(BaseCommand):
 
 class LSSteps(BaseCommand):
     """List all available step classes"""
+
+    options = {"mode": "out"}
 
     def setup(self):
         self.groups = run.steps_groups()
@@ -316,7 +320,7 @@ class Run(BaseCommand):
             "-s", "--steps", dest="steps", action="store", nargs="+",
             help="Step classes name", type=self._by_name)
         group.add_argument(
-            "-g", "--groups", dest="groups", action="store", nargs="+",
+            "-sg", "--step-groups", dest="groups", action="store", nargs="+",
             help="Groups To Run")
 
         self.parser.add_argument(
@@ -343,6 +347,8 @@ class Run(BaseCommand):
 
 class LSAlerts(BaseCommand):
     """List all available alert classes"""
+
+    options = {"mode": "out"}
 
     def setup(self):
         self.groups = run.alerts_groups()
@@ -399,7 +405,7 @@ class CheckAlerts(BaseCommand):
             "-a", "--alerts", dest="alerts", action="store", nargs="+",
             help="Alert classes name", type=self._by_name)
         group.add_argument(
-            "-g", "--groups", dest="groups", action="store", nargs="+",
+            "-ag", "--alert-groups", dest="groups", action="store", nargs="+",
             help="Groups To Run")
 
         self.parser.add_argument(
@@ -422,3 +428,76 @@ class CheckAlerts(BaseCommand):
             status = sum(exitcodes)
             if status:
                 sys.exit(status)
+
+
+class QA(BaseCommand):
+    """Run the QA test for your pipeline and make a reports of
+    errors, maintanability, coverage and a full QA index
+
+    """
+
+    options = {"mode": "test"}
+
+    def _group_by_name(self, name):
+        if not hasattr(self, "_buff"):
+            self._buff = set()
+            self._mapped_cls = {cls.__name__: cls for cls in run.load_steps()}
+        try:
+            cls = self._mapped_cls[name]
+            if cls in self._buff:
+                self.parser.error("Duplicated step name '{}'".format(name))
+            self._buff.add(cls)
+        except KeyError:
+            self.parser.error("Invalid step name '{}'".format(name))
+        return cls
+
+    def _alert_by_name(self, name):
+        if not hasattr(self, "_buff"):
+            self._buff = set()
+            self._mapped_cls = {cls.__name__: cls for cls in run.load_alerts()}
+        try:
+            cls = self._mapped_cls[name]
+            if cls in self._buff:
+                self.parser.error("Duplicated alert name '{}'".format(name))
+            self._buff.add(cls)
+        except KeyError:
+            self.parser.error("Invalid alert name '{}'".format(name))
+        return cls
+
+
+    def setup(self):
+        self.parser.add_argument(
+            "-f", "--failfast", dest='failfast', default=False,
+            help='Stop on first fail or error', action='store_true')
+
+        verbose_group = self.parser.add_mutually_exclusive_group()
+        verbose_group.add_argument(
+            "-v", "--verbose", dest='verbosity',  default=1, const=2,
+            help='Verbose output', action='store_const')
+        verbose_group.add_argument(
+            "-vv", "--vverbose", dest='verbosity', const=3,
+            help='Verbose output', action='store_const')
+
+        self.parser.add_argument(
+            "-el", "--exclude-loader", dest="loader", default=False,
+            help="Exclude loader from QA run", action="store_true")
+
+        steps_group = self.parser.add_mutually_exclusive_group()
+        steps_group.add_argument(
+            "-s", "--steps", dest="steps", action="store", nargs="+",
+            help="Step classes name", type=self._group_by_name)
+        steps_group.add_argument(
+            "-sg", "--step-groups", dest="steps_groups", action="store",
+            nargs="+", help="Groups To tests")
+
+        alerts_group = self.parser.add_mutually_exclusive_group()
+        alerts_group.add_argument(
+            "-a", "--alerts", dest="alerts", action="store", nargs="+",
+            help="Alert classes name", type=self._alert_by_name)
+        alerts_group.add_argument(
+            "-ag", "--alert-groups", dest="alert_groups", action="store",
+            nargs="+", help="Groups to tests")
+
+
+    def handle(self, failfast, verbosity, *args, **kwargs):
+        pass
