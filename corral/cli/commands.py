@@ -329,7 +329,7 @@ class Run(BaseCommand):
 
     def handle(self, steps, groups, sync):
         if not steps:
-            steps = run.load_steps(groups)
+            steps = run.load_steps(groups or None)
 
         procs = []
         for step_cls in steps:
@@ -464,7 +464,6 @@ class QA(BaseCommand):
             self.parser.error("Invalid alert name '{}'".format(name))
         return cls
 
-
     def setup(self):
         self.parser.add_argument(
             "-f", "--failfast", dest='failfast', default=False,
@@ -479,18 +478,24 @@ class QA(BaseCommand):
             help='Verbose output', action='store_const')
 
         self.parser.add_argument(
-            "-el", "--exclude-loader", dest="loader", default=False,
+            "-el", "--exclude-loader", dest="exclude_loader", default=False,
             help="Exclude loader from QA run", action="store_true")
 
         steps_group = self.parser.add_mutually_exclusive_group()
         steps_group.add_argument(
+            "-es", "--exclude-steps", dest="exclude_steps", default=False,
+            help="Exclude steps from QA run", action="store_true")
+        steps_group.add_argument(
             "-s", "--steps", dest="steps", action="store", nargs="+",
             help="Step classes name", type=self._group_by_name)
         steps_group.add_argument(
-            "-sg", "--step-groups", dest="steps_groups", action="store",
+            "-sg", "--step-groups", dest="step_groups", action="store",
             nargs="+", help="Groups To tests")
 
         alerts_group = self.parser.add_mutually_exclusive_group()
+        alerts_group.add_argument(
+            "-ea", "--exclude-alerts", dest="exclude_alerts", default=False,
+            help="Exclude alerts from QA run", action="store_true")
         alerts_group.add_argument(
             "-a", "--alerts", dest="alerts", action="store", nargs="+",
             help="Alert classes name", type=self._alert_by_name)
@@ -498,6 +503,21 @@ class QA(BaseCommand):
             "-ag", "--alert-groups", dest="alert_groups", action="store",
             nargs="+", help="Groups to tests")
 
+    def handle(self, failfast, verbosity, exclude_loader,
+               exclude_steps, steps, step_groups,
+               exclude_alerts, alerts, alert_groups):
+        processors = []
+        if not exclude_loader:
+            processors.append(run.load_loader())
 
-    def handle(self, failfast, verbosity, *args, **kwargs):
-        pass
+        if not exclude_steps:
+            if not steps:
+                steps = run.load_steps(step_groups or None)
+            processors.extend(steps or [])
+
+        if not exclude_alerts:
+            if not alerts:
+                alerts = run.load_alerts(alert_groups or None)
+            processors.extend(alerts or [])
+
+        qa.run_tests(processors, failfast, verbosity)
