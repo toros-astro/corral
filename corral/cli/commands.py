@@ -469,7 +469,6 @@ class QA(BaseCommand):
             "-f", "--failfast", dest='failfast', default=False,
             help='Stop on first fail or error', action='store_true')
 
-
         self.parser.add_argument(
             "-dl", "--default-logging", dest='default_logging', default=False,
             help='If is false all the loggers are setted to WARNING',

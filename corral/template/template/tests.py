@@ -19,17 +19,19 @@
 
 from corral import qa
 
+# from . import models
+
 
 # =============================================================================
 # LOADER
 # =============================================================================
 
-#~ class MyTestCase(qa.TestCase):
+class MyTestCase(qa.TestCase):
 
-    #~ subject = processor
+    # subject = Model
 
-    #~ def setup(self):
-        #~ pass
+    def setup(self):
+        pass
 
-    #~ def validate(self):
-        #~ pass
+    def validate(self):
+        pass

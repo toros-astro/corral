@@ -22,6 +22,7 @@ _intest = None
 def in_test():
     return _intest
 
+
 def get_version():
     return VERSION
 

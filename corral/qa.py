@@ -196,5 +196,7 @@ def run_tests(processors, failfast, verbosity, default_logging=False):
         runner = unittest.runner.TextTestRunner(
             verbosity=verbosity, failfast=failfast)
         suite_result = runner.run(suite)
-        result =  Result(proc, suite_result)
+        result = Result(proc, suite_result)
         results.append(result)
+
+    return results, is_partial
