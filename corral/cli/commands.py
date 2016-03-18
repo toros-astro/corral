@@ -469,6 +469,12 @@ class QA(BaseCommand):
             "-f", "--failfast", dest='failfast', default=False,
             help='Stop on first fail or error', action='store_true')
 
+
+        self.parser.add_argument(
+            "-dl", "--default-logging", dest='default_logging', default=False,
+            help='If is false all the loggers are setted to WARNING',
+            action='store_true')
+
         verbose_group = self.parser.add_mutually_exclusive_group()
         verbose_group.add_argument(
             "-v", "--verbose", dest='verbosity',  default=1, const=2,
@@ -503,7 +509,7 @@ class QA(BaseCommand):
             "-ag", "--alert-groups", dest="alert_groups", action="store",
             nargs="+", help="Groups to tests")
 
-    def handle(self, failfast, verbosity, exclude_loader,
+    def handle(self, failfast, verbosity, default_logging, exclude_loader,
                exclude_steps, steps, step_groups,
                exclude_alerts, alerts, alert_groups):
         processors = []
@@ -520,4 +526,4 @@ class QA(BaseCommand):
                 alerts = run.load_alerts(alert_groups or None)
             processors.extend(alerts or [])
 
-        qa.run_tests(processors, failfast, verbosity)
+        qa.run_tests(processors, failfast, verbosity, default_logging)

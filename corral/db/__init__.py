@@ -42,14 +42,18 @@ def setup(test_connection=False):
     if engine:
         return
 
-    conn = (
-        conf.settings.get("TEST_CONNECTION", "sqlite:///:memory")
-        if test_connection else
-        conf.settings.CONNECTION)
+    conn = get_url(test_connection)
 
     engine = create_engine(conn, echo=False)
     Session.configure(bind=engine)
     Model.metadata.bind = engine
+
+
+def get_url(test_connection=False):
+    return (
+        conf.settings.get("TEST_CONNECTION", "sqlite:///:memory")
+        if test_connection else
+        conf.settings.CONNECTION)
 
 
 def load_models_module():

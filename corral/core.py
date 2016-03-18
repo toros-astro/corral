@@ -7,16 +7,20 @@ from . import VERSION, DOC
 
 
 # =============================================================================
-# LOGGER
+# GLOBALS
 # =============================================================================
 
 logger = logging.getLogger("Corral")
+
+_intest = None
 
 
 # =============================================================================
 # FUNC
 # =============================================================================
 
+def in_test():
+    return _intest
 
 def get_version():
     return VERSION
@@ -27,6 +31,8 @@ def get_description():
 
 
 def setup_environment(test_mode=False):
+    global _intest
+
     from . import db, setup
     db.setup(test_connection=test_mode)
     db.load_default_models()
@@ -34,3 +40,5 @@ def setup_environment(test_mode=False):
 
     setup_cls = setup.load_pipeline_setup()
     setup.setup_pipeline(setup_cls)
+
+    _intest = test_mode

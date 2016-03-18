@@ -6,13 +6,14 @@
 # =============================================================================
 
 import abc
+import logging
 import unittest
 import inspect
 from collections import defaultdict
 
 import six
 
-from . import util, conf, core
+from . import util, conf, core, db, run
 from .db import database_exists, create_database, drop_database
 from .exceptions import ImproperlyConfigured
 from .run.base import Processor
@@ -36,17 +37,48 @@ class TestCase(unittest.TestCase):
     def get_subject(cls):
         return getattr(cls, "subject", None)
 
+    def __init__(self, conn, proc):
+        super(TestCase, self).__init__()
+        self.__conn = conn
+        self.__proc = proc
+        self.__session = None
+
+    def runTest(self):
+        with db.session_scope() as session:
+            self.__session = session
+            self.setup()
+        self.execute_processor()
+        with db.session_scope() as session:
+            self.__session = session
+            self.validate()
+
+        with db.session_scope() as session:
+            self.__session = session
+            self.teardown()
+
     def setUp(self):
-        self.setup()
         if database_exists(self.conn):
             drop_database(self.conn)
         create_database(self.conn)
+        db.create_all()
 
     def setup(self):
         pass
 
+    def execute_processor(self):
+        proc = self.__proc
+        if issubclass(proc, run.Loader):
+            run.execute_loader(self.proc, sync=True)
+        elif issubclass(proc, run.Step):
+            run.execute_step(proc, sync=True)
+        elif issubclass(proc, run.Alert):
+            run.execute_alert(proc, sync=True)
+
+    @abc.abstractmethod
+    def validate(self):
+        raise NotImplementedError()
+
     def tearDown(self):
-        self.tearDown()
         if database_exists(self.conn):
             drop_database(self.conn)
 
@@ -58,15 +90,59 @@ class TestCase(unittest.TestCase):
         assertRaisesRegex = six.assertRaisesRegex
         assertCountEqual = six.assertCountEqual
 
-    # stream asserts
-    def assertStreamHas(self, *example_objects):
-        pass
+    # asserts
+    def save(self, obj):
+        if isinstance(obj, db.Model):
+            self.session.add(obj)
 
-    def assertStreamHasNot(self, *example_objects):
-        return not self.assertStreamHas(*example_objects)
+    def delete(self, obj):
+        if isinstance(obj, db.Model):
+            self.session.delete(obj)
 
-    def assertStreamCount(self, example_object, expected):
-        pass
+    def assertStreamHas(self, model, *filters):
+        query = self.__session.query(model)
+        if filters:
+            query = query.filter(*filters)
+        if query.count() == 0:
+            filters_str = ", ".join(["'{}'".format(str(f)) for f in filters])
+            msg = "Model '{}' with filters {} not found".format(
+                model.__name__, filters_str)
+            self.fail(msg)
+
+    def assertStreamHasNot(self, model, *filters):
+        query = self.__session.query(model)
+        if filters:
+            query = query.filter(*filters)
+        if query.count() != 0:
+            filters_str = ", ".join(["'{}'".format(str(f)) for f in filters])
+            msg = "Model '{}' with filters {} found".format(
+                model.__name__, filters_str)
+            self.fail(msg)
+
+    def assertStreamCount(self, expected, model, *filters):
+        query = self.__session.query(model)
+        if filters:
+            query = query.filter(*filters)
+        self.assertEquals(query.count(), expected)
+
+    @property
+    def processor(self):
+        return self.__proc
+
+    @property
+    def session(self):
+        return self.__session
+
+    @property
+    def conn(self):
+        return self.__conn
+
+
+class Result(object):
+
+    def __init__(self, proc, ts_result):
+        self.proc = proc
+        self.ts_result = ts_result
 
 
 # =============================================================================
@@ -75,6 +151,13 @@ class TestCase(unittest.TestCase):
 
 def get_test_module():
     return util.dimport(TESTS_MODULE)
+
+
+def is_partial_test(processors):
+    # loader + steps + alerts
+    total_number_proc_procs = (
+        1 + len(conf.settings.STEPS) + len(conf.settings.ALERTS))
+    return len(processors) < total_number_proc_procs
 
 
 def get_processors_testcases(processors, test_module):
@@ -87,12 +170,31 @@ def get_processors_testcases(processors, test_module):
                 raise ImproperlyConfigured(msg.format(subject, type(subject)))
             buff[subject].append(cls)
 
-    testscases = [(proc, buff[proc]) for proc in processors]
+    db_url = db.get_url(core.in_test())
+    testscases = []
+    for proc in processors:
+        tests = [cls(db_url, proc) for cls in buff[proc]]
+        testscases.append((proc, tests))
     return testscases
 
 
-def run_tests(processors, failfast, verbosity):
+def run_tests(processors, failfast, verbosity, default_logging=False):
+    if not default_logging:
+        for k, logger in logging.Logger.manager.loggerDict.items():
+            if k.startswith("Corral") or k.startswith("sqlalchemy"):
+                if isinstance(logger, logging.Logger):
+                    logger.setLevel(logging.WARNING)
+
     test_module = get_test_module()
     testcases = get_processors_testcases(processors, test_module)
-    import ipdb; ipdb.set_trace()
+    is_partial = is_partial_test(processors)
+    results = []
 
+    for proc, tests in testcases:
+        suite = unittest.TestSuite()
+        suite.addTests(tests)
+        runner = unittest.runner.TextTestRunner(
+            verbosity=verbosity, failfast=failfast)
+        suite_result = runner.run(suite)
+        result =  Result(proc, suite_result)
+        results.append(result)

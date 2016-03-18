@@ -61,6 +61,10 @@ class Processor(object):
         if isinstance(obj, db.Model):
             self.session.add(obj)
 
+    def delete(self, obj):
+        if isinstance(obj, db.Model):
+            self.session.delete(obj)
+
     @abc.abstractmethod
     def generate(self):
         raise NotImplementedError  # pragma: no cover
