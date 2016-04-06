@@ -41,6 +41,7 @@ REQUIREMENTS = [
     "coverage>=4.0.3",
     "sh>=1.11",
     "xmltodict>=0.10.1",
+    "flake8>=2.5.4"
 ]
 
 
