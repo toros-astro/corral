@@ -430,11 +430,8 @@ class CheckAlerts(BaseCommand):
                 sys.exit(status)
 
 
-class QA(BaseCommand):
-    """Run the QA test for your pipeline and make a reports of
-    errors, maintanability, coverage and a full QA index
-
-    """
+class Test(BaseCommand):
+    """Run all unittests for your pipeline"""
 
     options = {"mode": "test"}
 
@@ -476,10 +473,10 @@ class QA(BaseCommand):
 
         verbose_group = self.parser.add_mutually_exclusive_group()
         verbose_group.add_argument(
-            "-v", "--verbose", dest='verbosity',  default=1, const=2,
+            "-v", "--verbose", dest='verbosity',  default=0, const=1,
             help='Verbose output', action='store_const')
         verbose_group.add_argument(
-            "-vv", "--vverbose", dest='verbosity', const=3,
+            "-vv", "--vverbose", dest='verbosity', const=2,
             help='Verbose output', action='store_const')
 
         self.parser.add_argument(
@@ -511,6 +508,7 @@ class QA(BaseCommand):
     def handle(self, failfast, verbosity, default_logging, exclude_loader,
                exclude_steps, steps, step_groups,
                exclude_alerts, alerts, alert_groups):
+
         processors = []
         if not exclude_loader:
             processors.append(run.load_loader())
@@ -526,3 +524,46 @@ class QA(BaseCommand):
             processors.extend(alerts or [])
 
         qa.run_tests(processors, failfast, verbosity, default_logging)
+
+
+class QAReport(BaseCommand):
+    """Run the QA test for your pipeline and make a reports of
+    errors, maintanability, coverage and a full QA index.
+
+    """
+
+    options = {"mode": "test"}
+
+    def setup(self):
+        self.parser.add_argument(
+            "-dl", "--default-logging", dest='default_logging', default=False,
+            help='If is false all the loggers are setted to WARNING',
+            action='store_true')
+
+        verbose_group = self.parser.add_mutually_exclusive_group()
+        verbose_group.add_argument(
+            "-v", "--verbose", dest='verbosity',  default=0, const=1,
+            help='Verbose output', action='store_const')
+        verbose_group.add_argument(
+            "-vv", "--vverbose", dest='verbosity', const=2,
+            help='Verbose output', action='store_const')
+
+    def handle(self, default_logging, verbosity):
+        processors = []
+        processors.append(run.load_loader())
+        processors.extend(run.load_steps(None))
+        processors.extend(run.load_alerts(None))
+        report = qa.qa_report(
+            processors, default_logging=default_logging, verbosity=verbosity)
+
+        if verbosity > 1:
+            print(report.full_output())
+
+        table = Texttable(max_width=0)
+        table.set_deco(Texttable.BORDER | Texttable.HEADER | Texttable.VLINES)
+        table.header(("Indicator", "Value"))
+
+        for k, v in report.resume().items():
+            pv = v if isinstance(v, str) else str(v)
+            table.add_row([k, pv])
+        print(table.draw())

@@ -3,6 +3,7 @@
 
 import sys
 import copy
+import argparse
 
 import six
 
@@ -15,6 +16,53 @@ from .base import BaseCommand
 # =============================================================================
 
 COMMANDS_MODULE = "{}.commands".format(conf.PACKAGE)
+
+MODE_IN, MODE_TEST, MODE_OUT = "in", "test", "out"
+
+
+# =============================================================================
+# CLASS
+# =============================================================================
+
+class CorralCLIParser(object):
+
+    def __init__(self, description):
+        self.global_parser = argparse.ArgumentParser(description=description)
+        self.global_parser.add_argument(
+            "--version", "-v", action="version", version=core.get_version())
+        self.global_parser.add_argument(
+            "-x", "--stacktrace", dest="stacktrace",
+            action="store_true", default=False)
+
+        cmd_help = (
+            "For more information please run 'python {} <COMMAND> --help'"
+        ).format(sys.argv[0])
+        self.subparsers = self.global_parser.add_subparsers(help=cmd_help)
+
+    def add_subparser(self, title, command, mode, **kwargs):
+        if mode not in (MODE_IN, MODE_OUT, MODE_TEST):
+            msg = "Command mode must be '{}', '{}', or '{}'. Found '{}'"
+            raise ValueError(MODE_IN, MODE_OUT, MODE_TEST, msg.format(mode))
+        parser = self.subparsers.add_parser(title, **kwargs)
+        parser.set_defaults(command=command)
+        parser.set_defaults(mode=mode)
+        return parser
+
+    def extract_func(self, ns):
+        kwargs = dict(ns._get_kwargs())
+        command = kwargs.pop("command")
+        mode = kwargs.pop("mode")
+        func_kwargs, global_kwargs = {}, {}
+        for k, v in kwargs.items():
+            if k in ("stacktrace",):
+                global_kwargs[k] = v
+            else:
+                func_kwargs[k] = v
+        return command, mode, func_kwargs, global_kwargs
+
+    def parse_args(self, argv):
+        parsed_args = self.global_parser.parse_args(argv)
+        return self.extract_func(parsed_args)
 
 
 # =============================================================================
@@ -37,7 +85,8 @@ def create_parser():
 
     command_names = set()
 
-    parser = util.CorralCLIParser()
+    description = core.get_description()
+    parser = CorralCLIParser(description)
 
     for cls in util.collect_subclasses(BaseCommand):
 
@@ -63,9 +112,9 @@ def create_parser():
 def run_from_command_line():
     parser = create_parser()
     command, mode, kwargs, gkwargs = parser.parse_args(sys.argv[1:])
-    if mode == "in":
+    if mode == MODE_IN:
         core.setup_environment()
-    elif mode == "test":
+    elif mode == MODE_TEST:
         core.setup_environment(test_mode=True)
     try:
         command.handle(**kwargs)

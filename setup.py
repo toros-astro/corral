@@ -37,7 +37,10 @@ REQUIREMENTS = [
     "SQLAlchemy-Utils>=0.31.0",
     "six>=1.10.0",
     "texttable>=0.8.3",
-    "alembic>=0.8.4"
+    "alembic>=0.8.4",
+    "coverage>=4.0.3",
+    "sh>=1.11",
+    "xmltodict>=0.10.1",
 ]
 
 
