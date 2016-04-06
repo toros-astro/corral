@@ -9,7 +9,6 @@ import abc
 import logging
 import unittest
 import inspect
-import contextlib
 import pkgutil
 import os
 import sys
@@ -178,6 +177,16 @@ class QAResult(object):
         self._style_report, self._style_report_text = style_report
 
     def qai(self):
+        """QAI = (TP * (T/PN) * COV) / (1+MSE)
+
+        Where:
+            TP: If all tests passes is 1, 0 otherwise.
+            T: The number of test cases.
+            PN: The number number of processors (Loader, Steps and Alerts).
+            COV: The code coverage (between 0 and 1).
+            MSE: The Maintainability and Style Errors.
+
+        """
         works = 1. if self._ts_report.wasSuccessful() else 0.
         test_by_procs = float(self._ts_report.testsRun) / len(self._processors)
         cov = float(self._cov_xml["coverage"]["@line-rate"])
@@ -191,17 +200,19 @@ class QAResult(object):
     def full_output(self):
         return "\n".join(
             ["", "**** COVERAGE ****", str(self._cov_report), "-" * 80] +
-            ["", "**** MAINTAINABILITY & STYLE ****", self._style_report_text, "-" * 80])
+            ["", "**** MAINTAINABILITY & STYLE ****",
+             self._style_report_text, "-" * 80])
 
     def resume(self):
         data = OrderedDict()
         data["Tests Sucess"] = self._ts_report.wasSuccessful()
         data["Test Number"] = self._ts_report.testsRun
         data["Procesors Number"] = len(self._processors)
-        data["Coverage"] = "{:.2f}%".format(
-            float(self._cov_xml["coverage"]["@line-rate"]))
-        data["Style"] = self._style_report.total_errors
-        data["-> QA Index"] = "{0:.2f}%".format(self.qai() * 100)
+        data["Coverage (%)"] = "{:.2f}%".format(
+            float(self._cov_xml["coverage"]["@line-rate"]) * 100)
+        data["Maintainability & Style Errors"] = (
+            self._style_report.total_errors)
+        data["-> QA Index (%)"] = "{0:.2f}%".format(self.qai() * 100)
         data["-> QA Score"] = self.qai_score()
         return data
 
@@ -294,7 +305,7 @@ def run_coverage(failfast, verbosity, default_logging=False):
     sh.coverage.erase()
     try:
         sh.coverage.run("--source", to_coverage, executable, "test", **params)
-    except ErrorReturnCode as err:
+    except sh.ErrorReturnCode as err:
         core.logger.error(err)
 
     report = sh.coverage.report()
@@ -352,7 +363,6 @@ def run_style():
         pep8.runner = report.task_queue.put
         return pep8
 
-
     pep8 = configure_pep8()
     mod_names = retrieve_all_pipeline_modules_names()
     top_mod_names = set([mn.split(".", 1)[0] for mn in mod_names])
@@ -390,4 +400,3 @@ def qa_report(processors, verbosity, *args, **kwargs):
     style_result = run_style()
     report = QAResult(processors, ts_result, cov_result, style_result)
     return report
-

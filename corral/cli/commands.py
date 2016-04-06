@@ -536,6 +536,9 @@ class QAReport(BaseCommand):
 
     def setup(self):
         self.parser.add_argument(
+            "--explain", dest="explain", default=False, action="store_true",
+            help="Explain the Corral QAI and QAI Score")
+        self.parser.add_argument(
             "-dl", "--default-logging", dest='default_logging', default=False,
             help='If is false all the loggers are setted to WARNING',
             action='store_true')
@@ -548,7 +551,7 @@ class QAReport(BaseCommand):
             "-vv", "--vverbose", dest='verbosity', const=2,
             help='Verbose output', action='store_const')
 
-    def handle(self, default_logging, verbosity):
+    def handle(self, explain, default_logging, verbosity):
         processors = []
         processors.append(run.load_loader())
         processors.extend(run.load_steps(None))
@@ -566,4 +569,17 @@ class QAReport(BaseCommand):
         for k, v in report.resume().items():
             pv = v if isinstance(v, str) else str(v)
             table.add_row([k, pv])
+        print("\n**** RESUME ****")
         print(table.draw())
+        print("")
+
+        if explain:
+            print("- QA Index (QAI):\n     {}".format(
+                report.qai.__doc__.strip()))
+            print("")
+            print(
+                "- QA Score (QAS) is a cuantitave scale based on rounded QAI:")
+            print("     " + ", ".join(
+                ["QAS(~{k}%)={v}".format(v=v, k=k*10)
+                 for k, v in sorted(qa.SCORE_COMMENTS.items())]))
+            print("")
