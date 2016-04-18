@@ -208,11 +208,11 @@ class QAResult(object):
         data["Tests Sucess"] = self._ts_report.wasSuccessful()
         data["Test Number"] = self._ts_report.testsRun
         data["Procesors Number"] = len(self._processors)
-        data["Coverage (%)"] = "{:.2f}%".format(
-            float(self._cov_xml["coverage"]["@line-rate"]) * 100)
+        data["Coverage (%)"] = "{:.2%}".format(
+            float(self._cov_xml["coverage"]["@line-rate"]))
         data["Maintainability & Style Errors"] = (
             self._style_report.total_errors)
-        data["-> QA Index (%)"] = "{0:.2f}%".format(self.qai() * 100)
+        data["-> QA Index (%)"] = "{:.2%}".format(self.qai())
         data["-> QA Score"] = self.qai_score()
         return data
 
