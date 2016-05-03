@@ -192,15 +192,15 @@ class Shell(BaseCommand):
             shell(slocals, banner)
 
 
-# class Notebook(BaseCommand):
-    # """Run the Jupyter notebook inside Corral enviroment"""
+class Notebook(BaseCommand):
+    """Run the Jupyter notebook inside Corral enviroment"""
 
-    # options = {
-        # "title": "notebook"}
+    options = {
+        "title": "notebook"}
 
-    # def handle(self):
-        # from IPython import start_ipython
-        # start_ipython(argv=['notebook'])
+    def handle(self):
+        from IPython import start_ipython
+        start_ipython(argv=['notebook'])
 
 
 class DBShell(BaseCommand):
@@ -585,7 +585,7 @@ class QAReport(BaseCommand):
             print("")
 
 
-class PrintDoc(BaseCommand):
+class GenDoc(BaseCommand):
     """Generate a Markdown documentation for your pipeline"""
 
     options = {"mode": "test"}

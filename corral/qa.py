@@ -418,7 +418,7 @@ def create_doc(processors, models):
         elif issubclass(proc, run.Step):
             steps.append(proc)
         elif issubclass(proc, run.Alert):
-            alerts.append(alert)
+            alerts.append(proc)
 
     ctx = {
         "now": datetime.datetime.now(), "core": core,
