@@ -14,6 +14,8 @@ import os
 import sys
 import tempfile
 import multiprocessing
+import datetime
+import codecs
 from collections import defaultdict, OrderedDict
 
 import six
@@ -26,7 +28,9 @@ from flake8 import engine, reporter
 
 import sh
 
-from . import util, conf, core, db, run, cli
+import jinja2
+
+from . import util, conf, core, db, run, cli, setup, res
 from .db import database_exists, create_database, drop_database
 from .exceptions import ImproperlyConfigured
 from .run.base import Processor
@@ -400,3 +404,25 @@ def qa_report(processors, verbosity, *args, **kwargs):
     style_result = run_style()
     report = QAResult(processors, ts_result, cov_result, style_result)
     return report
+
+
+def create_doc(processors, models):
+    path = res.fullpath("doc_template.md")
+    with codecs.open(path, encoding="utf8") as fp:
+        template = jinja2.Template(fp.read())
+
+    loader, steps, alerts = None, [], []
+    for proc in processors:
+        if issubclass(proc, run.Loader):
+            loader = proc
+        elif issubclass(proc, run.Step):
+            steps.append(proc)
+        elif issubclass(proc, run.Alert):
+            alerts.append(alert)
+
+    ctx = {
+        "now": datetime.datetime.now(), "core": core,
+        "pipeline_setup": setup.load_pipeline_setup(),
+        "models": models, "loader": loader, "steps": steps, "alerts": alerts}
+
+    return template.render(**ctx)

@@ -38,6 +38,10 @@ class Loader(Processor):
 
     runner_class = LoaderRunner
 
+    @classmethod
+    def retrieve_python_path(cls):
+        return conf.settings.LOADER
+
 
 # =============================================================================
 # FUNCTIONS

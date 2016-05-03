@@ -192,15 +192,15 @@ class Shell(BaseCommand):
             shell(slocals, banner)
 
 
-class Notebook(BaseCommand):
-    """Run the Jupyter notebook inside Corral enviroment"""
+# class Notebook(BaseCommand):
+    # """Run the Jupyter notebook inside Corral enviroment"""
 
-    options = {
-        "title": "notebook"}
+    # options = {
+        # "title": "notebook"}
 
-    def handle(self):
-        from IPython import start_ipython
-        start_ipython(argv=['notebook'])
+    # def handle(self):
+        # from IPython import start_ipython
+        # start_ipython(argv=['notebook'])
 
 
 class DBShell(BaseCommand):
@@ -583,3 +583,20 @@ class QAReport(BaseCommand):
                 ["QAS(~{k}%)={v}".format(v=v, k=k*10)
                  for k, v in sorted(qa.SCORE_COMMENTS.items())]))
             print("")
+
+
+class PrintDoc(BaseCommand):
+    """Generate a Markdown documentation for your pipeline"""
+
+    options = {"mode": "test"}
+
+    def handle(self):
+        processors = []
+        processors.append(run.load_loader())
+        processors.extend(run.load_steps(None))
+        processors.extend(run.load_alerts(None))
+
+        models = db.get_models(default=False)
+
+        doc = qa.create_doc(processors, models)
+        print(doc)

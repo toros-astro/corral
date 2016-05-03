@@ -49,6 +49,12 @@ class Step(Processor):
     ordering = None
     offset, limit = None, None
 
+    @classmethod
+    def retrieve_python_path(cls):
+        for import_string in conf.settings.STEPS:
+            if cls == util.dimport(import_string):
+                return import_string
+
     def generate(self):
         if self.model is None or self.conditions is None:
             clsname = type(self).__name__

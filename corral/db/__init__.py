@@ -65,6 +65,16 @@ def load_default_models():
     return default_models
 
 
+def get_models(default=True):
+    all_models = util.collect_subclasses(Model)
+    models = [
+        m for m in vars(load_models_module()).values() if m in all_models]
+    if default:
+        models.extend(
+            m for m in vars(load_default_models()).values() if m in all_models)
+    return tuple(models)
+
+
 def db_exists(connection=None):
     connection = (
         conf.settings.CONNECTION if connection is None else connection)

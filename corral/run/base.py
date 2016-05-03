@@ -35,6 +35,10 @@ class Processor(object):
             return cls.procno
         return getattr(cls, "production_procno", cls.procno)
 
+    @classmethod
+    def retrieve_python_path(cls):
+        return cls.__name__
+
     def __init__(self, session, proc):
         self.__session = session
         self.__current_proc = proc

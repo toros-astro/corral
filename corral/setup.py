@@ -15,6 +15,8 @@ from . import util, exceptions
 
 class PipelineSetup(object):
 
+    name = "Unamed Pipeline"
+
     @staticmethod
     def __new__(cls, *args, **kwargs):
         if not hasattr(cls, "_instance"):

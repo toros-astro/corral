@@ -61,6 +61,12 @@ class Alert(Processor):
 
     auto_register = True
 
+    @classmethod
+    def retrieve_python_path(cls):
+        for import_string in conf.settings.ALERTS:
+            if cls == util.dimport(import_string):
+                return import_string
+
     def setup(self):
         for ep in self.alert_to:
             ep.setup(self)

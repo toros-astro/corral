@@ -24,4 +24,5 @@ from corral.setup import PipelineSetup
 # =============================================================================
 
 class Pipeline(PipelineSetup):
-    pass
+
+    name = "${project_name}"
