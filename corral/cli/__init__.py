@@ -62,15 +62,15 @@ class CorralCLIParser(object):
         return line
 
     def main_help_text(self, max_line_length=80):
-        usage = ["", self.global_parser.usage, "", "Available subcommands:"]
-        usage.append("CORRAL")
+        usage = ["", self.global_parser.usage, "", "Available subcommands", ""]
+        usage.extend(["CORRAL", ""])
         usage.extend(
                 self._strip_line(line, max_line_length)
                 for line in sorted(self.help_texts["corral"]))
 
         pkgs = [k for k in self.help_texts.keys() if k != "corral"]
         for pkg in pkgs:
-            usage.extend(["", pkg.upper()])
+            usage.extend(["", pkg.upper(), ""])
             usage.extend(
                 self._strip_line(line, max_line_length)
                 for line in sorted(self.help_texts[pkg]))
@@ -88,7 +88,7 @@ class CorralCLIParser(object):
         project = command.__module__.split(".", 1)[0]
         description = " ".join(
             p.strip() for p in parser.description.split() if p.strip())
-        help_text = "[{}] - {}".format(title, description)
+        help_text = "- `{}`:  {}".format(title, description or "-")
         self.help_texts[project].append(help_text)
         return parser
 

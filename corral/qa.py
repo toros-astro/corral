@@ -420,9 +420,11 @@ def create_doc(processors, models):
         elif issubclass(proc, run.Alert):
             alerts.append(proc)
 
+    cli_help = cli.create_parser().main_help_text(0)
+
     ctx = {
         "now": datetime.datetime.now(), "core": core,
-        "pipeline_setup": setup.load_pipeline_setup(),
+        "pipeline_setup": setup.load_pipeline_setup(), "cli_help": cli_help,
         "models": models, "loader": loader, "steps": steps, "alerts": alerts}
 
     return template.render(**ctx)

@@ -3,7 +3,7 @@
 **Created at:** {{now}}
 **Corral Version:** {{core.get_version()}}
 
-{{pipeline_setup.__doc__ or "<EMPTY DOC>"}}
+{{pipeline_setup.__doc__ or "`<EMPTY DOC>`"}}
 
 
 {%- if models %}
@@ -13,7 +13,7 @@
 
 - **Table:** `{{mdl.__table__}}`
 
-{{ mdl.__doc__ or "<EMPTY DOC>" }}
+{{ mdl.__doc__ or "`<EMPTY DOC>`" }}
 
 {% endfor %}
 {%- endif %}
@@ -24,7 +24,7 @@
 
 - **Python Path** ``{{loader.retrieve_python_path()}}``
 
-{{ loader.__doc__ or "<EMPTY DOC>" }}
+{{ loader.__doc__ or "`<EMPTY DOC>`" }}
 {%- endif %}
 
 
@@ -35,7 +35,7 @@
 
 - **Python Path** ``{{step.retrieve_python_path()}}``
 
-{{ step.__doc__ or "<EMPTY DOC>" }}
+{{ step.__doc__ or "`<EMPTY DOC>`" }}
 
 {% endfor %}
 {%- endif %}
@@ -49,7 +49,13 @@
 
 - **Python Path** ``{{alert.retrieve_python_path()}}``
 
-{{ alert.__doc__ or "<EMPTY DOC>" }}
+{{ alert.__doc__ or "`<EMPTY DOC>`" }}
 
 {% endfor %}
 {%- endif %}
+
+
+# Command Line Interface
+
+{{cli_help}}
+
