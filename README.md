@@ -1,6 +1,6 @@
 #CORRAL
 
-<img src='./docs/logo_corral.jpg' alt='Corral' width='30' height='30'>
+<img src='./docs/logo_corral.jpg' alt='Corral' width='60' height='60'>
 
 #The Powerful Pipeline Framework
 
