@@ -1,5 +1,9 @@
 #CORRAL
 
+![alt text][logo]
+
+[logo]: ./logo_corral.jpg "Corral"
+
 #The Powerful Pipeline Framework
 
 Corral will solve your pipeline needs by merging a database full connection
