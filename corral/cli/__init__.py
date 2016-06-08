@@ -56,15 +56,24 @@ class CorralCLIParser(object):
         self.subparsers = self.global_parser.add_subparsers()
         self.help_texts = defaultdict(list)
 
-    def main_help_text(self):
+    def _strip_line(self, line, max_line_length):
+        if max_line_length and len(line) > max_line_length:
+            line = line[:max_line_length-3] + "..."
+        return line
+
+    def main_help_text(self, max_line_length=80):
         usage = ["", self.global_parser.usage, "", "Available subcommands:"]
         usage.append("CORRAL")
-        usage.extend(line for line in sorted(self.help_texts["corral"]))
+        usage.extend(
+                self._strip_line(line, max_line_length)
+                for line in sorted(self.help_texts["corral"]))
 
         pkgs = [k for k in self.help_texts.keys() if k != "corral"]
         for pkg in pkgs:
             usage.extend(["", pkg.upper()])
-            usage.extend(line for line in sorted(self.help_texts[pkg]))
+            usage.extend(
+                self._strip_line(line, max_line_length)
+                for line in sorted(self.help_texts[pkg]))
 
         return "\n".join(usage)
 
@@ -79,9 +88,8 @@ class CorralCLIParser(object):
         project = command.__module__.split(".", 1)[0]
         description = " ".join(
             p.strip() for p in parser.description.split() if p.strip())
-        help_text = "    [{}] - {}".format(title, description)
-        self.help_texts[project].append(
-            help_text if len(help_text) <= 80 else help_text[:77] + "...")
+        help_text = " [{}] - {}".format(title, description)
+        self.help_texts[project].append(help_text)
         return parser
 
     def extract_func(self, ns):
@@ -148,6 +156,9 @@ def create_parser():
 def run_from_command_line():
     parser = create_parser()
 
+    if sys.argv[1:] in (['--help'], ['-h']):
+        sys.stdout.write(parser.main_help_text() + "\n\n")
+        sys.exit(0)
     try:
         command, mode, kwargs, gkwargs = parser.parse_args(sys.argv[1:])
     except CorralArgumentParserError as err:

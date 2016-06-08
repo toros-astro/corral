@@ -31,6 +31,7 @@ from .base import BaseCommand
 # =============================================================================
 
 class Create(BaseCommand):
+    """Create a new corral pipeline"""
 
     options = {
         "mode": "out"}
