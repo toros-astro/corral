@@ -1,6 +1,4 @@
-#CORRAL
-
-<img src='./docs/logo_corral.jpg' alt='Corral' style='width 60;'>
+<img src='./docs/logo_corral.jpg' alt='Corral' style='width 40;'>
 
 #The Powerful Pipeline Framework
 
