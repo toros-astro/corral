@@ -88,7 +88,7 @@ class CorralCLIParser(object):
         project = command.__module__.split(".", 1)[0]
         description = " ".join(
             p.strip() for p in parser.description.split() if p.strip())
-        help_text = " [{}] - {}".format(title, description)
+        help_text = "[{}] - {}".format(title, description)
         self.help_texts[project].append(help_text)
         return parser
 
