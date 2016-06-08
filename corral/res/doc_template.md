@@ -13,7 +13,7 @@
 
 - **Table:** `{{mdl.__table__}}`
 
-{{ mdl.__doc__ or "`<EMPTY DOC>`" }}
+{{ doc_formatter(mdl.__doc__ or "`<EMPTY DOC>`") }}
 
 {% endfor %}
 {%- endif %}
@@ -24,7 +24,7 @@
 
 - **Python Path** ``{{loader.retrieve_python_path()}}``
 
-{{ loader.__doc__ or "`<EMPTY DOC>`" }}
+{{ doc_formatter(loader.__doc__ or "`<EMPTY DOC>`") }}
 {% endif %}
 
 {%- if steps %}
@@ -34,7 +34,7 @@
 
 - **Python Path** ``{{step.retrieve_python_path()}}``
 
-{{ step.__doc__ or "`<EMPTY DOC>`" }}
+{{ doc_formatter(step.__doc__ or "`<EMPTY DOC>`") }}
 
 {% endfor %}
 {%- endif %}
@@ -48,7 +48,7 @@
 
 - **Python Path** ``{{alert.retrieve_python_path()}}``
 
-{{ alert.__doc__ or "`<EMPTY DOC>`" }}
+{{ doc_formatter(alert.__doc__ or "`<EMPTY DOC>`") }}
 
 {% endfor %}
 {%- endif %}

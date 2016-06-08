@@ -406,7 +406,13 @@ def qa_report(processors, verbosity, *args, **kwargs):
     return report
 
 
-def create_doc(processors, models):
+def create_doc(processors, models, doc_formatter=None):
+
+    if doc_formatter is None:
+        def doc_formatter(string):
+            lines = [s.strip() for s in string.splitlines()]
+            return "\n".join(lines)
+
     path = res.fullpath("doc_template.md")
     with codecs.open(path, encoding="utf8") as fp:
         template = jinja2.Template(fp.read())
@@ -423,6 +429,7 @@ def create_doc(processors, models):
     cli_help = cli.create_parser().main_help_text(0)
 
     ctx = {
+        "doc_formatter": doc_formatter,
         "now": datetime.datetime.now(), "core": core,
         "pipeline_setup": setup.load_pipeline_setup(), "cli_help": cli_help,
         "models": models, "loader": loader, "steps": steps, "alerts": alerts}
