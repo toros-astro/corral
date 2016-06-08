@@ -4,6 +4,7 @@
 import sys
 import copy
 import argparse
+from collections import defaultdict
 
 import six
 
@@ -24,20 +25,48 @@ MODE_IN, MODE_TEST, MODE_OUT = "in", "test", "out"
 # CLASS
 # =============================================================================
 
+class CorralArgumentParserError(Exception):
+    pass
+
+
+class CorralHelpFormatter(argparse.HelpFormatter):
+    pass
+
+
+class CorralArgumentParser(argparse.ArgumentParser):
+
+    def error(self, message):
+        raise CorralArgumentParserError(message)
+
+
 class CorralCLIParser(object):
 
     def __init__(self, description):
-        self.global_parser = argparse.ArgumentParser(description=description)
+        usage = ("run 'python {} <COMMAND> --help'").format(sys.argv[0])
+
+        self.global_parser = CorralArgumentParser(
+            description=description, usage=usage,
+            formatter_class=CorralHelpFormatter)
         self.global_parser.add_argument(
             "--version", "-v", action="version", version=core.get_version())
         self.global_parser.add_argument(
             "-x", "--stacktrace", dest="stacktrace",
             action="store_true", default=False)
 
-        cmd_help = (
-            "For more information please run 'python {} <COMMAND> --help'"
-        ).format(sys.argv[0])
-        self.subparsers = self.global_parser.add_subparsers(help=cmd_help)
+        self.subparsers = self.global_parser.add_subparsers()
+        self.help_texts = defaultdict(list)
+
+    def main_help_text(self):
+        usage = ["", self.global_parser.usage, "", "Available subcommands:"]
+        usage.append("CORRAL")
+        usage.extend(line for line in sorted(self.help_texts["corral"]))
+
+        pkgs = [k for k in self.help_texts.keys() if k != "corral"]
+        for pkg in pkgs:
+            usage.extend(["", pkg.upper()])
+            usage.extend(line for line in sorted(self.help_texts[pkg]))
+
+        return "\n".join(usage)
 
     def add_subparser(self, title, command, mode, **kwargs):
         if mode not in (MODE_IN, MODE_OUT, MODE_TEST):
@@ -46,6 +75,13 @@ class CorralCLIParser(object):
         parser = self.subparsers.add_parser(title, **kwargs)
         parser.set_defaults(command=command)
         parser.set_defaults(mode=mode)
+
+        project = command.__module__.split(".", 1)[0]
+        description = " ".join(
+            p.strip() for p in parser.description.split() if p.strip())
+        help_text = "    [{}] - {}".format(title, description)
+        self.help_texts[project].append(
+            help_text if len(help_text) <= 80 else help_text[:77] + "...")
         return parser
 
     def extract_func(self, ns):
@@ -111,7 +147,14 @@ def create_parser():
 
 def run_from_command_line():
     parser = create_parser()
-    command, mode, kwargs, gkwargs = parser.parse_args(sys.argv[1:])
+
+    try:
+        command, mode, kwargs, gkwargs = parser.parse_args(sys.argv[1:])
+    except CorralArgumentParserError as err:
+        sys.stdout.write(parser.main_help_text() + "\n\n")
+        sys.stderr.write("Error: " + str(err) + "\n\n")
+        sys.exit(1)
+
     if mode == MODE_IN:
         core.setup_environment()
     elif mode == MODE_TEST:
