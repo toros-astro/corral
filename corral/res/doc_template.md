@@ -1,7 +1,7 @@
 # {{pipeline_setup.name}} Documentation
 
-**Created at:** {{now}}
-**Corral Version:** {{core.get_version()}}
+- **Created at:** {{now}}
+- **Corral Version:** {{core.get_version()}}
 
 {{pipeline_setup.__doc__ or "`<EMPTY DOC>`"}}
 
@@ -25,8 +25,7 @@
 - **Python Path** ``{{loader.retrieve_python_path()}}``
 
 {{ loader.__doc__ or "`<EMPTY DOC>`" }}
-{%- endif %}
-
+{% endif %}
 
 {%- if steps %}
 ## Steps
