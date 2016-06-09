@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# =============================================================================
+# DOC
+# =============================================================================
+
 """This module contains all the built in cli commands of corral"""
 
 
@@ -21,7 +25,9 @@ import six
 from texttable import Texttable
 
 from .. import db, conf, run, creator, qa
-from ..libs import sqlalchemy_sql_shell as sql_shell
+from ..libs import (
+    sqlalchemy_sql_shell as sql_shell,
+    argparse_ext as ape)
 
 from .base import BaseCommand
 
@@ -586,12 +592,40 @@ class QAReport(BaseCommand):
             print("")
 
 
+class ModelDiagram(BaseCommand):
+    """Generates a class diagram in 'dot' or 'plantuml
+    format of the models classes"""
+
+    options = {"mode": "out"}
+    formats = ["dot", "plantuml"]
+
+    def setup(self):
+        self.parser.add_argument(
+            "-o", "--output", dest="out", nargs="?",
+            type=ape.FileType('w'), default=sys.stdout,
+            action="store", help="destination of the diagram")
+        self.parser.add_argument(
+            "-fmt", "--format", dest="fmt", default=self.formats[0],
+            choices=self.formats, action="store", metavar="FORMAT",
+            help="format of the class diagram")
+
+    def handle(self, out, fmt):
+        data = db.class_diagram(fmt=fmt)
+        out.write(data + "\n\n")
+
+
 class GenDoc(BaseCommand):
     """Generate a Markdown documentation for your pipeline"""
 
-    options = {"mode": "test"}
+    options = {"mode": "out"}
 
-    def handle(self):
+    def setup(self):
+        self.parser.add_argument(
+            "-o", "--output", dest="out", nargs="?",
+            type=ape.FileType('w'), default=sys.stdout,
+            action="store", help="destination of the diagram")
+
+    def handle(self, out):
         processors = []
         processors.append(run.load_loader())
         processors.extend(run.load_steps(None))
@@ -600,4 +634,4 @@ class GenDoc(BaseCommand):
         models = db.get_models(default=False)
 
         doc = qa.create_doc(processors, models)
-        print(doc)
+        out.write(doc + "\n\n")
