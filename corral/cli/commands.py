@@ -592,7 +592,7 @@ class QAReport(BaseCommand):
             print("")
 
 
-class ModelDiagram(BaseCommand):
+class ModelsDiagram(BaseCommand):
     """Generates a class diagram in 'dot' or 'plantuml
     format of the models classes"""
 
@@ -614,7 +614,7 @@ class ModelDiagram(BaseCommand):
         out.write(data + "\n\n")
 
 
-class GenDoc(BaseCommand):
+class Doc(BaseCommand):
     """Generate a Markdown documentation for your pipeline"""
 
     options = {"mode": "out"}

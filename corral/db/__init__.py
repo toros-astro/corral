@@ -5,6 +5,7 @@
 # IMPORTS
 # =============================================================================
 
+import sys
 from contextlib import contextmanager
 
 from sqlalchemy import *  # noqa
@@ -116,7 +117,8 @@ def class_diagram(fmt="dot"):
 
     models = [
         m for m in util.collect_subclasses(Model)
-        if m.__module__ != default_models]
+        if sys.modules[m.__module__] != default_models]
+
     desc = sadisplay.describe(
         models,
         show_methods=True,
