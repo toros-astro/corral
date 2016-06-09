@@ -3,7 +3,7 @@
 #The Powerful Pipeline Framework
 
 Corral will solve your pipeline needs by merging a database full connection
-interface witha MVC_ model, by making you able of editing your custom schemas
+interface with a MVC model, by making you able of editing your custom schemas
 and adding the possibility of writting specific processing steps following a
 intuitive data handling model.
 
