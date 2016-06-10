@@ -598,6 +598,16 @@ class ModelsDiagram(BaseCommand):
 
     options = {"mode": "out"}
     formats = ["dot", "plantuml"]
+    formats_homepages = {
+        "dot": "http://www.graphviz.org/",
+        "plantuml": "http://plantuml.com/"
+    }
+    epilogue = {
+        "dot": 'Render graph by graphviz:\n  $ dot -Tpng {} > schema.png',
+        "plantuml": ("Render PlantUML class diagram:\n"
+                     " $ java -jar plantuml.jar schema.plantuml # png\n"
+                     " $ java -jar plantuml.jar -Tsvg schema.plantuml # svg")
+    }
 
     def setup(self):
         self.parser.add_argument(
@@ -611,7 +621,16 @@ class ModelsDiagram(BaseCommand):
 
     def handle(self, out, fmt):
         data = db.class_diagram(fmt=fmt)
-        out.write(data + "\n\n")
+        out.write(data)
+        if out == sys.stdout:
+            print("\n")
+        else:
+            print("Your File '{}' was created.".format(out.name))
+            print("")
+            print(self.epilogue[fmt].format(out.name))
+            print("")
+            print("More help: {}".format(self.formats_homepages[fmt]))
+            print("")
 
 
 class Doc(BaseCommand):
