@@ -605,8 +605,8 @@ class ModelsDiagram(BaseCommand):
     epilogue = {
         "dot": 'Render graph by graphviz:\n  $ dot -Tpng {} > schema.png',
         "plantuml": ("Render PlantUML class diagram:\n"
-                     " $ java -jar plantuml.jar schema.plantuml # png\n"
-                     " $ java -jar plantuml.jar -Tsvg schema.plantuml # svg")
+                     " $ java -jar plantuml.jar schema.plantuml       # PNG\n"
+                     " $ java -jar plantuml.jar -Tsvg schema.plantuml # SVG")
     }
 
     def setup(self):
@@ -625,7 +625,7 @@ class ModelsDiagram(BaseCommand):
         if out == sys.stdout:
             print("\n")
         else:
-            print("Your File '{}' was created.".format(out.name))
+            print("Your graph file '{}' was created.".format(out.name))
             print("")
             print(self.epilogue[fmt].format(out.name))
             print("")
@@ -637,6 +637,11 @@ class Doc(BaseCommand):
     """Generate a Markdown documentation for your pipeline"""
 
     options = {"mode": "out"}
+    epilogue = ("To convert your documentation to more suitable formats "
+                "we sugest Pandoc (http://pandoc.org/). Example: \n"
+                " $ pandoc {filename} -o {basename}.html # HTML\n"
+                " $ pandoc {filename} -o {basename}.tex  # LaTeX\n"
+                " $ pandoc {filename} -o {basename}.pdf  # PDF via LaTeX")
 
     def setup(self):
         self.parser.add_argument(
@@ -653,4 +658,13 @@ class Doc(BaseCommand):
         models = db.get_models(default=False)
 
         doc = qa.create_doc(processors, models)
-        out.write(doc + "\n\n")
+
+        out.write(doc)
+        if out == sys.stdout:
+            print("\n")
+        else:
+            basename = os.path.basename(out.name).rsplit(".", 1)[0]
+            print("Your documentaton file '{}' was created.".format(out.name))
+            print("")
+            print(self.epilogue.format(filename=out.name, basename=basename))
+            print("")
