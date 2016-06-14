@@ -43,7 +43,8 @@ REQUIREMENTS = [
     "sh>=1.11",
     "xmltodict>=0.10.1",
     "flake8>=2.5.4",
-    "Jinja2>=2.8"
+    "Jinja2>=2.8",
+    "mock==1.3.0"
 ]
 
 
