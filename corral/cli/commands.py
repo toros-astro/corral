@@ -530,7 +530,9 @@ class Test(BaseCommand):
                 alerts = run.load_alerts(alert_groups or None)
             processors.extend(alerts or [])
 
-        qa.run_tests(processors, failfast, verbosity, default_logging)
+        result = qa.run_tests(processors, failfast, verbosity, default_logging)
+        if not result.wasSuccessful():
+            self.exit_with(1)
 
 
 class QAReport(BaseCommand):

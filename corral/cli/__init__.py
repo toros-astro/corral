@@ -176,3 +176,5 @@ def run_from_command_line():
         sys.stderr.write("{}\n".format(err))
         if gkwargs.get("stacktrace"):
             six.reraise(type(err), err, six.sys.exc_traceback)
+    if command.exit_status:
+        sys.exit(command.exit_status)

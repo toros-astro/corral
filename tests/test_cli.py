@@ -72,12 +72,21 @@ class TestCli(BaseTest):
     @mock.patch("corral.core.setup_environment")
     @mock.patch("tests.commands.TestAPICommand.handle", side_effect=Exception)
     @mock.patch("sys.stderr")
+    @mock.patch("sys.stdout")
     def test_stack_trace_option(self, *args):
         with mock.patch("sys.argv", new=["test",  "--stacktrace", "foo"]):
             with self.assertRaises(Exception):
                 cli.run_from_command_line()
         with mock.patch("sys.argv", new=["test", "foo"]):
             cli.run_from_command_line()
+
+    @mock.patch("sys.argv", new=["test", "exit_error"])
+    def test_exit_error(self, *args):
+        with mock.patch("corral.core.setup_environment"):
+            with mock.patch("sys.exit") as sys_exit:
+                cli.run_from_command_line()
+                sys_exit.assert_called_once_with(
+                    commands.TestExitErrorCommand.EXIT_STATUS)
 
 
 class Create(BaseTest):
@@ -374,6 +383,7 @@ class Run(BaseTest):
                 new=["test", "run", "--steps", "Step2", "Step2", "--sync"])
     @mock.patch("corral.core.setup_environment")
     @mock.patch("sys.stderr")
+    @mock.patch("sys.stdout")
     def test_run_duplicated(self, *args):
         with mock.patch("corral.run.execute_step"):
             with self.assertRaises(SystemExit):
@@ -382,6 +392,7 @@ class Run(BaseTest):
     @mock.patch("sys.argv", new=["test", "run", "--steps", "FOO", "--sync"])
     @mock.patch("corral.core.setup_environment")
     @mock.patch("sys.stderr")
+    @mock.patch("sys.stdout")
     def test_run_invalid_step(self, *args):
         with mock.patch("corral.run.execute_step"):
             with self.assertRaises(SystemExit):
@@ -465,6 +476,7 @@ class CheckAlerts(BaseTest):
     )
     @mock.patch("corral.core.setup_environment")
     @mock.patch("sys.stderr")
+    @mock.patch("sys.stdout")
     def test_check_alerts_duplicated(self, *args):
         with mock.patch("corral.run.execute_alert"):
             with self.assertRaises(SystemExit):
@@ -474,6 +486,7 @@ class CheckAlerts(BaseTest):
         "sys.argv", new=["test", "check-alerts", "--alerts", "Foo", "--sync"])
     @mock.patch("corral.core.setup_environment")
     @mock.patch("sys.stderr")
+    @mock.patch("sys.stdout")
     def test_check_alerts_invalid(self, *args):
         with mock.patch("corral.run.execute_alert"):
             with self.assertRaises(SystemExit):

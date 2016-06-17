@@ -20,6 +20,12 @@ class BaseCommand(object):
         except AttributeError:
             return {}
 
+    def __init__(self):
+        self.__exit_status = 0
+
+    def exit_with(self, v):
+        self.__exit_status = int(v)
+
     def configure(self, parser):
         self.__parser = parser
 
@@ -36,3 +42,7 @@ class BaseCommand(object):
     @property
     def parser(self):
         return self.__parser
+
+    @property
+    def exit_status(self):
+        return self.__exit_status
