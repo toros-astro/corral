@@ -292,7 +292,7 @@ def run_coverage(failfast, verbosity, default_logging=False):
     executable = os.path.join(os.getcwd(), sys.argv[0])
     to_coverage = ",".join(retrieve_all_pipeline_modules_names())
 
-    params = {}
+    params = {"_ok_code": [0, 1]}
     if failfast:
         params["failfast"] = True
     if verbosity == 1:
