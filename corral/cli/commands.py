@@ -24,7 +24,7 @@ import six
 
 from texttable import Texttable
 
-from .. import db, conf, run, creator, qa
+from .. import db, conf, run, creator, qa, docs
 from ..libs import (
     sqlalchemy_sql_shell as sql_shell,
     argparse_ext as ape)
@@ -594,11 +594,11 @@ class QAReport(BaseCommand):
             print("")
 
 
-class ModelsDiagram(BaseCommand):
+class CreateModelsDiagram(BaseCommand):
     """Generates a class diagram in 'dot' or 'plantuml
     format of the models classes"""
 
-    options = {"mode": "out"}
+    options = {"mode": "out", "title": "create-models-diagram"}
     formats = ["dot", "plantuml"]
     formats_homepages = {
         "dot": "http://www.graphviz.org/",
@@ -622,7 +622,7 @@ class ModelsDiagram(BaseCommand):
             help="format of the class diagram")
 
     def handle(self, out, fmt):
-        data = db.class_diagram(fmt=fmt)
+        data = docs.models_diagram(fmt=fmt)
         out.write(data)
         if out == sys.stdout:
             print("\n")
@@ -635,10 +635,10 @@ class ModelsDiagram(BaseCommand):
             print("")
 
 
-class Doc(BaseCommand):
+class CreateDoc(BaseCommand):
     """Generate a Markdown documentation for your pipeline"""
 
-    options = {"mode": "out"}
+    options = {"mode": "out", "title": "create-doc"}
     epilogue = ("To convert your documentation to more suitable formats "
                 "we sugest Pandoc (http://pandoc.org/). Example: \n"
                 " $ pandoc {filename} -o {basename}.html # HTML\n"
@@ -659,7 +659,7 @@ class Doc(BaseCommand):
 
         models = db.get_models(default=False)
 
-        doc = qa.create_doc(processors, models)
+        doc = docs.create_doc(processors, models)
 
         out.write(doc)
         if out == sys.stdout:

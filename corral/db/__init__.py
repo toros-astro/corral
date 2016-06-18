@@ -5,7 +5,6 @@
 # IMPORTS
 # =============================================================================
 
-import sys
 from contextlib import contextmanager
 
 from sqlalchemy import *  # noqa
@@ -15,8 +14,6 @@ from sqlalchemy.ext import declarative
 from sqlalchemy_utils import *  # noqa
 
 from alembic.config import main as alembic_main
-
-import sadisplay
 
 from .. import conf, util, exceptions
 
@@ -104,28 +101,6 @@ def makemigrations(message=None):
 
 def migrate():
     return alembic("upgrade", "head")
-
-
-def class_diagram(fmt="dot"):
-    default_models = load_default_models()
-
-    parsers = {
-        "dot": sadisplay.dot,
-        "plantuml": sadisplay.plantuml,
-    }
-    parser = parsers[fmt]
-
-    models = [
-        m for m in util.collect_subclasses(Model)
-        if sys.modules[m.__module__] != default_models]
-
-    desc = sadisplay.describe(
-        models,
-        show_methods=True,
-        show_properties=True,
-        show_indexes=True)
-
-    return parser(desc)
 
 
 @contextmanager

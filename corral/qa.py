@@ -14,8 +14,6 @@ import os
 import sys
 import tempfile
 import multiprocessing
-import datetime
-import codecs
 from collections import defaultdict, OrderedDict
 
 import six
@@ -28,9 +26,7 @@ from flake8 import engine, reporter
 
 import sh
 
-import jinja2
-
-from . import util, conf, core, db, run, cli, setup, res
+from . import util, conf, core, db, run, cli
 from .db import database_exists, create_database, drop_database
 from .exceptions import ImproperlyConfigured
 from .run.base import Processor
@@ -404,34 +400,3 @@ def qa_report(processors, verbosity, *args, **kwargs):
     style_result = run_style()
     report = QAResult(processors, ts_result, cov_result, style_result)
     return report
-
-
-def create_doc(processors, models, doc_formatter=None):
-
-    if doc_formatter is None:
-        def doc_formatter(string):
-            lines = [s.strip() for s in string.splitlines()]
-            return "\n".join(lines)
-
-    path = res.fullpath("doc_template.md")
-    with codecs.open(path, encoding="utf8") as fp:
-        template = jinja2.Template(fp.read())
-
-    loader, steps, alerts = None, [], []
-    for proc in processors:
-        if issubclass(proc, run.Loader):
-            loader = proc
-        elif issubclass(proc, run.Step):
-            steps.append(proc)
-        elif issubclass(proc, run.Alert):
-            alerts.append(proc)
-
-    cli_help = cli.create_parser().main_help_text(0)
-
-    ctx = {
-        "doc_formatter": doc_formatter,
-        "now": datetime.datetime.now(), "core": core,
-        "pipeline_setup": setup.load_pipeline_setup(), "cli_help": cli_help,
-        "models": models, "loader": loader, "steps": steps, "alerts": alerts}
-
-    return template.render(**ctx)
