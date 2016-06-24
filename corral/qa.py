@@ -14,6 +14,7 @@ import os
 import sys
 import tempfile
 import multiprocessing
+import math
 from collections import defaultdict, OrderedDict
 
 import six
@@ -42,16 +43,18 @@ IS_WINDOWS = sys.platform.startswith("win")
 
 DEFAULT_SCORE_CUALIFICATIONS = {
     0: "F",
-    1: "F",
-    2: "F",
-    3: "D",
-    4: "D",
-    5: "D",
-    6: "C",
-    7: "C",
-    8: "B",
-    9: "B",
-    10: "A"
+    60: "D-",
+    63: "D",
+    67: "D+",
+    70: "C-",
+    73: "C",
+    77: "C+",
+    80: "B-",
+    83: "B",
+    87: "B+",
+    90: "A-",
+    93: "A",
+    95: "A+"
 }
 
 SCORE_CUALIFICATIONS = conf.settings.get("SCORE_CUALIFICATIONS",
@@ -59,7 +62,7 @@ SCORE_CUALIFICATIONS = conf.settings.get("SCORE_CUALIFICATIONS",
 
 DEFAULT_TAU = 20
 
-TAU = conf.settings.get("TAU", DEFAULT_TAU)
+TAU = float(conf.settings.get("TAU", DEFAULT_TAU))
 
 
 # =============================================================================
@@ -175,9 +178,10 @@ class TestCase(unittest.TestCase):
 
 class QAResult(object):
 
-    def __init__(self, processors,
+    def __init__(self, project_modules, processors,
                  ts_report, ts_out, cov_report, style_report):
-        self._processors = processors
+        self._project_modules = tuple(project_modules)
+        self._processors = tuple(processors)
         self._ts_report = ts_report
         self._ts_out = ts_out
         self._cov_report, self._cov_xml = cov_report
@@ -185,7 +189,7 @@ class QAResult(object):
 
     @property
     def qai(self):
-        """QAI = (TP * (T/PN) * COV) / (1+MSE)
+        """QAI = 2 * (TP * (T/PN) * COV) / (1 + exp(MSE/tau))
 
         Where:
             TP: If all tests passes is 1, 0 otherwise.
@@ -193,18 +197,29 @@ class QAResult(object):
             PN: The number number of processors (Loader, Steps and Alerts).
             COV: The code coverage (between 0 and 1).
             MSE: The Maintainability and Style Errors.
+            tau: Tolerance of style errors per file
 
         """
-        works = 1. if self._ts_report.wasSuccessful() else 0.
-        test_by_procs = float(self._ts_report.testsRun) / len(self._processors)
-        cov = float(self._cov_xml["coverage"]["@line-rate"])
-        style = 1. + self._style_report.total_errors
-        return (works * test_by_procs * cov) / style
+        TP = 1. if self.is_test_sucess else 0.
+        T_div_PN = float(self.test_runs) / self.processors_number
+        COV = self.coverage_line_rate
+
+        total_tau = TAU * len(self.project_modules)
+        style = 1 + math.exp(self.style_errors / total_tau)
+
+        result = 2 * TP * T_div_PN * COV/ style
+        return result
 
     @property
     def cualification(self):
-        qai_10 = int(round(self.qai * 10))
-        return SCORE_CUALIFICATIONS.get(qai_10, str(qai_10))
+        qai_100 = self.qai * 100
+        for lowlimit, c in sorted(SCORE_CUALIFICATIONS.items(), reverse=True):
+            if qai_100 >= lowlimit:
+                return c
+
+    @property
+    def project_modules(self):
+        return self._project_modules
 
     @property
     def coverage_report(self):
@@ -416,13 +431,20 @@ def run_style():
 
 
 def qa_report(processors, *args, **kwargs):
+    core.logger.info("Running Test, Coverage and Style Check. Please Wait...")
     ts_stream = six.StringIO()
     ts_result = run_tests(
         processors, failfast=False, stream=ts_stream, verbosity=2,
         *args, **kwargs)
+
     cov_result = run_coverage(
         failfast=False, verbosity=0, default_logging=False)
+
     style_result = run_style()
+    project_modules = retrieve_all_pipeline_modules_names()
+
     report = QAResult(
-        processors, ts_result, ts_stream.getvalue(), cov_result, style_result)
+        project_modules, processors,
+        ts_result, ts_stream.getvalue(), cov_result, style_result)
+
     return report

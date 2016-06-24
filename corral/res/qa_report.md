@@ -11,7 +11,6 @@
 - **Processors:** `{{ report.processors_number }}`
 - **Coverage:** `{{ "{:.2f}".format(report.coverage_line_rate * 100) }}%`
 - **Maintainability & Style Errors:** `{{ report.style_errors }}`
-- **Style Error Tolerance ($\tau$):**: `{{ "{:.2f}".format(tau) }}`
 
 <!-- -->
 
@@ -25,12 +24,15 @@
 {{ qai_doc }}
 ```
 
+**Current Value of Tau:**: `{{ "{:.2f}".format(tau) }}` per file
+
+
 ### 1.2 About The Cualificaion
 
-QA Score (QAS) is a cuantitave scale based on rounded QAI
+The Corral cualification is a cuantitave scale based on QAI
 
-{% for k, v in cualifications %}
-- QAS(~{{k * 10}}%) = `{{v}}`
+{% for lowlimit, c in cualifications %}
+- QAI >= {{ "{:.2f}".format(lowlimit) }}% -- `{{ c }}`
 {%- endfor %}
 
 {%- endif %}
