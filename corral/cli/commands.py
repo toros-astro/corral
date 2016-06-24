@@ -542,55 +542,50 @@ class QAReport(BaseCommand):
     """
 
     options = {"mode": "test"}
+    epilogue = ("To convert your documentation to more suitable formats "
+                "we sugest Pandoc (http://pandoc.org/). Example: \n"
+                " $ pandoc {filename} -o {basename}.html # HTML\n"
+                " $ pandoc {filename} -o {basename}.tex  # LaTeX\n"
+                " $ pandoc {filename} -o {basename}.pdf  # PDF via LaTeX")
 
     def setup(self):
         self.parser.add_argument(
-            "--explain", dest="explain", default=False, action="store_true",
-            help="Explain the Corral QAI and QAI Score")
+            "-o", "--output", dest="out", nargs="?",
+            type=ape.FileType('w'), default=sys.stdout,
+            action="store", help="destination of the diagram")
+        self.parser.add_argument(
+            "--not-explain-qai", dest="explain_qai",
+            default=True,  action="store_false",
+            help="Exclude the explanation the Corral QAI and QAI Score")
+        self.parser.add_argument(
+            "--exclude-test-output", "-et", dest='full_output', default=True,
+            help='Add the full outut of test into the report',
+            action='store_false')
+
         self.parser.add_argument(
             "-dl", "--default-logging", dest='default_logging', default=False,
             help='If is false all the loggers are setted to WARNING',
             action='store_true')
 
-        verbose_group = self.parser.add_mutually_exclusive_group()
-        verbose_group.add_argument(
-            "-v", "--verbose", dest='verbosity',  default=0, const=1,
-            help='Verbose output', action='store_const')
-        verbose_group.add_argument(
-            "-vv", "--vverbose", dest='verbosity', const=2,
-            help='Verbose output', action='store_const')
 
-    def handle(self, explain, default_logging, verbosity):
+    def handle(self, out, explain_qai, full_output, default_logging):
         processors = []
         processors.append(run.load_loader())
         processors.extend(run.load_steps(None))
         processors.extend(run.load_alerts(None))
-        report = qa.qa_report(
-            processors, default_logging=default_logging, verbosity=verbosity)
+        report = qa.qa_report(processors, default_logging=default_logging)
 
-        if verbosity > 1:
-            print(report.full_output())
+        data = docs.qa_report(
+            report=report, full_output=full_output, explain_qai=explain_qai)
 
-        table = Texttable(max_width=0)
-        table.set_deco(Texttable.BORDER | Texttable.HEADER | Texttable.VLINES)
-        table.header(("Indicator", "Value"))
-
-        for k, v in report.resume().items():
-            pv = v if isinstance(v, str) else str(v)
-            table.add_row([k, pv])
-        print("\n**** RESUME ****")
-        print(table.draw())
-        print("")
-
-        if explain:
-            print("- QA Index (QAI):\n     {}".format(
-                report.qai.__doc__.strip()))
+        out.write(data)
+        if out == sys.stdout:
+            print("\n")
+        else:
+            basename = os.path.basename(out.name).rsplit(".", 1)[0]
+            print("Your documentaton file '{}' was created.".format(out.name))
             print("")
-            print(
-                "- QA Score (QAS) is a cuantitave scale based on rounded QAI:")
-            print("     " + ", ".join(
-                ["QAS(~{k}%)={v}".format(v=v, k=k*10)
-                 for k, v in sorted(qa.SCORE_COMMENTS.items())]))
+            print(self.epilogue.format(filename=out.name, basename=basename))
             print("")
 
 

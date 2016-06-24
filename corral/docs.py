@@ -13,7 +13,7 @@ import jinja2
 
 import sadisplay
 
-from . import cli, core, res, setup, run, util, db
+from . import cli, core, res, setup, run, util, db, qa
 
 
 # =============================================================================
@@ -49,7 +49,7 @@ def create_doc(processors, models, doc_formatter=None):
             lines = [s.strip() for s in string.splitlines()]
             return "\n".join(lines)
 
-    path = res.fullpath("doc_template.md")
+    path = res.fullpath("doc.md")
     with codecs.open(path, encoding="utf8") as fp:
         template = jinja2.Template(fp.read())
 
@@ -69,5 +69,20 @@ def create_doc(processors, models, doc_formatter=None):
         "now": datetime.datetime.now(), "core": core,
         "pipeline_setup": setup.load_pipeline_setup(), "cli_help": cli_help,
         "models": models, "loader": loader, "steps": steps, "alerts": alerts}
+
+    return template.render(**ctx)
+
+
+def qa_report(report, full_output, explain_qai):
+    path = res.fullpath("qa_report.md")
+    with codecs.open(path, encoding="utf8") as fp:
+        template = jinja2.Template(fp.read())
+
+    ctx = {
+        "report": report, "full_output": full_output, "core": core,
+        "now": datetime.datetime.now(), "explain_qai": explain_qai,
+        "qai_doc": type(report).qai.__doc__, "tau": qa.TAU,
+        "cualifications": sorted(qa.SCORE_CUALIFICATIONS.items()),
+        "pipeline_setup": setup.load_pipeline_setup()}
 
     return template.render(**ctx)

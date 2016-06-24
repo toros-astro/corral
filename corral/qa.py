@@ -40,21 +40,26 @@ TESTS_MODULE = "{}.tests".format(conf.PACKAGE)
 
 IS_WINDOWS = sys.platform.startswith("win")
 
-DEFAULT_SCORE_COMMENTS = {
+DEFAULT_SCORE_CUALIFICATIONS = {
     0: "F",
-    1: "F+",
-    2: "E",
-    3: "E+",
+    1: "F",
+    2: "F",
+    3: "D",
     4: "D",
-    5: "D+",
+    5: "D",
     6: "C",
-    7: "C+",
+    7: "C",
     8: "B",
-    9: "A",
-    10: "A+"
+    9: "B",
+    10: "A"
 }
 
-SCORE_COMMENTS = conf.settings.get("SCORE_COMMENTS", DEFAULT_SCORE_COMMENTS)
+SCORE_CUALIFICATIONS = conf.settings.get("SCORE_CUALIFICATIONS",
+                                         DEFAULT_SCORE_CUALIFICATIONS)
+
+DEFAULT_TAU = 20
+
+TAU = conf.settings.get("TAU", DEFAULT_TAU)
 
 
 # =============================================================================
@@ -170,12 +175,15 @@ class TestCase(unittest.TestCase):
 
 class QAResult(object):
 
-    def __init__(self, processors, ts_report, cov_report, style_report):
+    def __init__(self, processors,
+                 ts_report, ts_out, cov_report, style_report):
         self._processors = processors
         self._ts_report = ts_report
+        self._ts_out = ts_out
         self._cov_report, self._cov_xml = cov_report
         self._style_report, self._style_report_text = style_report
 
+    @property
     def qai(self):
         """QAI = (TP * (T/PN) * COV) / (1+MSE)
 
@@ -193,28 +201,42 @@ class QAResult(object):
         style = 1. + self._style_report.total_errors
         return (works * test_by_procs * cov) / style
 
-    def qai_score(self):
-        qai_10 = int(round(self.qai() * 10))
-        return SCORE_COMMENTS.get(qai_10, str(qai_10))
+    @property
+    def cualification(self):
+        qai_10 = int(round(self.qai * 10))
+        return SCORE_CUALIFICATIONS.get(qai_10, str(qai_10))
 
-    def full_output(self):
-        return "\n".join(
-            ["", "**** COVERAGE ****", str(self._cov_report), "-" * 80] +
-            ["", "**** MAINTAINABILITY & STYLE ****",
-             self._style_report_text, "-" * 80])
+    @property
+    def coverage_report(self):
+        return six.text_type(self._cov_report)
 
-    def resume(self):
-        data = OrderedDict()
-        data["Tests Sucess"] = self._ts_report.wasSuccessful()
-        data["Test Number"] = self._ts_report.testsRun
-        data["Procesors Number"] = len(self._processors)
-        data["Coverage (%)"] = "{:.2f}%".format(
-            float(self._cov_xml["coverage"]["@line-rate"]) * 100)
-        data["Maintainability & Style Errors"] = (
-            self._style_report.total_errors)
-        data["-> QA Index (%)"] = "{0:.2f}%".format(self.qai() * 100)
-        data["-> QA Score"] = self.qai_score()
-        return data
+    @property
+    def style_report(self):
+        return six.text_type(self._style_report_text)
+
+    @property
+    def test_report(self):
+        return self._ts_out
+
+    @property
+    def is_test_sucess(self):
+        return self._ts_report.wasSuccessful()
+
+    @property
+    def test_runs(self):
+        return self._ts_report.testsRun
+
+    @property
+    def processors_number(self):
+        return len(self._processors)
+
+    @property
+    def coverage_line_rate(self):
+        return float(self._cov_xml["coverage"]["@line-rate"])
+
+    @property
+    def style_errors(self):
+        return self._style_report.total_errors
 
 
 # =============================================================================
@@ -267,7 +289,8 @@ def get_processors_testcases(processors, test_module):
     return testscases
 
 
-def run_tests(processors, failfast, verbosity, default_logging=False):
+def run_tests(processors, failfast, verbosity,
+              default_logging=False, stream=sys.stderr):
     if not default_logging:
         for k, logger in logging.Logger.manager.loggerDict.items():
             if k.startswith("Corral") or k.startswith("sqlalchemy"):
@@ -281,7 +304,7 @@ def run_tests(processors, failfast, verbosity, default_logging=False):
         suite.addTests(tests)
 
     runner = unittest.runner.TextTestRunner(
-        verbosity=verbosity, failfast=failfast)
+        stream=stream, verbosity=verbosity, failfast=failfast)
     suite_result = runner.run(suite)
     return suite_result
 
@@ -392,11 +415,14 @@ def run_style():
     return report, text
 
 
-def qa_report(processors, verbosity, *args, **kwargs):
+def qa_report(processors, *args, **kwargs):
+    ts_stream = six.StringIO()
     ts_result = run_tests(
-        processors, failfast=False, verbosity=verbosity, *args, **kwargs)
+        processors, failfast=False, stream=ts_stream, verbosity=2,
+        *args, **kwargs)
     cov_result = run_coverage(
         failfast=False, verbosity=0, default_logging=False)
     style_result = run_style()
-    report = QAResult(processors, ts_result, cov_result, style_result)
+    report = QAResult(
+        processors, ts_result, ts_stream.getvalue(), cov_result, style_result)
     return report
