@@ -1,6 +1,6 @@
 # {{pipeline_setup.name}} Quality Report
 
-- **Created at:** {{now}}
+- **Created at:** {{report.created_at}}
 - **Corral Version:** {{core.get_version()}}
 
 

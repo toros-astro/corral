@@ -7,6 +7,7 @@
 
 import abc
 import logging
+import datetime
 import unittest
 import inspect
 import pkgutil
@@ -186,6 +187,11 @@ class QAResult(object):
         self._ts_out = ts_out
         self._cov_report, self._cov_xml = cov_report
         self._style_report, self._style_report_text = style_report
+        self._created_at = datetime.datetime.utcnow()
+
+    @property
+    def created_at(self):
+        return self._created_at
 
     @property
     def qai(self):
