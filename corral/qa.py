@@ -16,7 +16,7 @@ import sys
 import tempfile
 import multiprocessing
 import math
-from collections import defaultdict, OrderedDict
+from collections import defaultdict
 
 import six
 
@@ -70,6 +70,39 @@ TAU = float(conf.settings.get("TAU", DEFAULT_TAU))
 # TEST CASE
 # =============================================================================
 
+class CorralPatch(object):
+
+    def __init__(self):
+        self._mocked = []
+        self._started = False
+
+    def __call__(self, *args, **kwargs):
+        mck = mock.patch(*args, **kwargs)
+        self._mocked.append(mck)
+
+    def dict(self, *args, **kwargs):
+        mck = mock.patch.dict(*args, **kwargs)
+        self._mocked.append(mck)
+
+    def object(self, *args, **kwargs):
+        mck = mock.patch.object(*args, **kwargs)
+        self._mocked.append(mck)
+
+    def multiple(self, *args, **kwargs):
+        mck = mock.patch.multiple(*args, **kwargs)
+        self._mocked.append(mck)
+
+    def start(self):
+        for mck in self._mocked:
+            mck.start()
+        self._started = True
+
+    def stop(self):
+        if self._started:
+            for mck in reversed(self._mocked):
+                mck.stop()
+
+
 @six.add_metaclass(abc.ABCMeta)
 class TestCase(unittest.TestCase):
 
@@ -82,11 +115,16 @@ class TestCase(unittest.TestCase):
         self.__conn = conn
         self.__proc = proc
         self.__session = None
+        self.__patch = CorralPatch()
+        self.__enabled_patch = False
 
     def runTest(self):
         with db.session_scope() as session:
             self.__session = session
+            self.__enabled_patch = True
             self.setup()
+            self.__enabled_patch = False
+        self.__patch.start()
         self.execute_processor()
         with db.session_scope() as session:
             self.__session = session
@@ -120,6 +158,7 @@ class TestCase(unittest.TestCase):
     def tearDown(self):
         if database_exists(self.conn):
             drop_database(self.conn)
+        self.__patch.stop()
 
     def teardown(self):
         pass
@@ -129,7 +168,7 @@ class TestCase(unittest.TestCase):
         assertRaisesRegex = six.assertRaisesRegex
         assertCountEqual = six.assertCountEqual
 
-    # asserts
+    # asserts and stuff
     def save(self, obj):
         if isinstance(obj, db.Model):
             self.session.add(obj)
@@ -176,6 +215,12 @@ class TestCase(unittest.TestCase):
     def conn(self):
         return self.__conn
 
+    @property
+    def patch(self):
+        if not self.__enabled_patch:
+            raise AttributeError("patch can only be accessible from setup()")
+        return self.__patch
+
 
 class QAResult(object):
 
@@ -213,7 +258,7 @@ class QAResult(object):
         total_tau = TAU * len(self.project_modules)
         style = 1 + math.exp(self.style_errors / total_tau)
 
-        result = 2 * TP * T_div_PN * COV/ style
+        result = (2 * TP * T_div_PN * COV) / style
         return result
 
     @property

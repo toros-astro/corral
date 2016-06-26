@@ -567,7 +567,6 @@ class QAReport(BaseCommand):
             help='If is false all the loggers are setted to WARNING',
             action='store_true')
 
-
     def handle(self, out, explain_qai, full_output, default_logging):
         processors = []
         processors.append(run.load_loader())
