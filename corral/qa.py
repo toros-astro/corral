@@ -120,18 +120,20 @@ class TestCase(unittest.TestCase):
         self.__enabled_patch = False
 
     def runTest(self):
-        with db.session_scope() as session:
-            self.__session = session
-            self.__enabled_patch = True
-            self.setup()
-            self.__enabled_patch = False
-        self.execute_processor()
-        with db.session_scope() as session:
-            self.__session = session
-            self.validate()
-        with db.session_scope() as session:
-            self.__session = session
-            self.teardown()
+        try:
+            with db.session_scope() as session:
+                self.__session = session
+                self.__enabled_patch = True
+                self.setup()
+                self.__enabled_patch = False
+            self.execute_processor()
+            with db.session_scope() as session:
+                self.__session = session
+                self.validate()
+        finally:
+            with db.session_scope() as session:
+                self.__session = session
+                self.teardown()
 
     def setUp(self):
         if database_exists(self.conn):
@@ -160,8 +162,8 @@ class TestCase(unittest.TestCase):
             drop_database(self.conn)
         self.__patch.stop()
 
-    def teardown(self):
-        pass
+    def teardown(self, ex_type, ex, tb):
+        return not ex_type
 
     # PY2 COMP
     if six.PY2:
