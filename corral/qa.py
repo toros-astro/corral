@@ -74,33 +74,34 @@ class CorralPatch(object):
 
     def __init__(self):
         self._mocked = []
-        self._started = False
 
     def __call__(self, *args, **kwargs):
         mck = mock.patch(*args, **kwargs)
+        mck.start()
         self._mocked.append(mck)
+        return mck
 
     def dict(self, *args, **kwargs):
         mck = mock.patch.dict(*args, **kwargs)
+        mck.start()
         self._mocked.append(mck)
+        return mck
 
     def object(self, *args, **kwargs):
         mck = mock.patch.object(*args, **kwargs)
+        mck.start()
         self._mocked.append(mck)
+        return mck
 
     def multiple(self, *args, **kwargs):
         mck = mock.patch.multiple(*args, **kwargs)
+        mck.start()
         self._mocked.append(mck)
-
-    def start(self):
-        for mck in self._mocked:
-            mck.start()
-        self._started = True
+        return mck
 
     def stop(self):
-        if self._started:
-            for mck in reversed(self._mocked):
-                mck.stop()
+        for mck in reversed(self._mocked):
+            mck.stop()
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -124,7 +125,6 @@ class TestCase(unittest.TestCase):
             self.__enabled_patch = True
             self.setup()
             self.__enabled_patch = False
-        self.__patch.start()
         self.execute_processor()
         with db.session_scope() as session:
             self.__session = session
