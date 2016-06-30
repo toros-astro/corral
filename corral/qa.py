@@ -61,7 +61,7 @@ DEFAULT_SCORE_CUALIFICATIONS = {
 SCORE_CUALIFICATIONS = conf.settings.get("SCORE_CUALIFICATIONS",
                                          DEFAULT_SCORE_CUALIFICATIONS)
 
-DEFAULT_TAU = 20
+DEFAULT_TAU = 13
 
 TAU = float(conf.settings.get("TAU", DEFAULT_TAU))
 
