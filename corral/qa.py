@@ -63,7 +63,7 @@ SCORE_CUALIFICATIONS = conf.settings.get("SCORE_CUALIFICATIONS",
 
 DEFAULT_TAU = 13
 
-TAU = float(conf.settings.get("TAU", DEFAULT_TAU))
+TAU = float(conf.settings.get("QAI_TAU", DEFAULT_TAU))
 
 
 # =============================================================================
