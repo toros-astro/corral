@@ -21,14 +21,13 @@ from . import cli, core, res, setup, run, util, db, qa
 # =============================================================================
 
 def models_diagram(fmt="dot"):
-    default_models = db.load_default_models()
-
     parsers = {
         "dot": sadisplay.dot,
         "plantuml": sadisplay.plantuml,
     }
     parser = parsers[fmt]
 
+    default_models = db.load_default_models()
     models = [
         m for m in util.collect_subclasses(db.Model)
         if sys.modules[m.__module__] != default_models]
@@ -40,6 +39,22 @@ def models_diagram(fmt="dot"):
         show_indexes=True)
 
     return parser(desc)
+
+
+#~ def pipeline_diagram():
+    #~ Node = namedtuple("Node", ["proc", "type", "input", "output"])
+    #~ nodes = []
+
+    #~ default_models = db.load_default_models()
+    #~ models = [
+        #~ m for m in util.collect_subclasses(db.Model)
+        #~ if sys.modules[m.__module__] != default_models]
+
+    #~ # check loader
+    #~ loader_cls = run.load_loader()
+    #~ import ipdb; ipdb.set_trace()
+
+    #~ return parser(desc)
 
 
 def create_doc(processors, models, doc_formatter=None):

@@ -589,43 +589,31 @@ class QAReport(BaseCommand):
 
 
 class CreateModelsDiagram(BaseCommand):
-    """Generates a class diagram in 'dot' or 'plantuml
+    """Generates a class diagram in 'dot' 
     format of the models classes"""
 
     options = {"mode": "out", "title": "create-models-diagram"}
-    formats = ["dot", "plantuml"]
-    formats_homepages = {
-        "dot": "http://www.graphviz.org/",
-        "plantuml": "http://plantuml.com/"
-    }
-    epilogue = {
-        "dot": 'Render graph by graphviz:\n  $ dot -Tpng {} > schema.png',
-        "plantuml": ("Render PlantUML class diagram:\n"
-                     " $ java -jar plantuml.jar schema.plantuml       # PNG\n"
-                     " $ java -jar plantuml.jar -Tsvg schema.plantuml # SVG")
-    }
+    epilogue = (
+        "Render graph by graphviz:\n"
+        " $ dot -Tpng {filename} > {basename}.png\n"
+        "\nMore Help: http://www.graphviz.org/")
 
     def setup(self):
         self.parser.add_argument(
             "-o", "--output", dest="out", nargs="?",
             type=ape.FileType('w'), default=sys.stdout,
             action="store", help="destination of the diagram")
-        self.parser.add_argument(
-            "-fmt", "--format", dest="fmt", default=self.formats[0],
-            choices=self.formats, action="store", metavar="FORMAT",
-            help="format of the class diagram")
 
-    def handle(self, out, fmt):
-        data = docs.models_diagram(fmt=fmt)
+    def handle(self, out):
+        data = docs.models_diagram(fmt="dot")
         out.write(data)
         if out == sys.stdout:
             print("\n")
         else:
+            basename = os.path.basename(out.name).rsplit(".", 1)[0]
             print("Your graph file '{}' was created.".format(out.name))
             print("")
-            print(self.epilogue[fmt].format(out.name))
-            print("")
-            print("More help: {}".format(self.formats_homepages[fmt]))
+            print(self.epilogue.format(filename=out.name, basename=basename))
             print("")
 
 
@@ -664,3 +652,33 @@ class CreateDoc(BaseCommand):
             print("")
             print(self.epilogue.format(filename=out.name, basename=basename))
             print("")
+
+
+"""
+class CreatePipelineDiagram(BaseCommand):
+    "Generates a pipeline diagram diagram in 'dot' format"
+
+    options = {"mode": "out", "title": "create-pipeline-diagram"}
+    epilogue = (
+        "Render graph by graphviz:\n"
+        " $ dot -Tpng {filename} > {basename}.png\n"
+        "\nMore Help: http://www.graphviz.org/")
+
+    def setup(self):
+        self.parser.add_argument(
+            "-o", "--output", dest="out", nargs="?",
+            type=ape.FileType('w'), default=sys.stdout,
+            action="store", help="destination of the diagram")
+
+    def handle(self, out):
+        data = docs.pipeline_diagram()
+        out.write(data)
+        if out == sys.stdout:
+            print("\n")
+        else:
+            basename = os.path.basename(out.name).rsplit(".", 1)[0]
+            print("Your graph file '{}' was created.".format(out.name))
+            print("")
+            print(self.epilogue.format(filename=out.name, basename=basename))
+            print("")
+"""
