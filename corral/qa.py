@@ -162,8 +162,8 @@ class TestCase(unittest.TestCase):
             drop_database(self.conn)
         self.__patch.stop()
 
-    def teardown(self, ex_type, ex, tb):
-        return not ex_type
+    def teardown(self):
+        pass
 
     # PY2 COMP
     if six.PY2:
