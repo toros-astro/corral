@@ -1,10 +1,10 @@
-<img src='./docs/logo_corral.jpg' alt='Corral' style='width 40;'>
+<img src='./docs/logo_corral.jpg' alt='Corral' width=260/>
 
 #The Powerful Pipeline Framework
 
-Corral will solve your pipeline needs by merging a database full connection
-interface with a MVC model, by making you able of editing your custom schemas
-and adding the possibility of writting specific processing steps following a
+Corral will solve your pipeline needs by merging a database full connection  
+interface with a MVC model, by making you able of editing your custom schemas  
+and adding the possibility of writting specific processing steps following a  
 intuitive data handling model.
 
 ##Features
