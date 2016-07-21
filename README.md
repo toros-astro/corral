@@ -17,9 +17,15 @@ intuitive data handling model.
 
 ##Installation
 
-Install project by cloning from Corral github: https://github.com/toros-astro/corral.git and by making
-`pip install -e .`, or by giving the github link directly to pip:
-`pip install -e git+https://github.com/toros-astro/corral.git`.
+Install project by cloning from [Corral github](https://github.com/toros-astro/corral.git):  
+
+```git clone https://github.com/toros-astro/corral.git``` 
+
+and by making `pip install -e .`, or the classic `python setup.py install`. 
+
+You can also run the install by giving the github link directly to pip:  
+
+```pip install -e git+https://github.com/toros-astro/corral.git```.
 
 ##Support
 
