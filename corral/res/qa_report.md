@@ -4,10 +4,10 @@
 - **Corral Version:** {{core.get_version()}}
 
 
-## 1. Resume
+## 1. Summary
 
-- **Tests Sucess:** `{{ "Yes" if report.is_test_sucess else "No" }}`
-- **Tests Run:** `{{ report.test_runs }}`
+- **Tests Success:** `{{ "Yes" if report.is_test_sucess else "No" }}`
+- **Tests Ran:** `{{ report.test_runs }}`
 - **Processors:** `{{ report.processors_number }}`
 - **Coverage:** `{{ "{:.2f}".format(report.coverage_line_rate * 100) }}%`
 - **Maintainability & Style Errors:** `{{ report.style_errors }}`
@@ -15,7 +15,7 @@
 <!-- -->
 
 - **QA Index:** `{{ "{0:.2f}%".format( report.qai * 100) }}`
-- **QA Cualification:** `{{ report.cualification }}`
+- **QA Qualification:** `{{ report.cualification }}`
 
 {% if explain_qai %}
 ### 1.1 About The Corral Quality Assurance Index (QAI)
@@ -27,9 +27,9 @@
 **Current Value of Tau:**: `{{ "{:.2f}".format(tau) }}` per file
 
 
-### 1.2 About The Cualificaion
+### 1.2 About The Qualification
 
-The Corral cualification is a cuantitave scale based on QAI
+The Corral qualification is a quantitave scale based on QAI
 
 {% for lowlimit, c in cualifications %}
 - QAI >= {{ "{:.2f}".format(lowlimit) }}% -- `{{ c }}`
