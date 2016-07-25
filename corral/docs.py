@@ -59,6 +59,26 @@ def models_diagram(fmt="dot"):
 
 def create_doc(processors, models, doc_formatter=None):
 
+    def get_cli_text():
+        parser = cli.create_parser()
+        scmd_fmt = lambda scmd, htext: "- ``{}``: {}".format(scmd, htext)
+
+        usage = [
+            "", parser.global_parser.usage, "", "Available subcommands", ""]
+        usage.extend(["**CORRAL**", ""])
+        usage.extend(
+                scmd_fmt(hparts[0], hparts[1])
+                for hparts in sorted(parser.help_texts["corral"]))
+
+        pkgs = [k for k in parser.help_texts.keys() if k != "corral"]
+        for pkg in pkgs:
+            usage.extend(["", "**" + pkg.upper() + "**", ""])
+            usage.extend(
+                scmd_fmt(hparts[0], hparts[1])
+                for hparts in sorted(parser.help_texts[pkg]))
+
+        return "\n".join(usage)
+
     if doc_formatter is None:
         def doc_formatter(string):
             lines = [s.strip() for s in string.splitlines()]
@@ -77,7 +97,7 @@ def create_doc(processors, models, doc_formatter=None):
         elif issubclass(proc, run.Alert):
             alerts.append(proc)
 
-    cli_help = cli.create_parser().main_help_text(0)
+    cli_help = get_cli_text()
 
     ctx = {
         "doc_formatter": doc_formatter,

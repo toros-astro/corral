@@ -6,6 +6,8 @@ import copy
 import argparse
 from collections import defaultdict
 
+from termcolor import colored
+
 import six
 
 from .. import core, conf, util, exceptions
@@ -56,24 +58,28 @@ class CorralCLIParser(object):
         self.subparsers = self.global_parser.add_subparsers()
         self.help_texts = defaultdict(list)
 
-    def _strip_line(self, line, max_line_length):
+    def  _defaut_scmd_fmt(self, scmd, htext, max_line_length, color):
+        scmd = "[{}]".format(scmd)
+        line = "{} {}".format(color(scmd, "green"), htext)
         if max_line_length and len(line) > max_line_length:
             line = line[:max_line_length-3] + "..."
         return line
 
-    def main_help_text(self, max_line_length=80):
+    def main_help_text(self, max_line_length=80, color=True):
+        color = colored if color else (lambda t: t)
+        scmd_fmt = self._defaut_scmd_fmt
         usage = ["", self.global_parser.usage, "", "Available subcommands", ""]
-        usage.extend(["CORRAL", ""])
+        usage.extend([color("CORRAL", "red")])
         usage.extend(
-                self._strip_line(line, max_line_length)
-                for line in sorted(self.help_texts["corral"]))
+                scmd_fmt(hparts[0], hparts[1], max_line_length, color)
+                for hparts in sorted(self.help_texts["corral"]))
 
         pkgs = [k for k in self.help_texts.keys() if k != "corral"]
         for pkg in pkgs:
-            usage.extend(["", pkg.upper(), ""])
+            usage.extend(["", color(pkg.upper(), "red")])
             usage.extend(
-                self._strip_line(line, max_line_length)
-                for line in sorted(self.help_texts[pkg]))
+                scmd_fmt(hparts[0], hparts[1], max_line_length, color)
+                for hparts in sorted(self.help_texts[pkg]))
 
         return "\n".join(usage)
 
@@ -88,8 +94,8 @@ class CorralCLIParser(object):
         project = command.__module__.split(".", 1)[0]
         description = " ".join(
             p.strip() for p in parser.description.split() if p.strip())
-        help_text = "- `{}`:  {}".format(title, description or "-")
-        self.help_texts[project].append(help_text)
+        help_parts = (title, description or "-")
+        self.help_texts[project].append(help_parts)
         return parser
 
     def extract_func(self, ns):
