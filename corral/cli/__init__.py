@@ -59,8 +59,7 @@ class CorralCLIParser(object):
         self.help_texts = defaultdict(list)
 
     def  _defaut_scmd_fmt(self, scmd, htext, max_line_length, color):
-        scmd = "[{}]".format(scmd)
-        line = "{} {}".format(color(scmd, "green"), htext)
+        line = "  {} - {}".format(color(scmd, "green"), htext)
         if max_line_length and len(line) > max_line_length:
             line = line[:max_line_length-3] + "..."
         return line
@@ -69,14 +68,15 @@ class CorralCLIParser(object):
         color = colored if color else (lambda t: t)
         scmd_fmt = self._defaut_scmd_fmt
         usage = ["", self.global_parser.usage, "", "Available subcommands", ""]
-        usage.extend([color("CORRAL", "red")])
+        usage.extend([color("[corral]", "red")])
         usage.extend(
                 scmd_fmt(hparts[0], hparts[1], max_line_length, color)
                 for hparts in sorted(self.help_texts["corral"]))
 
         pkgs = [k for k in self.help_texts.keys() if k != "corral"]
         for pkg in pkgs:
-            usage.extend(["", color(pkg.upper(), "red")])
+            pkg_title = "[{}]".format(pkg)
+            usage.extend(["", color(pkg_title, "red")])
             usage.extend(
                 scmd_fmt(hparts[0], hparts[1], max_line_length, color)
                 for hparts in sorted(self.help_texts[pkg]))
