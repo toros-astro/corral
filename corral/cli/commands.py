@@ -95,7 +95,7 @@ class Migrate(BaseCommand):
     def setup(self):
         self.parser.add_argument(
             "--noinput", dest="noinput", action="store_true", default=False,
-            help="Create the database without asking")
+            help="Migrate the database without asking")
 
     def handle(self, noinput):
         if noinput:
