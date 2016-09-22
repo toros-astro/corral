@@ -16,9 +16,5 @@
 
 def load_ipython_extension(ipython):
     from corral import core
-    from corral.cli.commands import Shell
-
     core.setup_environment()
 
-    ns = Shell().get_locals()
-    ipython.push(ns, interactive=True)

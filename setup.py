@@ -36,7 +36,7 @@ REQUIREMENTS = [
     'alembic>=0.8.4',
     'attrs>=16.2.0',
     'coverage>=4.0.3',
-    'flake8>=2.5.4',
+    'flake8<3.0.0',
     'Jinja2>=2.8',
     'mock>=1.3.0',
     'sadisplay>=0.4.6',
