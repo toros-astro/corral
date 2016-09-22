@@ -19,12 +19,13 @@ import os
 import logging
 import sys
 import argparse
+import shutil
 
 import six
 
 from texttable import Texttable
 
-from .. import db, conf, run, creator, qa, docs, cli
+from .. import db, conf, run, creator, qa, docs, cli, setup, res
 from ..libs import (
     sqlalchemy_sql_shell as sql_shell,
     argparse_ext as ape)
@@ -134,7 +135,7 @@ class Shell(BaseCommand):
     options = {
         "title": "shell"}
 
-    def _get_locals(self):
+    def get_locals(self):
         slocals = {"db": db, "settings": conf.settings}
         slocals.update({
             k: v for k, v in vars(db.load_models_module()).items()
@@ -191,7 +192,7 @@ class Shell(BaseCommand):
             help="Specify the shell to be used")
 
     def handle(self, shell):
-        slocals = self._get_locals()
+        slocals = self.get_locals()
         with db.session_scope() as session:
             slocals["session"] = session
             banner = self._create_banner(slocals)
@@ -203,11 +204,82 @@ class Notebook(BaseCommand):
     """Run the Jupyter notebook inside Corral enviroment"""
 
     options = {
-        "title": "notebook"}
+        "title": "notebook",
+        "mode": "out"}
 
-    def handle(self):
-        from IPython import start_ipython
-        start_ipython(argv=['notebook'])
+    def _install_kernel_spec(self, app, dir_name, display_name,
+                             settings_module, ipython_arguments):
+        """install an IPython >= 3.0 kernelspec that loads corral env
+
+        Thanks: django extensions
+
+        """
+        ksm = app.kernel_spec_manager
+        try_spec_names = ['python3' if six.PY3 else 'python2', 'python']
+        if isinstance(try_spec_names, six.string_types):
+            try_spec_names = [try_spec_names]
+        ks = None
+        for spec_name in try_spec_names:
+            try:
+                ks = ksm.get_kernel_spec(spec_name)
+                break
+            except:
+                continue
+        if not ks:
+            raise CommandError("No notebook (Python) kernel specs found")
+
+        ks.display_name = display_name
+        ks.env["CORRAL_SETTINGS_MODULE"] = settings_module
+        ks.argv.extend(ipython_arguments)
+
+        in_corral_dir, in_corral = os.path.split(os.path.realpath(sys.argv[0]))
+
+        if in_corral == 'in_corral.py' and os.path.isdir(in_corral_dir) and in_corral_dir != os.getcwd():
+            pythonpath = ks.env.get('PYTHONPATH', os.environ.get('PYTHONPATH', ''))
+            pythonpath = pythonpath.split(':')
+            if manage_py_dir not in pythonpath:
+                pythonpath.append(manage_py_dir)
+            ks.env['PYTHONPATH'] = ':'.join(filter(None, pythonpath))
+
+        kernel_dir = os.path.join(ksm.user_kernel_dir, conf.PACKAGE)
+        if not os.path.exists(kernel_dir):
+            os.makedirs(kernel_dir)
+            shutil.copy(res.fullpath("logo-64x64.png"), kernel_dir)
+        with open(os.path.join(kernel_dir, 'kernel.json'), 'w') as f:
+            f.write(ks.to_json())
+
+
+    def setup(self):
+        self.parser.add_argument(
+            'arguments', nargs=argparse.REMAINDER,
+            help="Notebook arguments (see notebook help)")
+
+    def handle(self, arguments):
+        from notebook.notebookapp import NotebookApp
+        extension = "corral.libs.notebook_extension"
+
+        pipeline = setup.load_pipeline_setup()
+
+        app = NotebookApp.instance()
+        dir_name = conf.PACKAGE
+        display_name = pipeline.name
+        settings_module = conf.CORRAL_SETTINGS_MODULE
+
+        ipython_arguments = arguments[:]
+        if extension not in ipython_arguments:
+            ipython_arguments.extend(['--ext', extension])
+
+        app.initialize([])
+        self._install_kernel_spec(
+            app, dir_name, display_name,
+            settings_module, ipython_arguments)
+        app.start()
+
+
+
+
+        #~ from IPython import start_ipython
+        #~ start_ipython(argv=['notebook'])
 
 
 class DBShell(BaseCommand):

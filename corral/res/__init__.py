@@ -7,4 +7,7 @@ PATH = os.path.abspath(os.path.dirname(__file__))
 
 
 def fullpath(fname):
-    return os.path.join(PATH, fname)
+    path = os.path.join(PATH, fname)
+    if not os.path.isfile(path):
+        raise OSError("Resource '{}' do not exists".format(fname))
+    return path
