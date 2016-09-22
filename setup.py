@@ -33,19 +33,20 @@ import corral
 # =============================================================================
 
 REQUIREMENTS = [
-    "SQLAlchemy>=1.0.8",
-    "SQLAlchemy-Utils>=0.31.0",
-    "sadisplay==0.4.6",
-    "six>=1.10.0",
-    "texttable>=0.8.3",
-    "alembic>=0.8.4",
-    "coverage>=4.0.3",
-    "sh>=1.11",
-    "xmltodict>=0.10.1",
-    "flake8>=2.5.4",
-    "Jinja2>=2.8",
-    "mock>=1.3.0",
-    "termcolor>=1.1.0"
+    'alembic>=0.8.4',
+    'attrs>=16.2.0',
+    'coverage>=4.0.3',
+    'flake8>=2.5.4',
+    'Jinja2>=2.8',
+    'mock>=1.3.0',
+    'sadisplay>=0.4.6',
+    'sh>=1.11',
+    'six>=1.10.0',
+    'SQLAlchemy>=1.0.8',
+    'SQLAlchemy-Utils>=0.31.0',
+    'termcolor>=1.1.0',
+    'texttable>=0.8.3',
+    'xmltodict>=0.10.1'
 ]
 
 

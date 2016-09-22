@@ -11,7 +11,7 @@ from termcolor import colored
 import six
 
 from .. import core, conf, util, exceptions
-from .base import BaseCommand
+from .base import BaseCommand, MODE_IN, MODE_OUT, MODE_TEST
 
 
 # =============================================================================
@@ -19,8 +19,6 @@ from .base import BaseCommand
 # =============================================================================
 
 COMMANDS_MODULE = "{}.commands".format(conf.PACKAGE)
-
-MODE_IN, MODE_TEST, MODE_OUT = "in", "test", "out"
 
 
 # =============================================================================
@@ -127,6 +125,14 @@ def load_commands_module():
             core.logger.error("On load commands: " + six.text_type(err))
 
 
+def load_project_commands():
+    commands_module = load_commands_module().__name__
+    commands = [
+        cmd for cmd in util.collect_subclasses(BaseCommand)
+        if cmd.__module__ == commands_module]
+    return commands
+
+
 def create_parser():
 
     from . import commands  # noqa
@@ -142,9 +148,8 @@ def create_parser():
 
         options = copy.deepcopy(cls.get_options())
 
-        title = options.pop("title", cls.__name__.lower())
-        mode = options.pop("mode", "in")
-        options["description"] = options.get("description", cls.__doc__) or ""
+        title = options.pop("title")
+        mode = options.pop("mode")
 
         if title in command_names:
             msg = "Duplicate Command '{}'".format(title)

@@ -16,7 +16,7 @@ import sys
 import tempfile
 import multiprocessing
 import math
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 
 import six
 
@@ -27,6 +27,8 @@ import xmltodict
 from flake8 import engine, reporter
 
 import sh
+
+import attr
 
 from . import util, conf, core, db, run, cli
 from .db import database_exists, create_database, drop_database
@@ -70,6 +72,16 @@ TAU = float(conf.settings.get("QAI_TAU", DEFAULT_TAU))
 # TEST CASE
 # =============================================================================
 
+@attr.s(frozen=True)
+class CommandStatus(object):
+    arguments = attr.ib()
+    kwargs = attr.ib()
+    gkwargs = attr.ib()
+    out = attr.ib()
+    err = attr.ib()
+    exit_status = attr.ib()
+
+
 class CorralPatch(object):
 
     def __init__(self):
@@ -107,17 +119,20 @@ class CorralPatch(object):
 @six.add_metaclass(abc.ABCMeta)
 class TestCase(unittest.TestCase):
 
+    # Mostly for internal use
     @classmethod
     def get_subject(cls):
         return getattr(cls, "subject", None)
 
-    def __init__(self, conn, proc):
+    def __init__(self, conn, proc_or_cmd):
         super(TestCase, self).__init__()
         self.__conn = conn
-        self.__proc = proc
+        self.__proc_or_cmd = proc_or_cmd
         self.__session = None
         self.__patch = CorralPatch()
         self.__enabled_patch = False
+        self.__cliargs = []
+        self.__command_status = None
 
     def runTest(self):
         try:
@@ -126,7 +141,7 @@ class TestCase(unittest.TestCase):
                 self.__enabled_patch = True
                 self.setup()
                 self.__enabled_patch = False
-            self.execute_processor()
+            self.execute()
             with db.session_scope() as session:
                 self.__session = session
                 self.validate()
@@ -141,17 +156,30 @@ class TestCase(unittest.TestCase):
         create_database(self.conn)
         db.create_all()
 
+    def execute(self):
+        poc = self.__proc_or_cmd
+        if issubclass(poc, run.Loader):
+            run.execute_loader(poc, sync=True)
+        elif issubclass(poc, run.Step):
+            run.execute_step(poc, sync=True)
+        elif issubclass(poc, run.Alert):
+            run.execute_alert(poc, sync=True)
+        elif issubclass(poc, cli.BaseCommand):
+            parser = cli.create_parser()
+            options = poc.get_options()
+            arguments = [options["title"]] + self.__cliargs
+            out, err = six.StringIO(), six.StringIO()
+            command, mode, kwargs, gkwargs = parser.parse_args(arguments)
+            with mock.patch("sys.stdout", out), mock.patch("sys.stderr", err):
+                command.handle(**kwargs)
+            self.__command_status = CommandStatus(
+                arguments=arguments, kwargs=kwargs, gkwargs=gkwargs,
+                out=out.getvalue(), err=err.getvalue(),
+                exit_status=command.exit_status)
+
+    # mostly the public api
     def setup(self):
         pass
-
-    def execute_processor(self):
-        proc = self.__proc
-        if issubclass(proc, run.Loader):
-            run.execute_loader(self.proc, sync=True)
-        elif issubclass(proc, run.Step):
-            run.execute_step(proc, sync=True)
-        elif issubclass(proc, run.Alert):
-            run.execute_alert(proc, sync=True)
 
     @abc.abstractmethod
     def validate(self):
@@ -165,19 +193,12 @@ class TestCase(unittest.TestCase):
     def teardown(self):
         pass
 
+    # ASSERT
+
     # PY2 COMP
     if six.PY2:
         assertRaisesRegex = six.assertRaisesRegex
         assertCountEqual = six.assertCountEqual
-
-    # asserts and stuff
-    def save(self, obj):
-        if isinstance(obj, db.Model):
-            self.session.add(obj)
-
-    def delete(self, obj):
-        if isinstance(obj, db.Model):
-            self.session.delete(obj)
 
     def assertStreamHas(self, model, *filters):
         query = self.__session.query(model)
@@ -205,9 +226,18 @@ class TestCase(unittest.TestCase):
             query = query.filter(*filters)
         self.assertEquals(query.count(), expected)
 
+    # mostly for setup
+    def save(self, obj):
+        if isinstance(obj, db.Model):
+            self.session.add(obj)
+
+    def delete(self, obj):
+        if isinstance(obj, db.Model):
+            self.session.delete(obj)
+
     @property
-    def processor(self):
-        return self.__proc
+    def proc_or_cmd(self):
+        return self.__proc_or_cmd
 
     @property
     def session(self):
@@ -223,13 +253,24 @@ class TestCase(unittest.TestCase):
             raise AttributeError("patch can only be accessible from setup()")
         return self.__patch
 
+    @property
+    def cliargs(self):
+        if not self.__enabled_patch:
+            raise AttributeError("cliargs can only be accessible from setup()")
+        return self.__cliargs
+
+    @property
+    def command_status(self):
+        return self.__command_status
+
 
 class QAResult(object):
 
-    def __init__(self, project_modules, processors,
+    def __init__(self, project_modules, processors, commands,
                  ts_report, ts_out, cov_report, style_report):
         self._project_modules = tuple(project_modules)
         self._processors = tuple(processors)
+        self._commands = tuple(commands)
         self._ts_report = ts_report
         self._ts_out = ts_out
         self._cov_report, self._cov_xml = cov_report
@@ -242,25 +283,27 @@ class QAResult(object):
 
     @property
     def qai(self):
-        """QAI = 2 * (TP * (T/PN) * COV) / (1 + exp(MSE/tau))
+        """QAI = 2 * (TP * (T/PNC) * COV) / (1 + exp(MSE/tau))
 
         Where:
             TP: If all tests passes is 1, 0 otherwise.
             T: The number of test cases.
-            PN: The number number of processors (Loader, Steps and Alerts).
+            PCN: The number number of processors (Loader, Steps and Alerts)
+                 and commands.
             COV: The code coverage (between 0 and 1).
             MSE: The Maintainability and Style Errors.
             tau: Tolerance of style errors per file
 
         """
         TP = 1. if self.is_test_sucess else 0.
-        T_div_PN = float(self.test_runs) / self.processors_number
+        PCN = self.processors_number + self.commands_number
+        T_div_PCN = float(self.test_runs) / PN
         COV = self.coverage_line_rate
 
         total_tau = TAU * len(self.project_modules)
         style = 1 + math.exp(self.style_errors / total_tau)
 
-        result = (2 * TP * T_div_PN * COV) / style
+        result = (2 * TP * T_div_PCN * COV) / style
         return result
 
     @property
@@ -297,6 +340,10 @@ class QAResult(object):
     @property
     def processors_number(self):
         return len(self._processors)
+
+    @property
+    def commands_number(self):
+        return len(self._commands)
 
     @property
     def coverage_line_rate(self):
@@ -339,13 +386,15 @@ def retrieve_all_pipeline_modules_names():
     return tuple(set(modules_names))
 
 
-def get_processors_testcases(processors, test_module):
+def get_testcases(processors, commands, test_module):
     buff = defaultdict(list)
     for cls in vars(test_module).values():
         if inspect.isclass(cls) and issubclass(cls, TestCase):
             subject = cls.get_subject()
-            if not issubclass(subject, Processor):
-                msg = "'{}' subject must be a Processor instance. Found '{}'"
+            if not issubclass(subject, (Processor, cli.BaseCommand)):
+                msg = (
+                    "'{}' subject must be a Processor or BaseCommand instance."
+                    " Found '{}'")
                 raise ImproperlyConfigured(msg.format(subject, type(subject)))
             buff[subject].append(cls)
 
@@ -354,10 +403,13 @@ def get_processors_testcases(processors, test_module):
     for proc in processors:
         tests = [cls(db_url, proc) for cls in buff[proc]]
         testscases.append((proc, tests))
+    for cmd in commands:
+        tests = [cls(db_url, cmd) for cls in buff[cmd]]
+        testscases.append((cmd, tests))
     return testscases
 
 
-def run_tests(processors, failfast, verbosity,
+def run_tests(processors, commands, failfast, verbosity,
               default_logging=False, stream=sys.stderr):
     if not default_logging:
         for k, logger in logging.Logger.manager.loggerDict.items():
@@ -367,7 +419,7 @@ def run_tests(processors, failfast, verbosity,
 
     suite = unittest.TestSuite()
     test_module = get_test_module()
-    testcases = get_processors_testcases(processors, test_module)
+    testcases = get_testcases(processors, commands, test_module)
     for _, tests in testcases:
         suite.addTests(tests)
 
@@ -483,11 +535,11 @@ def run_style():
     return report, text
 
 
-def qa_report(processors, *args, **kwargs):
+def qa_report(processors, commands, *args, **kwargs):
     core.logger.info("Running Test, Coverage and Style Check. Please Wait...")
     ts_stream = six.StringIO()
     ts_result = run_tests(
-        processors, failfast=False, stream=ts_stream, verbosity=2,
+        processors, commands, failfast=False, stream=ts_stream, verbosity=2,
         *args, **kwargs)
 
     cov_result = run_coverage(
@@ -497,7 +549,7 @@ def qa_report(processors, *args, **kwargs):
     project_modules = retrieve_all_pipeline_modules_names()
 
     report = QAResult(
-        project_modules, processors,
+        project_modules, processors, commands,
         ts_result, ts_stream.getvalue(), cov_result, style_result)
 
     return report

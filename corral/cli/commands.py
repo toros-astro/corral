@@ -24,7 +24,7 @@ import six
 
 from texttable import Texttable
 
-from .. import db, conf, run, creator, qa, docs
+from .. import db, conf, run, creator, qa, docs, util, cli
 from ..libs import (
     sqlalchemy_sql_shell as sql_shell,
     argparse_ext as ape)
@@ -442,30 +442,45 @@ class Test(BaseCommand):
 
     options = {"mode": "test"}
 
-    def _group_by_name(self, name):
-        if not hasattr(self, "_buff"):
-            self._buff = set()
-            self._mapped_cls = {cls.__name__: cls for cls in run.load_steps()}
+    def _step_by_name(self, name):
+        if not hasattr(self, "_sbuff"):
+            self._sbuff = set()
+            self._smapped_cls = {cls.__name__: cls for cls in run.load_steps()}
         try:
-            cls = self._mapped_cls[name]
-            if cls in self._buff:
+            cls = self._smapped_cls[name]
+            if cls in self._sbuff:
                 self.parser.error("Duplicated step name '{}'".format(name))
-            self._buff.add(cls)
+            self._sbuff.add(cls)
         except KeyError:
             self.parser.error("Invalid step name '{}'".format(name))
         return cls
 
     def _alert_by_name(self, name):
-        if not hasattr(self, "_buff"):
-            self._buff = set()
-            self._mapped_cls = {cls.__name__: cls for cls in run.load_alerts()}
+        if not hasattr(self, "_sbuff"):
+            self._sbuff = set()
+            self._amapped_cls = {
+                cls.__name__: cls for cls in run.load_alerts()}
         try:
-            cls = self._mapped_cls[name]
-            if cls in self._buff:
+            cls = self._amapped_cls[name]
+            if cls in self._abuff:
                 self.parser.error("Duplicated alert name '{}'".format(name))
-            self._buff.add(cls)
+            self._abuff.add(cls)
         except KeyError:
             self.parser.error("Invalid alert name '{}'".format(name))
+        return cls
+
+    def _command_by_name(self, name):
+        if not hasattr(self, "_cbuff"):
+            self._buff = set()
+            self._cmapped_cls = {
+                cls.__name__: cls for cls in cli.load_project_commands()}
+        try:
+            cls = self._cmapped_cls[name]
+            if cls in self._buff:
+                self.parser.error("Duplicated command name '{}'".format(name))
+            self._cbuff.add(cls)
+        except KeyError:
+            self.parser.error("Invalid command name '{}'".format(name))
         return cls
 
     def setup(self):
@@ -496,7 +511,7 @@ class Test(BaseCommand):
             help="Exclude steps from QA run", action="store_true")
         steps_group.add_argument(
             "-s", "--steps", dest="steps", action="store", nargs="+",
-            help="Step classes name", type=self._group_by_name)
+            help="Step classes name", type=self._step_by_name)
         steps_group.add_argument(
             "-sg", "--step-groups", dest="step_groups", action="store",
             nargs="+", help="Groups To tests")
@@ -512,9 +527,19 @@ class Test(BaseCommand):
             "-ag", "--alert-groups", dest="alert_groups", action="store",
             nargs="+", help="Groups to tests")
 
+        cmd_group = self.parser.add_mutually_exclusive_group()
+        cmd_group.add_argument(
+            "-ec", "--exclude-commands", dest="exclude_cmds", default=False,
+            help="Exclude commands from QA run", action="store_true")
+        cmd_group.add_argument(
+            "-c", "--commands", dest="commands", action="store", nargs="+",
+            help="Commands classes name", type=self._command_by_name)
+
+
     def handle(self, failfast, verbosity, default_logging, exclude_loader,
                exclude_steps, steps, step_groups,
-               exclude_alerts, alerts, alert_groups):
+               exclude_alerts, alerts, alert_groups,
+               exclude_cmds, commands):
 
         processors = []
         if not exclude_loader:
@@ -530,7 +555,12 @@ class Test(BaseCommand):
                 alerts = run.load_alerts(alert_groups or None)
             processors.extend(alerts or [])
 
-        result = qa.run_tests(processors, failfast, verbosity, default_logging)
+        if not exclude_cmds:
+            if not commands:
+                commands = cli.load_project_commands()
+
+        result = qa.run_tests(
+            processors, commands, failfast, verbosity, default_logging)
         if not result.wasSuccessful():
             self.exit_with(1)
 
@@ -572,7 +602,11 @@ class QAReport(BaseCommand):
         processors.append(run.load_loader())
         processors.extend(run.load_steps(None))
         processors.extend(run.load_alerts(None))
-        report = qa.qa_report(processors, default_logging=default_logging)
+
+        commands = cli.load_project_commands()
+
+        report = qa.qa_report(
+            processors, commands, default_logging=default_logging)
 
         data = docs.qa_report(
             report=report, full_output=full_output, explain_qai=explain_qai)

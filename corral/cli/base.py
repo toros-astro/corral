@@ -5,6 +5,12 @@ import abc
 
 import six
 
+# =============================================================================
+# CONSTANTS
+# =============================================================================
+
+MODE_IN, MODE_TEST, MODE_OUT = "in", "test", "out"
+
 
 # =============================================================================
 # CLASS
@@ -16,9 +22,13 @@ class BaseCommand(object):
     @classmethod
     def get_options(cls):
         try:
-            return cls.options
+            options = cls.options
         except AttributeError:
-            return {}
+            options = {}
+        options.setdefault("title", cls.__name__.lower())
+        options.setdefault("mode", MODE_IN)
+        options.setdefault("description", cls.__doc__ or "")
+        return options
 
     def __init__(self):
         self.__exit_status = 0
