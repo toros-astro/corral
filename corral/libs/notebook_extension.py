@@ -9,11 +9,11 @@
 
 """
 
+
 # =============================================================================
 # FUNCTIONS
 # =============================================================================
 
-# -*- coding: utf-8 -*-
 def load_ipython_extension(ipython):
     from corral import core
     from corral.cli.commands import Shell
@@ -22,4 +22,3 @@ def load_ipython_extension(ipython):
 
     ns = Shell().get_locals()
     ipython.push(ns, interactive=True)
-

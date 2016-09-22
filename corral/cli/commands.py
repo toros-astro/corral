@@ -226,7 +226,7 @@ class Notebook(BaseCommand):
             except:
                 continue
         if not ks:
-            raise CommandError("No notebook (Python) kernel specs found")
+            self.parser.error("No notebook (Python) kernel specs found")
 
         ks.display_name = display_name
         ks.env["CORRAL_SETTINGS_MODULE"] = settings_module
@@ -234,11 +234,17 @@ class Notebook(BaseCommand):
 
         in_corral_dir, in_corral = os.path.split(os.path.realpath(sys.argv[0]))
 
-        if in_corral == 'in_corral.py' and os.path.isdir(in_corral_dir) and in_corral_dir != os.getcwd():
-            pythonpath = ks.env.get('PYTHONPATH', os.environ.get('PYTHONPATH', ''))
+        add_dir_to_pypath = (
+            in_corral == 'in_corral.py' and
+            os.path.isdir(in_corral_dir) and
+            in_corral_dir != os.getcwd())
+
+        if add_dir_to_pypath:
+            pythonpath = ks.env.get(
+                'PYTHONPATH', os.environ.get('PYTHONPATH', ''))
             pythonpath = pythonpath.split(':')
-            if manage_py_dir not in pythonpath:
-                pythonpath.append(manage_py_dir)
+            if in_corral_dir not in pythonpath:
+                pythonpath.append(in_corral_dir)
             ks.env['PYTHONPATH'] = ':'.join(filter(None, pythonpath))
 
         kernel_dir = os.path.join(ksm.user_kernel_dir, conf.PACKAGE)
@@ -247,7 +253,6 @@ class Notebook(BaseCommand):
             shutil.copy(res.fullpath("logo-64x64.png"), kernel_dir)
         with open(os.path.join(kernel_dir, 'kernel.json'), 'w') as f:
             f.write(ks.to_json())
-
 
     def setup(self):
         self.parser.add_argument(
@@ -274,12 +279,6 @@ class Notebook(BaseCommand):
             app, dir_name, display_name,
             settings_module, ipython_arguments)
         app.start()
-
-
-
-
-        #~ from IPython import start_ipython
-        #~ start_ipython(argv=['notebook'])
 
 
 class DBShell(BaseCommand):
