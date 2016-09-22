@@ -16,7 +16,7 @@ import sys
 import tempfile
 import multiprocessing
 import math
-from collections import defaultdict, namedtuple
+from collections import defaultdict
 
 import six
 

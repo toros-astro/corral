@@ -41,27 +41,29 @@ def models_diagram(fmt="dot"):
     return parser(desc)
 
 
-#~ def pipeline_diagram():
-    #~ Node = namedtuple("Node", ["proc", "type", "input", "output"])
-    #~ nodes = []
+# def pipeline_diagram():
+    # Node = namedtuple("Node", ["proc", "type", "input", "output"])
+    # nodes = []
 
-    #~ default_models = db.load_default_models()
-    #~ models = [
-        #~ m for m in util.collect_subclasses(db.Model)
-        #~ if sys.modules[m.__module__] != default_models]
+    # default_models = db.load_default_models()
+    # models = [
+    #   m for m in util.collect_subclasses(db.Model)
+    #   if sys.modules[m.__module__] != default_models]
 
-    #~ # check loader
-    #~ loader_cls = run.load_loader()
-    #~ import ipdb; ipdb.set_trace()
+    # # check loader
+    # loader_cls = run.load_loader()
+    # import ipdb; ipdb.set_trace()
 
-    #~ return parser(desc)
+    # return parser(desc)
 
 
 def create_doc(processors, models, doc_formatter=None):
 
     def get_cli_text():
+        def scmd_fmt(scmd, htext):
+            return "- ``{}``: {}".format(scmd, htext)
+
         parser = cli.create_parser()
-        scmd_fmt = lambda scmd, htext: "- ``{}``: {}".format(scmd, htext)
 
         usage = [
             "", parser.global_parser.usage, "", "Available subcommands", ""]

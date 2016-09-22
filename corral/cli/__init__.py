@@ -56,7 +56,7 @@ class CorralCLIParser(object):
         self.subparsers = self.global_parser.add_subparsers()
         self.help_texts = defaultdict(list)
 
-    def  _defaut_scmd_fmt(self, scmd, htext, max_line_length, color):
+    def _defaut_scmd_fmt(self, scmd, htext, max_line_length, color):
         line = "  {} - {}".format(color(scmd, "green"), htext)
         if max_line_length and len(line) > max_line_length:
             line = line[:max_line_length-3] + "..."

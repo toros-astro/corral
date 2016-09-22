@@ -24,7 +24,7 @@ import six
 
 from texttable import Texttable
 
-from .. import db, conf, run, creator, qa, docs, util, cli
+from .. import db, conf, run, creator, qa, docs, cli
 from ..libs import (
     sqlalchemy_sql_shell as sql_shell,
     argparse_ext as ape)
@@ -535,7 +535,6 @@ class Test(BaseCommand):
             "-c", "--commands", dest="commands", action="store", nargs="+",
             help="Commands classes name", type=self._command_by_name)
 
-
     def handle(self, failfast, verbosity, default_logging, exclude_loader,
                exclude_steps, steps, step_groups,
                exclude_alerts, alerts, alert_groups,
@@ -688,29 +687,29 @@ class CreateDoc(BaseCommand):
             print("")
 
 
-#~ class CreatePipelineDiagram(BaseCommand):
-    #~ """Generates a pipeline diagram diagram in 'dot' format"""
+# class CreatePipelineDiagram(BaseCommand):
+    # """Generates a pipeline diagram diagram in 'dot' format"""
 
-    #~ options = {"mode": "out", "title": "create-pipeline-diagram"}
-    #~ epilogue = (
-        #~ "Render graph by graphviz:\n"
-        #~ " $ dot -Tpng {filename} > {basename}.png\n"
-        #~ "\nMore Help: http://www.graphviz.org/")
+    # options = {"mode": "out", "title": "create-pipeline-diagram"}
+    # epilogue = (
+        # "Render graph by graphviz:\n"
+        # " $ dot -Tpng {filename} > {basename}.png\n"
+        # "\nMore Help: http://www.graphviz.org/")
 
-    #~ def setup(self):
-        #~ self.parser.add_argument(
-            #~ "-o", "--output", dest="out", nargs="?",
-            #~ type=ape.FileType('w'), default=sys.stdout,
-            #~ action="store", help="destination of the diagram")
+    # def setup(self):
+        # self.parser.add_argument(
+            # "-o", "--output", dest="out", nargs="?",
+            # type=ape.FileType('w'), default=sys.stdout,
+            # action="store", help="destination of the diagram")
 
-    #~ def handle(self, out):
-        #~ data = docs.pipeline_diagram()
-        #~ out.write(data)
-        #~ if out == sys.stdout:
-            #~ print("\n")
-        #~ else:
-            #~ basename = os.path.basename(out.name).rsplit(".", 1)[0]
-            #~ print("Your graph file '{}' was created.".format(out.name))
-            #~ print("")
-            #~ print(self.epilogue.format(filename=out.name, basename=basename))
-            #~ print("")
+    # def handle(self, out):
+        # data = docs.pipeline_diagram()
+        # out.write(data)
+        # if out == sys.stdout:
+            # print("\n")
+        # else:
+            # basename = os.path.basename(out.name).rsplit(".", 1)[0]
+            # print("Your graph file '{}' was created.".format(out.name))
+            # print("")
+            # print(self.epilogue.format(filename=out.name, basename=basename))
+            # print("")
