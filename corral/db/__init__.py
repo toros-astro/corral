@@ -28,7 +28,7 @@ IN_MEMORY_CONNECTIONS = ("sqlite:///:memory:", "sqlite:///")
 
 engine = None
 
-Session = sessionmaker()
+Session = sessionmaker()  # noqa
 
 Model = declarative.declarative_base(name="Model")
 
@@ -44,7 +44,7 @@ def setup(test_connection=False):
 
     conn = get_url(test_connection)
 
-    engine = create_engine(conn, echo=False)
+    engine = create_engine(conn, echo=False)  # noqa
     Session.configure(bind=engine)
     Model.metadata.bind = engine
 
@@ -79,7 +79,7 @@ def db_exists(connection=None):
     connection = (
         conf.settings.CONNECTION if connection is None else connection)
     real_db = connection not in IN_MEMORY_CONNECTIONS
-    return real_db and database_exists(conf.settings.CONNECTION)
+    return real_db and database_exists(conf.settings.CONNECTION)  # noqa
 
 
 def create_all(model_cls=None, **kwargs):

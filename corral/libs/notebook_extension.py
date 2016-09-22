@@ -17,4 +17,3 @@
 def load_ipython_extension(ipython):
     from corral import core
     core.setup_environment()
-

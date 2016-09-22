@@ -277,11 +277,9 @@ class Notebook(BaseTest):
     @mock.patch("sys.argv", new=["test", "notebook"])
     @mock.patch("corral.core.setup_environment")
     def test_notebook_command(self, *args):
-        with mock.patch("IPython.start_ipython") as start_ipython:
+        with mock.patch("notebook.notebookapp.NotebookApp.instance") as nb:
             cli.run_from_command_line()
-            self.assertTrue(start_ipython.called)
-            expected = [mock.call(argv=['notebook'])]
-            start_ipython.assert_has_calls(expected)
+            self.assertTrue(nb.called)
 
 
 class Load(BaseTest):

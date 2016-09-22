@@ -260,24 +260,27 @@ class Notebook(BaseCommand):
             help="Notebook arguments (see notebook help)")
 
     def handle(self, arguments):
-        from notebook.notebookapp import NotebookApp
-        extension = "corral.libs.notebook_extension"
+        try:
+            from notebook.notebookapp import NotebookApp
+        except ImportError:
+            self.parser.error("notebook not found. Please install it")
+        else:
+            extension = "corral.libs.notebook_extension"
 
-        pipeline = setup.load_pipeline_setup()
-        shell = Shell()
+            pipeline = setup.load_pipeline_setup()
 
-        app = NotebookApp.instance()
-        dir_name = conf.PACKAGE
-        display_name = pipeline.name
-        settings_module = conf.CORRAL_SETTINGS_MODULE
+            app = NotebookApp.instance()
+            dir_name = conf.PACKAGE
+            display_name = pipeline.name
+            settings_module = conf.CORRAL_SETTINGS_MODULE
 
-        ipython_arguments = ['--ext', extension]
+            ipython_arguments = ['--ext', extension]
 
-        app.initialize(arguments)
-        self._install_kernel_spec(
-            app, dir_name, display_name,
-            settings_module, ipython_arguments)
-        app.start()
+            app.initialize(arguments)
+            self._install_kernel_spec(
+                app, dir_name, display_name,
+                settings_module, ipython_arguments)
+            app.start()
 
 
 class DBShell(BaseCommand):
