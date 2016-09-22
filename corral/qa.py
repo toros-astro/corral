@@ -297,7 +297,7 @@ class QAResult(object):
         """
         TP = 1. if self.is_test_sucess else 0.
         PCN = self.processors_number + self.commands_number
-        T_div_PCN = float(self.test_runs) / PN
+        T_div_PCN = float(self.test_runs) / PCN
         COV = self.coverage_line_rate
 
         total_tau = TAU * len(self.project_modules)
