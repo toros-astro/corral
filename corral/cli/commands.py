@@ -144,7 +144,7 @@ class Shell(BaseCommand):
             slocals.update(conf.settings.SHELL_LOCALS)
         return slocals
 
-    def _create_banner(self, slocals):
+    def create_banner(self, slocals):
         by_module = collections.defaultdict(list)
         for k, v in slocals.items():
             module_name = getattr(v, "__module__", None) or ""
@@ -195,7 +195,7 @@ class Shell(BaseCommand):
         slocals = self.get_locals()
         with db.session_scope() as session:
             slocals["session"] = session
-            banner = self._create_banner(slocals)
+            banner = self.create_banner(slocals)
             shell = self.shells[shell]
             shell(slocals, banner)
 
@@ -208,7 +208,7 @@ class Notebook(BaseCommand):
         "mode": "out"}
 
     def _install_kernel_spec(self, app, dir_name, display_name,
-                             settings_module, ipython_arguments):
+                             settings_module, banner, ipython_arguments):
         """install an IPython >= 3.0 kernelspec that loads corral env
 
         Thanks: django extensions
@@ -253,6 +253,11 @@ class Notebook(BaseCommand):
             shutil.copy(res.fullpath("logo-64x64.png"), kernel_dir)
         with open(os.path.join(kernel_dir, 'kernel.json'), 'w') as f:
             f.write(ks.to_json())
+        with open(os.path.join(kernel_dir, 'kernel.js'), 'w') as f:
+            title = "{} Available Variables".format(display_name).upper()
+            alert = "\\n".join([title] + banner.splitlines()[:-1])
+            js = '$(document).ready(function(){alert("' + alert + '")});'
+            f.write(js)
 
     def setup(self):
         self.parser.add_argument(
@@ -264,20 +269,20 @@ class Notebook(BaseCommand):
         extension = "corral.libs.notebook_extension"
 
         pipeline = setup.load_pipeline_setup()
+        shell = Shell()
 
         app = NotebookApp.instance()
         dir_name = conf.PACKAGE
         display_name = pipeline.name
         settings_module = conf.CORRAL_SETTINGS_MODULE
+        banner = shell.create_banner(shell.get_locals())
 
-        ipython_arguments = arguments[:]
-        if extension not in ipython_arguments:
-            ipython_arguments.extend(['--ext', extension])
+        ipython_arguments = ['--ext', extension]
 
-        app.initialize([])
+        app.initialize(arguments)
         self._install_kernel_spec(
             app, dir_name, display_name,
-            settings_module, ipython_arguments)
+            settings_module, banner, ipython_arguments)
         app.start()
 
 
