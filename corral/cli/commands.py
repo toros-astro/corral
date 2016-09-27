@@ -242,7 +242,6 @@ class Notebook(BaseCommand):
         ks.env['PYTHONPATH'] = ':'.join(filter(None, pythonpath))
 
         kernel_dir = os.path.join(ksm.user_kernel_dir, conf.PACKAGE)
-        print kernel_dir
         if not os.path.exists(kernel_dir):
             os.makedirs(kernel_dir)
             shutil.copy(res.fullpath("logo-64x64.png"), kernel_dir)
