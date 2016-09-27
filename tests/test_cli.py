@@ -276,6 +276,7 @@ class Notebook(BaseTest):
 
     @mock.patch("sys.argv", new=["test", "notebook"])
     @mock.patch("corral.core.setup_environment")
+    @mock.patch("corral.cli.commands.Notebook.install_kernel_spec")
     def test_notebook_command(self, *args):
         with mock.patch("notebook.notebookapp.NotebookApp.instance") as nb:
             cli.run_from_command_line()

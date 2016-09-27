@@ -80,7 +80,7 @@ class MakeMigrations(BaseCommand):
     """
     def setup(self):
         self.parser.add_argument(
-            '-m', "--message", action="store", type=str,
+            '-m', "--message", action="store", type=str, required=True,
             help="Message for the new version", dest="message")
 
     def handle(self, message):
@@ -207,8 +207,8 @@ class Notebook(BaseCommand):
         "title": "notebook",
         "mode": "out"}
 
-    def _install_kernel_spec(self, app, dir_name, display_name,
-                             settings_module, ipython_arguments):
+    def install_kernel_spec(self, app, dir_name, display_name,
+                            settings_module, ipython_arguments):
         """install an IPython >= 3.0 kernelspec that loads corral env
 
         Thanks: django extensions
@@ -234,20 +234,15 @@ class Notebook(BaseCommand):
 
         in_corral_dir, in_corral = os.path.split(os.path.realpath(sys.argv[0]))
 
-        add_dir_to_pypath = (
-            in_corral == 'in_corral.py' and
-            os.path.isdir(in_corral_dir) and
-            in_corral_dir != os.getcwd())
-
-        if add_dir_to_pypath:
-            pythonpath = ks.env.get(
-                'PYTHONPATH', os.environ.get('PYTHONPATH', ''))
-            pythonpath = pythonpath.split(':')
-            if in_corral_dir not in pythonpath:
-                pythonpath.append(in_corral_dir)
-            ks.env['PYTHONPATH'] = ':'.join(filter(None, pythonpath))
+        pythonpath = ks.env.get(
+            'PYTHONPATH', os.environ.get('PYTHONPATH', ''))
+        pythonpath = pythonpath.split(':')
+        if in_corral_dir not in pythonpath:
+            pythonpath.append(in_corral_dir)
+        ks.env['PYTHONPATH'] = ':'.join(filter(None, pythonpath))
 
         kernel_dir = os.path.join(ksm.user_kernel_dir, conf.PACKAGE)
+        print kernel_dir
         if not os.path.exists(kernel_dir):
             os.makedirs(kernel_dir)
             shutil.copy(res.fullpath("logo-64x64.png"), kernel_dir)
@@ -277,7 +272,7 @@ class Notebook(BaseCommand):
             ipython_arguments = ['--ext', extension]
 
             app.initialize(arguments)
-            self._install_kernel_spec(
+            self.install_kernel_spec(
                 app, dir_name, display_name,
                 settings_module, ipython_arguments)
             app.start()
@@ -308,8 +303,7 @@ class Exec(BaseCommand):
         self.parser.add_argument("path", action="store", help="Path to script")
 
     def handle(self, path):
-        ns = {}
-        fname = os.path.basename(path)
+        fname, ns = os.path.basename(path), {}
         with open(path) as fp:
             code = compile(fp.read(), fname, 'exec')
             exec(code, ns, ns)
