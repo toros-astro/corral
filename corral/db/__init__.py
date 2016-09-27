@@ -10,6 +10,7 @@ from contextlib import contextmanager
 from sqlalchemy import *  # noqa
 from sqlalchemy.orm import *  # noqa
 from sqlalchemy.ext import declarative
+from sqlalchemy.engine import url
 
 from sqlalchemy_utils import *  # noqa
 
@@ -54,6 +55,11 @@ def get_url(test_connection=False):
         conf.settings.get("TEST_CONNECTION", "sqlite:///:memory")
         if test_connection else
         conf.settings.CONNECTION)
+
+
+def get_urlo(test_connection=False):
+    uri = get_url(test_connection)
+    return url.make_url(uri)
 
 
 def load_models_module():

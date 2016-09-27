@@ -283,7 +283,7 @@ class DBShell(BaseCommand):
 
     options = {"title": "dbshell"}
 
-    def handle(self):
+    def run_plain(self):
         elogger = logging.getLogger('sqlalchemy.engine')
         original_level = elogger.level
         try:
@@ -292,6 +292,36 @@ class DBShell(BaseCommand):
             sql_shell.run(db.engine)
         finally:
             elogger.setLevel(original_level)
+
+    def run_pgcli(self):
+        from pgcli import main
+        pgcli = main.PGCli()
+        pgcli.connect(
+            database=self.urlo.database, host=self.urlo.host or '',
+            user=self.urlo.username or '',
+            port=self.urlo.port or '',
+            passwd=self.urlo.password or '')
+        pgcli.run_cli()
+
+    def setup(self):
+        self.shells = collections.OrderedDict()
+        self.urlo = db.get_urlo()
+        if self.urlo.drivername == "postgresql":
+            try:
+                import pgcli  # noqa
+                self.shells["pgcli"] = self.run_pgcli
+            except ImportError:
+                pass
+        self.shells["plain"] = self.run_plain
+
+        self.parser.add_argument(
+            "--shell", "-s", dest="shell", action="store",
+            choices=self.shells.keys(), default=list(self.shells.keys())[0],
+            help="Specify the shell to be used")
+
+    def handle(self, shell):
+        shell = self.shells[shell]
+        shell()
 
 
 class Exec(BaseCommand):
