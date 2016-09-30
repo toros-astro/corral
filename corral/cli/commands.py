@@ -308,9 +308,11 @@ class DBShell(BaseCommand):
         if self.urlo.drivername == "postgresql":
             try:
                 import pgcli  # noqa
-                self.shells["pgcli"] = self.run_pgcli
+                self.shells["adv"] = self.run_pgcli
             except ImportError:
                 pass
+        else:
+            self.shells["adv"] = self.run_plain
         self.shells["plain"] = self.run_plain
 
         self.parser.add_argument(
