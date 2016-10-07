@@ -302,13 +302,30 @@ class DBShell(BaseCommand):
             passwd=self.urlo.password or '')
         pgcli.run_cli()
 
+    def run_mycli(self):
+        from mycli import main
+        mycli = main.MyCli()
+        mycli.connect(
+            database=self.urlo.database, host=self.urlo.host or '',
+            user=self.urlo.username or '',
+            port=self.urlo.port or '',
+            passwd=self.urlo.password or '')
+        mycli.run_cli()
+
     def setup(self):
         self.shells = collections.OrderedDict()
         self.urlo = db.get_urlo()
-        if self.urlo.drivername == "postgresql":
+        backend = self.urlo.get_backend_name()
+        if backend == "postgresql":
             try:
                 import pgcli  # noqa
                 self.shells["adv"] = self.run_pgcli
+            except ImportError:
+                pass
+        elif backend == "mysql":
+            try:
+                import mycli  # noqa
+                self.shells["adv"] = self.run_mycli
             except ImportError:
                 pass
         else:
