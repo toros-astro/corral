@@ -5,8 +5,9 @@ import atexit
 import inspect
 import logging
 
-from .conf import settings
 from . import util, exceptions
+
+settings = util.dimport("corral.conf.settings", lazy=True)
 
 
 # =============================================================================

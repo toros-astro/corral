@@ -9,7 +9,9 @@ from email.mime.text import MIMEText
 
 import six
 
-from .. import conf
+from .. import util
+
+conf = util.dimport("corral.conf", lazy=True)
 
 
 # =============================================================================

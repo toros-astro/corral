@@ -4,21 +4,17 @@
 import sys
 import copy
 import argparse
+import os
 from collections import defaultdict
 
 from termcolor import colored
 
 import six
 
-from .. import core, conf, util, exceptions
-from .base import BaseCommand, MODE_IN, MODE_OUT, MODE_TEST
+from .. import core, util, exceptions
+from .base import BaseCommand, MODE_IN, MODE_OUT, MODE_TEST, MODE_NOPIPE
 
-
-# =============================================================================
-# CONSTANTS
-# =============================================================================
-
-COMMANDS_MODULE = "{}.commands".format(conf.PACKAGE)
+conf = util.dimport("corral.conf", lazy=True)
 
 
 # =============================================================================
@@ -82,7 +78,7 @@ class CorralCLIParser(object):
         return "\n".join(usage)
 
     def add_subparser(self, title, command, mode, **kwargs):
-        if mode not in (MODE_IN, MODE_OUT, MODE_TEST):
+        if mode not in (MODE_IN, MODE_OUT, MODE_TEST, MODE_NOPIPE):
             msg = "Command mode must be '{}', '{}', or '{}'. Found '{}'"
             raise ValueError(MODE_IN, MODE_OUT, MODE_TEST, msg.format(mode))
         parser = self.subparsers.add_parser(title, **kwargs)
@@ -120,7 +116,8 @@ class CorralCLIParser(object):
 def load_commands_module():
     if conf.settings.has_module("commands"):
         try:
-            return util.dimport(COMMANDS_MODULE)
+            commands_module = "{}.commands".format(conf.PACKAGE)
+            return util.dimport(commands_module)
         except ImportError as err:
             core.logger.error("On load commands: " + six.text_type(err))
 
@@ -137,7 +134,13 @@ def create_parser():
 
     from . import commands  # noqa
 
-    load_commands_module()
+    in_pipeline = "CORRAL_SETTINGS_MODULE" in os.environ
+
+    try:
+        load_commands_module()
+    except:
+        if in_pipeline:
+            raise
 
     command_names = set()
 
@@ -150,6 +153,9 @@ def create_parser():
 
         title = options.pop("title")
         mode = options.pop("mode")
+
+        if mode != MODE_NOPIPE and in_pipeline is False:
+            continue
 
         if title in command_names:
             msg = "Duplicate Command '{}'".format(title)

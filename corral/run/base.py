@@ -6,8 +6,9 @@ import multiprocessing
 
 import six
 
-from .. import db
-from ..conf import settings
+from .. import db, util
+
+conf = util.dimport("corral.conf", lazy=True)
 
 
 # =============================================================================
@@ -31,7 +32,7 @@ class Processor(object):
 
     @classmethod
     def get_procno(cls):
-        if settings.DEBUG_PROCESS:
+        if conf.settings.DEBUG_PROCESS:
             return cls.procno
         return getattr(cls, "production_procno", cls.procno)
 

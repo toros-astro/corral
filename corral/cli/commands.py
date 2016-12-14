@@ -25,12 +25,14 @@ import six
 
 from texttable import Texttable
 
-from .. import db, conf, run, creator, qa, docs, cli, setup, res
+from .. import db, run, creator, qa, docs, cli, setup, res, util
 from ..libs import (
     sqlalchemy_sql_shell as sql_shell,
     argparse_ext as ape)
 
 from .base import BaseCommand
+
+conf = util.dimport("corral.conf", lazy=True)
 
 
 # =============================================================================
@@ -41,7 +43,7 @@ class Create(BaseCommand):
     """Create a new corral pipeline"""
 
     options = {
-        "mode": "out"}
+        "mode": "nopipe"}
 
     def setup(self):
         self.parser.add_argument(

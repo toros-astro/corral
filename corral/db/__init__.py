@@ -16,14 +16,14 @@ from sqlalchemy_utils import *  # noqa
 
 from alembic.config import main as alembic_main
 
-from .. import conf, util, exceptions
+from .. import util, exceptions
+
+conf = util.dimport("corral.conf", lazy=True)
 
 
 # =============================================================================
 # CONSTANTS
 # =============================================================================
-
-MODELS_MODULE = "{}.models".format(conf.PACKAGE)
 
 IN_MEMORY_CONNECTIONS = ("sqlite:///:memory:", "sqlite:///")
 
@@ -63,6 +63,7 @@ def get_urlo(test_connection=False):
 
 
 def load_models_module():
+    MODELS_MODULE = "{}.models".format(conf.PACKAGE)
     return util.dimport(MODELS_MODULE)
 
 

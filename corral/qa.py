@@ -30,17 +30,17 @@ import sh
 
 import attr
 
-from . import util, conf, core, db, run, cli
+from . import util, core, db, run, cli
 from .db import database_exists, create_database, drop_database
 from .exceptions import ImproperlyConfigured
 from .run.base import Processor
+
+conf = util.dimport("corral.conf", lazy=True)
 
 
 # =============================================================================
 # CONSTANTS
 # =============================================================================
-
-TESTS_MODULE = "{}.tests".format(conf.PACKAGE)
 
 IS_WINDOWS = sys.platform.startswith("win")
 
@@ -60,12 +60,7 @@ DEFAULT_SCORE_CUALIFICATIONS = {
     95: "A+"
 }
 
-SCORE_CUALIFICATIONS = conf.settings.get("SCORE_CUALIFICATIONS",
-                                         DEFAULT_SCORE_CUALIFICATIONS)
-
 DEFAULT_TAU = 13
-
-TAU = float(conf.settings.get("QAI_TAU", DEFAULT_TAU))
 
 
 # =============================================================================
@@ -300,7 +295,9 @@ class QAResult(object):
         T_div_PCN = float(self.test_runs) / PCN
         COV = self.coverage_line_rate
 
-        total_tau = TAU * len(self.project_modules)
+        total_tau = (
+            float(conf.settings.get("QAI_TAU", DEFAULT_TAU)) *
+            len(self.project_modules))
         style = 1 + math.exp(self.style_errors / total_tau)
 
         result = (2 * TP * T_div_PCN * COV) / style
@@ -308,8 +305,10 @@ class QAResult(object):
 
     @property
     def cualification(self):
+        score_cualifications = conf.settings.get("SCORE_CUALIFICATIONS",
+                                                 DEFAULT_SCORE_CUALIFICATIONS)
         qai_100 = self.qai * 100
-        for lowlimit, c in sorted(SCORE_CUALIFICATIONS.items(), reverse=True):
+        for lowlimit, c in sorted(score_cualifications.items(), reverse=True):
             if qai_100 >= lowlimit:
                 return c
 
@@ -358,8 +357,12 @@ class QAResult(object):
 # FUNCTIONS
 # =============================================================================
 
+def get_test_module_name():
+    return "{}.tests".format(conf.PACKAGE)
+
+
 def get_test_module():
-    return util.dimport(TESTS_MODULE)
+    return util.dimport(get_test_module_name())
 
 
 def retrieve_all_pipeline_modules_names():
@@ -375,7 +378,7 @@ def retrieve_all_pipeline_modules_names():
         return modules
 
     modules_names = [
-        TESTS_MODULE,
+        get_test_module_name(),
         db.MODELS_MODULE, cli.COMMANDS_MODULE,
         conf.CORRAL_SETTINGS_MODULE, conf.PACKAGE,
         conf.settings.PIPELINE_SETUP, conf.settings.PIPELINE_SETUP,

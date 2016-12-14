@@ -9,7 +9,7 @@ import six
 # CONSTANTS
 # =============================================================================
 
-MODE_IN, MODE_TEST, MODE_OUT = "in", "test", "out"
+MODE_IN, MODE_TEST, MODE_OUT, MODE_NOPIPE = "in", "test", "out", "nopipe"
 
 
 # =============================================================================

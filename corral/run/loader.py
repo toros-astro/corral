@@ -5,10 +5,12 @@ import inspect
 
 import six
 
-from .. import conf, db, util, exceptions
+from .. import db, util, exceptions
 from ..core import logger
 
 from .base import Processor, Runner
+
+conf = util.dimport("corral.conf", lazy=True)
 
 
 # =============================================================================
