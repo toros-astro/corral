@@ -48,6 +48,7 @@ class BaseTest(unittest.TestCase):
         assertRaisesRegex = six.assertRaisesRegex
         assertCountEqual = six.assertCountEqual
 
+
 # =============================================================================
 # MAIN
 # =============================================================================
