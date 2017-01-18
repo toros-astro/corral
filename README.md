@@ -33,6 +33,7 @@ If you have issues pleas report them as a issue ticket in our github. Thanks!
 
 ##License
 
-I guess a BSD will do.
+BSD-3: https://opensource.org/licenses/BSD-3-Clause
+BSD-3 Licence Explained: https://tldrlegal.com/license/bsd-3-clause-license-(revised)
 
 [![Build Status](https://travis-ci.org/toros-astro/corral.svg?branch=master)](https://travis-ci.org/toros-astro/corral)
