@@ -554,6 +554,34 @@ class CheckAlerts(BaseCommand):
                 sys.exit(status)
 
 
+class RunAll(BaseCommand):
+    """Shortcut command to run the loader, steps and alerts asynchronous.
+
+    For more control check the commands 'load', 'run' and 'check-alerts'.
+
+    """
+
+    options = {"title": "run-all"}
+
+    def handle(self):
+        procs = []
+
+        loader_runner = [run.load_loader()], run.execute_loader
+        steps_runner = run.load_steps(), run.execute_step
+        alerts_runner = run.load_alerts(), run.execute_alert
+
+        for processors, runner in [loader_runner, steps_runner, alerts_runner]:
+            for processor in processors:
+                proc = runner(processor)
+                procs.extend(proc)
+        for proc in procs:
+            proc.join()
+        exitcodes = [proc.exitcode for proc in procs]
+        status = sum(exitcodes)
+        if status:
+            sys.exit(status)
+
+
 class Test(BaseCommand):
     """Run all unittests for your pipeline"""
 
