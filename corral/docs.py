@@ -112,14 +112,15 @@ def create_doc(processors, models, doc_formatter=None):
 
 def qa_report(report, full_output, explain_qai):
     path = res.fullpath("qa_report.md")
+    score_cualifications = qa.get_score_cualifications()
+
     with codecs.open(path, encoding="utf8") as fp:
         template = jinja2.Template(fp.read())
-
     ctx = {
         "report": report, "full_output": full_output,
         "explain_qai": explain_qai, "qai_doc": type(report).qai.__doc__,
-        "tau": qa.TAU, "core": core,
-        "cualifications": sorted(qa.SCORE_CUALIFICATIONS.items()),
+        "tau": qa.get_tau(), "core": core,
+        "cualifications": sorted(score_cualifications.items()),
         "pipeline_setup": setup.load_pipeline_setup()}
 
     return template.render(**ctx)

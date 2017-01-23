@@ -294,10 +294,9 @@ class QAResult(object):
         PCN = self.processors_number + self.commands_number
         T_div_PCN = float(self.test_runs) / PCN
         COV = self.coverage_line_rate
+        tau = get_tau()
 
-        total_tau = (
-            float(conf.settings.get("QAI_TAU", DEFAULT_TAU)) *
-            len(self.project_modules))
+        total_tau = float(tau) * len(self.project_modules)
         style = 1 + math.exp(self.style_errors / total_tau)
 
         result = (2 * TP * T_div_PCN * COV) / style
@@ -305,8 +304,7 @@ class QAResult(object):
 
     @property
     def cualification(self):
-        score_cualifications = conf.settings.get("SCORE_CUALIFICATIONS",
-                                                 DEFAULT_SCORE_CUALIFICATIONS)
+        score_cualifications = get_score_cualifications()
         qai_100 = self.qai * 100
         for lowlimit, c in sorted(score_cualifications.items(), reverse=True):
             if qai_100 >= lowlimit:
@@ -365,6 +363,15 @@ def get_test_module():
     return util.dimport(get_test_module_name())
 
 
+def get_tau():
+    return conf.settings.get("QAI_TAU", DEFAULT_TAU)
+
+
+def get_score_cualifications():
+    return conf.settings.get("SCORE_CUALIFICATIONS",
+                             DEFAULT_SCORE_CUALIFICATIONS)
+
+
 def retrieve_all_pipeline_modules_names():
 
     def recursive_search(pkg_name):
@@ -377,9 +384,11 @@ def retrieve_all_pipeline_modules_names():
                 modules.extend(recursive_search(mod_fullname))
         return modules
 
+    models_module = db.load_models_module().__name__
+    commands_module = cli.load_commands_module().__name__
     modules_names = [
         get_test_module_name(),
-        db.MODELS_MODULE, cli.COMMANDS_MODULE,
+        models_module, commands_module,
         conf.CORRAL_SETTINGS_MODULE, conf.PACKAGE,
         conf.settings.PIPELINE_SETUP, conf.settings.PIPELINE_SETUP,
         conf.settings.LOADER]
@@ -514,7 +523,11 @@ def run_style():
     top_mod_names = set([mn.split(".", 1)[0] for mn in mod_names])
     paths = [
         os.path.dirname(util.dimport(mn).__file__) for mn in top_mod_names]
+    exclude_paths = [
+        os.path.join(path, "migrations", "versions") for path in paths]
 
+    for path in exclude_paths:
+        pep8.options.exclude.append(path)
     for path in paths:
         pep8.paths.append(path)
 
