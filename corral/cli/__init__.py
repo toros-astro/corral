@@ -172,7 +172,6 @@ def create_parser():
 
 def run_from_command_line():
     parser = create_parser()
-
     if sys.argv[1:] in (['--help'], ['-h']):
         sys.stdout.write(parser.main_help_text() + "\n\n")
         sys.exit(0)
@@ -182,16 +181,16 @@ def run_from_command_line():
         sys.stdout.write(parser.main_help_text() + "\n\n")
         sys.stderr.write("Error: " + str(err) + "\n\n")
         sys.exit(1)
-
-    if mode == MODE_IN:
-        core.setup_environment()
-    elif mode == MODE_TEST:
-        core.setup_environment(test_mode=True)
-    try:
-        command.handle(**kwargs)
-    except BaseException as err:
-        sys.stderr.write("{}\n".format(err))
-        if gkwargs.get("stacktrace"):
-            six.reraise(type(err), err, six.sys.exc_traceback)
-    if command.exit_status:
-        sys.exit(command.exit_status)
+    else:
+        if mode == MODE_IN:
+            core.setup_environment()
+        elif mode == MODE_TEST:
+            core.setup_environment(test_mode=True)
+        try:
+            command.handle(**kwargs)
+        except BaseException as err:
+            sys.stderr.write("{}\n".format(err))
+            if gkwargs.get("stacktrace"):
+                six.reraise(type(err), err, six.sys.exc_traceback)
+        if command.exit_status:
+            sys.exit(command.exit_status)

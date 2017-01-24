@@ -258,7 +258,7 @@ class Notebook(BaseCommand):
     def handle(self, arguments):
         try:
             from notebook.notebookapp import NotebookApp
-        except ImportError:
+        except ImportError:  # pragma: no cover
             self.parser.error("notebook not found. Please install it")
         else:
             extension = "corral.libs.notebook_extension"
@@ -322,13 +322,13 @@ class DBShell(BaseCommand):
             try:
                 import pgcli  # noqa
                 self.shells["adv"] = self.run_pgcli
-            except ImportError:
+            except ImportError:  # pragma: no cover
                 pass
         elif backend == "mysql":
             try:
                 import mycli  # noqa
                 self.shells["adv"] = self.run_mycli
-            except ImportError:
+            except ImportError:  # pragma: no cover
                 pass
         else:
             self.shells["adv"] = self.run_plain
@@ -601,8 +601,8 @@ class Test(BaseCommand):
         return cls
 
     def _alert_by_name(self, name):
-        if not hasattr(self, "_sbuff"):
-            self._sbuff = set()
+        if not hasattr(self, "_abuff"):
+            self._abuff = set()
             self._amapped_cls = {
                 cls.__name__: cls for cls in run.load_alerts()}
         try:
@@ -616,12 +616,12 @@ class Test(BaseCommand):
 
     def _command_by_name(self, name):
         if not hasattr(self, "_cbuff"):
-            self._buff = set()
+            self._cbuff = set()
             self._cmapped_cls = {
                 cls.__name__: cls for cls in cli.load_project_commands()}
         try:
             cls = self._cmapped_cls[name]
-            if cls in self._buff:
+            if cls in self._cbuff:
                 self.parser.error("Duplicated command name '{}'".format(name))
             self._cbuff.add(cls)
         except KeyError:
@@ -764,6 +764,7 @@ class QAReport(BaseCommand):
             print("")
             print(self.epilogue.format(filename=out.name, basename=basename))
             print("")
+        out.flush()
 
 
 class CreateModelsDiagram(BaseCommand):
@@ -793,6 +794,7 @@ class CreateModelsDiagram(BaseCommand):
             print("")
             print(self.epilogue.format(filename=out.name, basename=basename))
             print("")
+        out.flush()
 
 
 class CreateDoc(BaseCommand):
@@ -809,7 +811,7 @@ class CreateDoc(BaseCommand):
         self.parser.add_argument(
             "-o", "--output", dest="out", nargs="?",
             type=ape.FileType('w'), default=sys.stdout,
-            action="store", help="destination of the diagram")
+            action="store", help="destination of the documentation")
 
     def handle(self, out):
         processors = []
@@ -830,31 +832,4 @@ class CreateDoc(BaseCommand):
             print("")
             print(self.epilogue.format(filename=out.name, basename=basename))
             print("")
-
-
-# class CreatePipelineDiagram(BaseCommand):
-    # """Generates a pipeline diagram diagram in 'dot' format"""
-
-    # options = {"mode": "out", "title": "create-pipeline-diagram"}
-    # epilogue = (
-        # "Render graph by graphviz:\n"
-        # " $ dot -Tpng {filename} > {basename}.png\n"
-        # "\nMore Help: http://www.graphviz.org/")
-
-    # def setup(self):
-        # self.parser.add_argument(
-            # "-o", "--output", dest="out", nargs="?",
-            # type=ape.FileType('w'), default=sys.stdout,
-            # action="store", help="destination of the diagram")
-
-    # def handle(self, out):
-        # data = docs.pipeline_diagram()
-        # out.write(data)
-        # if out == sys.stdout:
-            # print("\n")
-        # else:
-            # basename = os.path.basename(out.name).rsplit(".", 1)[0]
-            # print("Your graph file '{}' was created.".format(out.name))
-            # print("")
-            # print(self.epilogue.format(filename=out.name, basename=basename))
-            # print("")
+        out.flush()

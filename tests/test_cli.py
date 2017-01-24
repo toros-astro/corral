@@ -21,6 +21,7 @@ from corral.cli import commands as builtin_commands
 
 from . import commands
 from .steps import TestLoader, Step1, Step2
+from .alerts import Alert1
 from .base import BaseTest
 
 
@@ -155,6 +156,79 @@ class CreateDB(BaseTest):
                 self.assertTrue(create_all.called)
 
 
+class MakeMigrations(BaseTest):
+
+    @mock.patch("sys.argv", new=["test", "makemigrations", "-m", "foo"])
+    @mock.patch("corral.core.setup_environment")
+    def test_makemigrations(self, *args):
+        with mock.patch("corral.db.makemigrations") as makemigrations:
+            cli.run_from_command_line()
+            makemigrations.assert_called_with("foo")
+
+
+class Migrate(BaseTest):
+
+    @mock.patch("sys.argv", new=["test", "migrate"])
+    @mock.patch("corral.core.setup_environment")
+    def test_migrate_comand(self, *args):
+        patch = "corral.cli.commands.Migrate.ask"
+        with mock.patch(patch, return_value="yes") as ask:
+            with mock.patch("corral.db.migrate") as migrate:
+                cli.run_from_command_line()
+                ask.assert_called()
+                migrate.assert_called()
+
+        with mock.patch(patch, return_value="no") as ask:
+            with mock.patch("corral.db.migrate") as migrate:
+                cli.run_from_command_line()
+                self.assertTrue(ask.called)
+                migrate.assert_not_called()
+
+        with mock.patch(patch, side_effect=["foo", "no"]) as ask:
+            with mock.patch("corral.db.migrate") as migrate:
+                cli.run_from_command_line()
+                expected = [
+                    mock.call(arg) for arg in
+                    ("Do you want to migrate the database [Yes/no]? ",
+                     "Please answer 'yes' or 'no': ")]
+                ask.assert_has_calls(expected)
+                self.assertFalse(migrate.called)
+
+    @mock.patch("sys.argv", new=["test", "migrate", "--noinput"])
+    @mock.patch("corral.core.setup_environment")
+    def test_migrate_noinput(self, *args):
+        patch = "corral.cli.commands.Migrate.ask"
+        with mock.patch(patch, return_value="yes") as ask:
+            with mock.patch("corral.db.migrate") as migrate:
+                cli.run_from_command_line()
+                ask.assert_not_called()
+                self.assertTrue(migrate.called)
+
+        with mock.patch(patch, return_value="no") as ask:
+            with mock.patch("corral.db.migrate") as migrate:
+                cli.run_from_command_line()
+                ask.assert_not_called()
+                self.assertTrue(migrate.called)
+
+
+class Alembic(BaseTest):
+
+    @mock.patch("sys.argv", new=["test", "alembic", "foo"])
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("corral.db.alembic")
+    def test_alembic(self, alembic, *args):
+            cli.run_from_command_line()
+            alembic.assert_called_with("foo")
+
+    @mock.patch("sys.argv", new=["test", "alembic", "init"])
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("corral.db.alembic")
+    @mock.patch("sys.stderr")
+    def test_alembic_fail_init(self, stderr, *args):
+            cli.run_from_command_line()
+            stderr.write.assert_called()
+
+
 class Shell(BaseTest):
 
     @mock.patch("sys.argv", new=["test", "shell"])
@@ -261,6 +335,32 @@ class DBShell(BaseTest):
                 cli.run_from_command_line()
                 run_dbshell.assert_called_with(db.engine)
 
+    @mock.patch("sys.argv", new=["test", "dbshell"])
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("tests.settings.CONNECTION", "postgresql://usr:psw@host:1/db")
+    def test_dbshell_pgcli(self, *args):
+        with mock.patch("pgcli.main.PGCli") as run_dbshell:
+            with mock.patch("sys.stdout"):
+                cli.run_from_command_line()
+                run_dbshell.assert_called()
+                run_dbshell().connect.assert_called_with(
+                    database="db", host="host",
+                    passwd="psw", port=1, user="usr")
+                run_dbshell().run_cli.assert_called()
+
+    @mock.patch("sys.argv", new=["test", "dbshell"])
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("tests.settings.CONNECTION", "mysql://usr:psw@host:1/db")
+    def test_dbshell_mycli(self, *args):
+        with mock.patch("mycli.main.MyCli") as run_dbshell:
+            with mock.patch("sys.stdout"):
+                cli.run_from_command_line()
+                run_dbshell.assert_called()
+                run_dbshell().connect.assert_called_with(
+                    database="db", host="host",
+                    passwd="psw", port=1, user="usr")
+                run_dbshell().run_cli.assert_called()
+
 
 class Exec(BaseTest):
 
@@ -293,18 +393,32 @@ class Load(BaseTest):
             execute_loader.assert_called_with(TestLoader, sync=True)
 
 
+class Groups(BaseTest):
+
+    @mock.patch("sys.argv", new=["test", "groups"])
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("sys.stdout")
+    def test_groups(self, *args):
+        with mock.patch("texttable.Texttable.header") as header, \
+             mock.patch("texttable.Texttable.add_row") as row:
+            cli.run_from_command_line()
+            header.assert_called_with(("Processor", "Groups"))
+            row.assert_any_call(["Steps", ":".join(run.steps_groups())])
+            row.assert_any_call(["Alerts", ":".join(run.alerts_groups())])
+
+
 class LSSteps(BaseTest):
 
     @mock.patch("sys.argv", new=["test", "lssteps"])
     @mock.patch("corral.core.setup_environment")
     @mock.patch("sys.stdout")
-    def test_lssteps(self, *args):
-        with mock.patch("corral.run.load_steps") as load_steps:
-            with mock.patch("texttable.Texttable.header") as header:
-                cli.run_from_command_line()
-                header.assert_called_with(
-                    ('Step Class', 'Process', 'Groups'))
-                self.assertTrue(load_steps.called)
+    def test_lssteps_called(self, *args):
+        with mock.patch("texttable.Texttable.header") as header, \
+             mock.patch("texttable.Texttable.add_row") as row:
+            cli.run_from_command_line()
+            header.assert_called_with(
+                ('Step Class', 'Process', 'Groups'))
+            self.assertEquals(row.call_count, len(run.load_steps()))
 
     @mock.patch("sys.argv", new=["test", "lssteps"])
     @mock.patch("corral.core.setup_environment")
@@ -316,6 +430,31 @@ class LSSteps(BaseTest):
                 cli.run_from_command_line()
                 add_rows.assert_not_called()
                 self.assertTrue(load_steps.called)
+
+
+class LSAlerts(BaseTest):
+
+    @mock.patch("sys.argv", new=["test", "lsalerts"])
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("sys.stdout")
+    def test_lsalerts_called(self, *args):
+        with mock.patch("texttable.Texttable.header") as header, \
+             mock.patch("texttable.Texttable.add_row") as row:
+            cli.run_from_command_line()
+            header.assert_called_with(
+                ('Alert Class', 'Process', 'Groups'))
+            self.assertEquals(row.call_count, len(run.load_alerts()))
+
+    @mock.patch("sys.argv", new=["test", "lsalerts"])
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("sys.stdout")
+    def test_lsalerts_none(self, *args):
+        with mock.patch("corral.run.load_alerts",
+                        return_value=()) as load_alerts:
+            with mock.patch("texttable.Texttable.add_rows") as add_rows:
+                cli.run_from_command_line()
+                add_rows.assert_not_called()
+                self.assertTrue(load_alerts.called)
 
 
 class Run(BaseTest):
@@ -398,31 +537,6 @@ class Run(BaseTest):
                 cli.run_from_command_line()
 
 
-class LSAlerts(BaseTest):
-
-    @mock.patch("sys.argv", new=["test", "lsalerts"])
-    @mock.patch("corral.core.setup_environment")
-    @mock.patch("sys.stdout")
-    def test_lsalerts(self, *args):
-        with mock.patch("corral.run.load_alerts") as load_alerts:
-            with mock.patch("texttable.Texttable.header") as header:
-                cli.run_from_command_line()
-                header.assert_called_with(
-                    ('Alert Class', 'Process', 'Groups'))
-                self.assertTrue(load_alerts.called)
-
-    @mock.patch("sys.argv", new=["test", "lsalerts"])
-    @mock.patch("corral.core.setup_environment")
-    @mock.patch("sys.stdout")
-    def test_lsalerts_none(self, *args):
-        with mock.patch("corral.run.load_alerts",
-                        return_value=()) as load_alerts:
-            with mock.patch("texttable.Texttable.add_rows") as add_rows:
-                cli.run_from_command_line()
-                add_rows.assert_not_called()
-                self.assertTrue(load_alerts.called)
-
-
 class CheckAlerts(BaseTest):
 
     @mock.patch("sys.argv", new=["test", "check-alerts", "--sync"])
@@ -490,3 +604,187 @@ class CheckAlerts(BaseTest):
         with mock.patch("corral.run.execute_alert"):
             with self.assertRaises(SystemExit):
                 cli.run_from_command_line()
+
+
+class CreateDoc(BaseTest):
+
+    @mock.patch("corral.docs.create_doc", return_value="foo")
+    @mock.patch("sys.argv", new=["test", "create-doc"])
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("sys.stdout")
+    def test_create_doc_stdout(self, stdout, *args):
+        cli.run_from_command_line()
+        stdout.write.assert_any_call("foo")
+
+    @mock.patch("corral.docs.create_doc", return_value="foo")
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("sys.stdout")
+    def test_create_doc_file(self, stdout, *args):
+        tempfile = self.get_tempfile()
+        params = ["test", "create-doc", "-o", tempfile]
+        with mock.patch("sys.argv", new=params):
+            cli.run_from_command_line()
+            self.assertEquals(open(tempfile).read(), "foo")
+
+
+class CreateModelsDiagram(BaseTest):
+
+    @mock.patch("corral.docs.models_diagram", return_value="foo")
+    @mock.patch("sys.argv", new=["test", "create-models-diagram"])
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("sys.stdout")
+    def test_create_md_stdout(self, stdout, *args):
+        cli.run_from_command_line()
+        stdout.write.assert_any_call("foo")
+
+    @mock.patch("corral.docs.models_diagram", return_value="foo")
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("sys.stdout")
+    def test_create_md_file(self, stdout, *args):
+        tempfile = self.get_tempfile()
+        params = ["test", "create-models-diagram", "-o", tempfile]
+        with mock.patch("sys.argv", new=params):
+            cli.run_from_command_line()
+            self.assertEquals(open(tempfile).read(), "foo")
+
+
+class QAReport(BaseTest):
+
+    @mock.patch("corral.qa.qa_report")
+    @mock.patch("corral.docs.qa_report", return_value="foo")
+    @mock.patch("sys.argv", new=["test", "qareport"])
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("sys.stdout")
+    def test_create_qar_stdout(self, stdout, *args):
+        cli.run_from_command_line()
+        stdout.write.assert_any_call("foo")
+
+    @mock.patch("corral.qa.qa_report")
+    @mock.patch("corral.docs.qa_report", return_value="foo")
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("sys.stdout")
+    def test_create_qar_file(self, stdout, *args):
+        tempfile = self.get_tempfile()
+        params = ["test", "qareport", "-o", tempfile]
+        with mock.patch("sys.argv", new=params):
+            cli.run_from_command_line()
+            self.assertEquals(open(tempfile).read(), "foo")
+
+
+class Test(BaseTest):
+
+    @mock.patch("sys.argv", new=["test", "test"])
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("sys.stdout")
+    def test_test_all(self, *args):
+        with mock.patch("corral.docs.qa.run_tests") as rt:
+            cli.run_from_command_line()
+            rt.assert_called()
+
+    @mock.patch("sys.argv", new=["test", "test"])
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("sys.stdout")
+    @mock.patch("sys.exit")
+    def test_test_fail(self, sys_exit, *args):
+        fresult = mock.MagicMock()
+        with mock.patch.object(fresult, "wasSuccessful") as ws:
+            ws.return_value = False
+            with mock.patch("corral.docs.qa.run_tests", return_value=fresult):
+                cli.run_from_command_line()
+        sys_exit.assert_called_with(1)
+
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("sys.stdout")
+    @mock.patch("sys.stderr")
+    def test_test_by_name(self, *args):
+        params = ["test", "test", "-s", "Step1",
+                  "-a", "Alert1", "-c", "TestAPICommand"]
+        expected = (
+            [TestLoader, Step1, Alert1],
+            [commands.TestAPICommand], False, 0, False)
+        with mock.patch("sys.argv", new=params), \
+                mock.patch("corral.docs.qa.run_tests") as rt:
+                    cli.run_from_command_line()
+                    rt.assert_called_with(*expected)
+
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("sys.stdout")
+    @mock.patch("sys.stderr")
+    def test_test_duplicated(self, *args):
+        params = ["test", "test", "-s", "Step1", "Step1",
+                  "-a", "Alert1", "-c", "TestAPICommand"]
+        with mock.patch("sys.argv", new=params), \
+                mock.patch("sys.exit") as sys_exit:
+                    cli.run_from_command_line()
+                    sys_exit.assert_called_with(1)
+        params = ["test", "test", "-s", "Step1",
+                  "-a", "Alert1", "Alert1", "-c", "TestAPICommand"]
+        with mock.patch("sys.argv", new=params), \
+                mock.patch("sys.exit") as sys_exit:
+                    cli.run_from_command_line()
+                    sys_exit.assert_called_with(1)
+        params = ["test", "test", "-s", "Step1", "Step1",
+                  "-a", "Alert1", "-c", "TestAPICommand"]
+        with mock.patch("sys.argv", new=params), \
+                mock.patch("sys.exit") as sys_exit:
+                    cli.run_from_command_line()
+                    sys_exit.assert_called_with(1)
+        params = ["test", "test", "-s", "Step1",
+                  "-a", "Alert1", "-c", "TestAPICommand", "TestAPICommand"]
+        with mock.patch("sys.argv", new=params), \
+                mock.patch("sys.exit") as sys_exit:
+                    cli.run_from_command_line()
+                    sys_exit.assert_called_with(1)
+
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("sys.stdout")
+    @mock.patch("sys.stderr")
+    def test_test_invalid_name(self, *args):
+        params = ["test", "test", "-s", "Step1x",
+                  "-a", "Alert1", "-c", "TestAPICommand"]
+        with mock.patch("sys.argv", new=params), \
+                mock.patch("sys.exit") as sys_exit:
+                    cli.run_from_command_line()
+                    sys_exit.assert_called_with(1)
+        params = ["test", "test", "-s", "Step1",
+                  "-a", "Alert1x", "-c", "TestAPICommand"]
+        with mock.patch("sys.argv", new=params), \
+                mock.patch("sys.exit") as sys_exit:
+                    cli.run_from_command_line()
+                    sys_exit.assert_called_with(1)
+        params = ["test", "test", "-s", "Step1",
+                  "-a", "Alert1", "-c", "TestAPICommandx"]
+        with mock.patch("sys.argv", new=params), \
+                mock.patch("sys.exit") as sys_exit:
+                    cli.run_from_command_line()
+                    sys_exit.assert_called_with(1)
+
+
+class RunAll(BaseTest):
+
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("sys.stdout")
+    @mock.patch("sys.stderr")
+    @mock.patch("sys.argv", new=["test", "run-all"])
+    def test_run_all(self, *args):
+        with mock.patch("corral.run.execute_loader") as execute_loader, \
+                mock.patch("corral.run.execute_step") as execute_step, \
+                mock.patch("corral.run.execute_alert") as execute_alert:
+                    cli.run_from_command_line()
+                    execute_loader.assert_any_call(TestLoader)
+                    execute_step.assert_any_call(Step1)
+                    execute_step.assert_any_call(Step2)
+                    execute_alert.assert_any_call(Alert1)
+
+    @mock.patch("sys.argv", new=["test", "run-all"])
+    @mock.patch("corral.core.setup_environment")
+    @mock.patch("sys.stdout")
+    @mock.patch("sys.exit")
+    def test_run_fail(self, sys_exit, *args):
+        fproc = mock.MagicMock()
+        fproc.exitcode = 1
+        with mock.patch("corral.run.execute_loader", return_value=[fproc]), \
+                mock.patch("corral.run.execute_step"), \
+                mock.patch("corral.run.execute_alert"):
+                    cli.run_from_command_line()
+        sys_exit.assert_called_with(1)

@@ -12,9 +12,23 @@
 # IMPORTS
 # =============================================================================
 
+import atexit
 import unittest
+import tempfile
+import shutil
 
 import six
+
+# =============================================================================
+# CONSTANTS
+# =============================================================================
+
+TEMP_DIR = tempfile.mkdtemp(suffix="_corral_test")
+
+
+@atexit.register
+def clean():
+    shutil.rmtree(TEMP_DIR)
 
 
 # =============================================================================
@@ -43,6 +57,9 @@ class BaseTest(unittest.TestCase):
                     session.query(model).delete()
         except:
             pass
+
+    def get_tempfile(self, *args, **kwargs):
+        return tempfile.mkstemp(dir=TEMP_DIR, *args, **kwargs)[1]
 
     if six.PY2:
         assertRaisesRegex = six.assertRaisesRegex
