@@ -65,7 +65,7 @@ class TestGetScoreCualifications(BaseTest):
 
         expected = {
             limit: "".join([random.choice(string.ascii_letters)
-                            for _ in  range(random.randint(1,  10))])
+                            for _ in range(random.randint(1,  10))])
             for limit in range(0, 100, random.randint(1,  10))
         }
         with mock.patch("tests.settings.SCORE_CUALIFICATIONS",
@@ -82,4 +82,3 @@ class TestRetrieveAllPipelineModulesNames(BaseTest):
             msg = "'{}' don't start with '{}'".format(result, expected)
             self.assertTrue(
                 result.startswith(expected) or result == expected[:-1], msg)
-
