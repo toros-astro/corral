@@ -733,7 +733,7 @@ class QAReport(BaseCommand):
             help="Exclude the explanation the Corral QAI and QAI Score")
         self.parser.add_argument(
             "--exclude-test-output", "-et", dest='full_output', default=True,
-            help='Add the full outut of test into the report',
+            help='Add the full output of test into the report',
             action='store_false')
 
         self.parser.add_argument(

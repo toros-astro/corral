@@ -20,13 +20,7 @@ from . import cli, core, res, setup, run, util, db, qa
 # FUNCTIONS
 # =============================================================================
 
-def models_diagram(fmt="dot"):
-    parsers = {
-        "dot": sadisplay.dot,
-        "plantuml": sadisplay.plantuml,
-    }
-    parser = parsers[fmt]
-
+def models_diagram():
     default_models = db.load_default_models()
     models = [
         m for m in util.collect_subclasses(db.Model)
@@ -38,23 +32,7 @@ def models_diagram(fmt="dot"):
         show_properties=True,
         show_indexes=True)
 
-    return parser(desc)
-
-
-# def pipeline_diagram():
-    # Node = namedtuple("Node", ["proc", "type", "input", "output"])
-    # nodes = []
-
-    # default_models = db.load_default_models()
-    # models = [
-    #   m for m in util.collect_subclasses(db.Model)
-    #   if sys.modules[m.__module__] != default_models]
-
-    # # check loader
-    # loader_cls = run.load_loader()
-    # import ipdb; ipdb.set_trace()
-
-    # return parser(desc)
+    return sadisplay.dot(desc)
 
 
 def create_doc(processors, models, doc_formatter=None):
@@ -118,7 +96,7 @@ def qa_report(report, full_output, explain_qai):
         template = jinja2.Template(fp.read())
     ctx = {
         "report": report, "full_output": full_output,
-        "explain_qai": explain_qai, "qai_doc": type(report).qai.__doc__,
+        "explain_qai": explain_qai, "qai_doc": report.__class__.qai.__doc__,
         "tau": qa.get_tau(), "core": core,
         "cualifications": sorted(score_cualifications.items()),
         "pipeline_setup": setup.load_pipeline_setup()}
