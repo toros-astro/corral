@@ -374,6 +374,13 @@ def get_score_cualifications():
 
 def retrieve_all_pipeline_modules_names():
 
+    def extract_modules(cls_names):
+        modules = []
+        for cls_name in cls_names:
+            cls = util.dimport(cls_name)
+            modules.append(cls.__module__)
+        return modules
+
     def recursive_search(pkg_name):
         modules = []
         pkg = util.dimport(pkg_name)
@@ -389,12 +396,14 @@ def retrieve_all_pipeline_modules_names():
     modules_names = [
         get_test_module_name(),
         models_module, commands_module,
-        conf.CORRAL_SETTINGS_MODULE, conf.PACKAGE,
-        conf.settings.PIPELINE_SETUP, conf.settings.PIPELINE_SETUP,
-        conf.settings.LOADER]
-    modules_names.extend(conf.settings.STEPS)
-    modules_names.extend(conf.settings.ALERTS)
+        conf.CORRAL_SETTINGS_MODULE, conf.PACKAGE]
+    modules_names.extend(extract_modules([
+        conf.settings.PIPELINE_SETUP,
+        conf.settings.LOADER]))
+    modules_names.extend(extract_modules(conf.settings.STEPS))
+    modules_names.extend(extract_modules(conf.settings.ALERTS))
     modules_names.extend(recursive_search(conf.PACKAGE))
+
     return tuple(set(modules_names))
 
 

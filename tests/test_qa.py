@@ -129,3 +129,12 @@ class TestRunCoverage(BaseTest):
         cov.xml.assert_called()
         with bopen() as fp:
             self.assertIs(fp.read(), result[1])
+
+
+class TestRunStyle(BaseTest):
+
+    def test_run_style(self):
+        modules = qa.retrieve_all_pipeline_modules_names()
+        report, text = qa.run_style()
+        self.assertEquals(
+            report.counters["files"], len(modules) + 1)  # __init__
