@@ -15,11 +15,12 @@
 import random
 import string
 
-from corral import qa
-
 import mock
 
-from . import tests
+from corral import qa
+from corral.exceptions import ImproperlyConfigured
+
+from . import tests, steps, commands
 from .base import BaseTest
 
 
@@ -82,3 +83,49 @@ class TestRetrieveAllPipelineModulesNames(BaseTest):
             msg = "'{}' don't start with '{}'".format(result, expected)
             self.assertTrue(
                 result.startswith(expected) or result == expected[:-1], msg)
+
+
+class TestGetTestcases(BaseTest):
+
+    def test_get_testcases(self):
+        for subject, tc in qa.get_testcases([steps.Step1],
+                                            [commands.TestAPICommand], tests):
+            self.assertTrue(tc)
+            for t in tc:
+                self.assertIs(t.subject, subject)
+
+    @mock.patch("tests.tests.ExampleTestStep1.subject")
+    def test_subject_invalid(self, *args):
+        with self.assertRaises(ImproperlyConfigured):
+            qa.get_testcases([steps.Step1], [], tests)
+
+
+class TestRunTest(BaseTest):
+
+    @mock.patch("corral.db")
+    @mock.patch("corral.qa.database_exists")
+    @mock.patch("corral.qa.create_database")
+    @mock.patch("corral.qa.drop_database")
+    @mock.patch("unittest.runner._WritelnDecorator")
+    def test_run_test(self, *args):
+        test_cases = qa.get_testcases([steps.Step1], [], tests)
+        expected = len(test_cases[0][1])
+        result = qa.run_tests([steps.Step1], [],
+                              failfast=False, verbosity=0)
+        self.assertEquals(result.testsRun, expected)
+
+
+class TestRunCoverage(BaseTest):
+
+    @mock.patch("tempfile.NamedTemporaryFile")
+    @mock.patch("corral.qa.get_testcases")
+    @mock.patch("corral.qa.run_tests")
+    @mock.patch("xmltodict.parse", lambda xml: xml)
+    @mock.patch('six.moves.builtins.open')
+    @mock.patch("sh.coverage")
+    def test_run_coverage(self, cov, bopen, xmltodict_parse, *args):
+        result = qa.run_coverage(failfast=False, verbosity=0)
+        self.assertIs(cov.report(), result[0])
+        cov.xml.assert_called()
+        with bopen() as fp:
+            self.assertIs(fp.read(), result[1])
