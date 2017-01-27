@@ -12,11 +12,11 @@ intuitive data handling model.
 
 ##Features
 
-* Command line interface with standard utilities
-* Editable commands on your application
-* Completely built on SQLAlchemy ORM
-* Allows the introduction of Steps
-* Follows the MVC (Model View Controller) pattern
+*   Command line interface with standard utilities
+*   Editable commands on your application
+*   Completely built on SQLAlchemy ORM
+*   Allows the introduction of Steps
+*   Follows the MVC (Model View Controller) pattern
 
 ##Installation
 
@@ -32,9 +32,14 @@ You can also run the install by giving the github link directly to pip:
 
 ##Support
 
-If you have issues pleas report them as a issue ticket in our github. Thanks!
+-   **Full Documentation and Tutorial:** http://corral.readthedocs.io/
+-   **Community Forum:**
+    https://groups.google.com/forum/#!forum/corral-users-forum
+-   **Issues:** If you have issues please report them as a issue
+    here: https://github.com/toros-astro/corral/issues
+
 
 ##License
 
-- BSD-3: https://opensource.org/licenses/BSD-3-Clause
-- BSD-3 Licence Explained: https://tldrlegal.com/license/bsd-3-clause-license-(revised)
+-   BSD-3: https://opensource.org/licenses/BSD-3-Clause
+-   BSD-3 Licence Explained: https://tldrlegal.com/license/bsd-3-clause-license-(revised)
