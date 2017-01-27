@@ -2,6 +2,8 @@
 
 #The Powerful Pipeline Framework
 
+[![Build Status](https://travis-ci.org/toros-astro/corral.svg?branch=master)](https://travis-ci.org/toros-astro/corral)
+
 Corral will solve your pipeline needs by merging a database full connection  
 interface with a MVC model, by making you able of editing your custom schemas  
 and adding the possibility of writting specific processing steps following a  
@@ -35,5 +37,3 @@ If you have issues pleas report them as a issue ticket in our github. Thanks!
 
 - BSD-3: https://opensource.org/licenses/BSD-3-Clause
 - BSD-3 Licence Explained: https://tldrlegal.com/license/bsd-3-clause-license-(revised)
-
-[![Build Status](https://travis-ci.org/toros-astro/corral.svg?branch=master)](https://travis-ci.org/toros-astro/corral)
