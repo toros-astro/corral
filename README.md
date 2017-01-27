@@ -18,6 +18,14 @@ intuitive data handling model.
 *   Allows the introduction of Steps
 *   Follows the MVC (Model View Controller) pattern
 
+##Support
+
+-   **Full Documentation and Tutorial:** http://corral.readthedocs.io/
+-   **Community Forum:**
+    https://groups.google.com/forum/#!forum/corral-users-forum
+-   **Issues:** If you have issues please report them as a issue
+    here: https://github.com/toros-astro/corral/issues
+
 ##Installation
 
 Install project by cloning from [Corral github](https://github.com/toros-astro/corral.git):
@@ -29,14 +37,6 @@ and by making `pip install -e .`, or the classic `python setup.py install`.
 You can also run the install by giving the github link directly to pip:
 
 ```pip install -e git+https://github.com/toros-astro/corral.git```.
-
-##Support
-
--   **Full Documentation and Tutorial:** http://corral.readthedocs.io/
--   **Community Forum:**
-    https://groups.google.com/forum/#!forum/corral-users-forum
--   **Issues:** If you have issues please report them as a issue
-    here: https://github.com/toros-astro/corral/issues
 
 
 ##License
