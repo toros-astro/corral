@@ -1,5 +1,5 @@
-Escribiendo tu primer Pipeline con Corral - Parte 3
-===================================================
+Tutorial - Part #3 - Loaders
+============================
 
 Cargando Datos al Stream: Loader
 --------------------------------

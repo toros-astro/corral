@@ -1,5 +1,5 @@
-Escribiendo tu primer Pipeline con Corral - Parte 1
-===================================================
+Tutorial - Part #1 - Creating An Empty Project
+==============================================
 
 Let's learn by example.
 

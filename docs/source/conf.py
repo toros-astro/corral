@@ -20,8 +20,11 @@ import shlex
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath(os.path.join('..', "..")))
 
-from recommonmark.parser import CommonMarkParser
+import corral
+
+#~ from recommonmark.parser import CommonMarkParser
 
 # on_rtd is whether we are on readthedocs.org
 ON_RTD = os.environ.get('READTHEDOCS', None) == 'True'
@@ -32,9 +35,9 @@ ON_RTD = os.environ.get('READTHEDOCS', None) == 'True'
 # If your documentation needs a minimal Sphinx version, state it here.
 #needs_sphinx = '1.0'
 
-source_parsers = {
-    '.md': CommonMarkParser,
-}
+#~ source_parsers = {
+    #~ '.md': CommonMarkParser,
+#~ }
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -69,7 +72,7 @@ author = u'Juan B Cabral, Bruno Sanchez, Martín Beroiz'
 # built documents.
 #
 # The short X.Y version.
-version = '0.1'
+version = ".".join(corral.__version__)
 # The full version, including alpha/beta/rc tags.
 release = version
 
@@ -146,7 +149,7 @@ html_theme = 'default'
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-#html_favicon = None
+html_favicon = "_static/favicon.ico"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

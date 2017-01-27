@@ -1,5 +1,5 @@
-Escribiendo tu primer Pipeline con Corral - Parte 4
-===================================================
+Tutorial - Part #4 - Steps
+==========================
 
 Steps: Procesando Datos
 -----------------------
@@ -14,7 +14,7 @@ y máximos de  ``sepal_length``, ``sepal_width``,
     En todos el tutorial hemos usado como base de datos SQLite la cual
     no sporta concurrencia. Tenga en cuenta que esto es solo un ejercicio y
     en un verdadero Pipeline deberia usar alguna base de datos como
-    PostgreSQL, MySQL, Oracle o incluso algo mas pontente como Hive_
+    PostgreSQL_, MySQL_, Oracle_ o incluso algo mas pontente como Hive_
 
 
 Modelo para las estadísticas

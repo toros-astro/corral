@@ -1,5 +1,5 @@
-Escribiendo tu primer Pipeline con Corral - Parte 2
-===================================================
+Tutorial - Part #2 - Models
+===========================
 
 El caso: Iris Pipeline
 ----------------------
