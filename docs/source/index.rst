@@ -17,6 +17,14 @@ interface with a MVC_ model, by making you able of editing your custom schemas
 and adding the possibility of writting specific processing steps following a
 intuitive data handling model.
 
+.. image:: https://travis-ci.org/toros-astro/corral.svg?branch=master
+    :target: https://travis-ci.org/toros-astro/corral
+    :alt: Build Status
+
+.. image:: https://img.shields.io/badge/License-BSD%203--Clause-blue.svg
+   :target: https://opensource.org/licenses/BSD-3-Clause
+   :alt: License
+
 
 Help & discussion mailing list
 ------------------------------
