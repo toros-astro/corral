@@ -68,7 +68,7 @@ Contents:
     :maxdepth: 2
 
     intro/index.rst
-
+    topics/index.rst
     cli.rst
 
     glossary.rst
