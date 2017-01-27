@@ -1,16 +1,16 @@
 .. _index:
 
-====================
-Corral documentation
-====================
+==================================================================
+Corral Pipelines: MVC Framework
+==================================================================
 
 .. only:: html
 
     .. image:: _static/logo_medium.jpg
-        :align: center
-        :scale: 10 %
+        :align: left
+        :scale: 100 %
 
-.. rubric:: Everything you need to know about Corral.
+.. rubric:: Trustworthy and Fully Functional Data Intensive Parallel Pipelines
 
 Corral will solve your pipeline needs by merging a database full connection
 interface with a MVC_ model, by making you able of editing your custom schemas

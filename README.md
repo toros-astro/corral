@@ -3,10 +3,11 @@
 #The Powerful Pipeline Framework
 
 [![Build Status](https://travis-ci.org/toros-astro/corral.svg?branch=master)](https://travis-ci.org/toros-astro/corral)
+[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
-Corral will solve your pipeline needs by merging a database full connection  
-interface with a MVC model, by making you able of editing your custom schemas  
-and adding the possibility of writting specific processing steps following a  
+Corral will solve your pipeline needs by merging a database full connection
+interface with a MVC model, by making you able of editing your custom schemas
+and adding the possibility of writting specific processing steps following a
 intuitive data handling model.
 
 ##Features
@@ -19,13 +20,13 @@ intuitive data handling model.
 
 ##Installation
 
-Install project by cloning from [Corral github](https://github.com/toros-astro/corral.git):  
+Install project by cloning from [Corral github](https://github.com/toros-astro/corral.git):
 
-```git clone https://github.com/toros-astro/corral.git``` 
+```git clone https://github.com/toros-astro/corral.git```
 
-and by making `pip install -e .`, or the classic `python setup.py install`. 
+and by making `pip install -e .`, or the classic `python setup.py install`.
 
-You can also run the install by giving the github link directly to pip:  
+You can also run the install by giving the github link directly to pip:
 
 ```pip install -e git+https://github.com/toros-astro/corral.git```.
 
