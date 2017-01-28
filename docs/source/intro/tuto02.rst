@@ -1,20 +1,21 @@
 Tutorial - Part #2 - Models
 ===========================
 
-El caso: Iris Pipeline
+Study case: Iris Pipeline
 ----------------------
 
-Llevaremos adelante un ejemplo sencillo, utilizaremos nuestro pipeline recien
-creado para crear un pipeline para el calculo sencillo de estadisticas del
-famoso `Fisher Iris Dataset`_.
+We will carry out a simple exercise, using our recently initialized pipeline
+to develop a piepeline for statistic calculations of the famous `Fisher Iris Dataset`.
 
-La idea global es que las estadisticas de cada tipo de Iris (Setosa, Virgínica
-y Versicolor) se ejecute por separado para aprovechar el multiprocesamiento de
-3 procesadores simultaneamente.
+The global idea is to obtain information for each class of Iris (
+Setosa, Virginica, and Versicolor) that is being calculated separatedly, 
+seizing the multi processing of 3 cores at the time.
 
-Finalmente definiremos unas alertas para informar algun estado deseado.
+Finally we will define some alerts, just to let us know if any expected 
+results are obtained.
 
-Así mismo definiremos algunos comandos para ver el estado general del pipeline.
+We will define some commands as well, to check the pipeline general
+status.
 
 
 Descargando los datos
