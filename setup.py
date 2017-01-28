@@ -66,10 +66,12 @@ def do_setup():
         keywords=corral.KEYWORDS,
         classifiers=(
             "Development Status :: 4 - Beta",
-            "Intended Audience :: Education",
-            "Intended Audience :: Science/Research",
-            "License :: OSI Approved :: BSD License",
-            "Operating System :: OS Independent",
+            'Intended Audience :: Science/Research',
+            'Intended Audience :: Developers',
+            'License :: OSI Approved',
+            'Operating System :: POSIX',
+            'Operating System :: Unix',
+            'Operating System :: MacOS',
             "Programming Language :: Python",
             "Programming Language :: Python :: 2",
             "Programming Language :: Python :: 2.7",
@@ -78,6 +80,7 @@ def do_setup():
             "Programming Language :: Python :: 3.5",
             "Programming Language :: Python :: Implementation :: CPython",
             "Topic :: Scientific/Engineering",
+            'Topic :: Software Development'
         ),
         packages=[
             pkg for pkg in setuptools.find_packages()
