@@ -5,7 +5,7 @@
 
 __version__ = ("0", "0", "1")
 
-NAME = "corral"
+NAME = "corral-pipeline"
 
 DOC = __doc__
 

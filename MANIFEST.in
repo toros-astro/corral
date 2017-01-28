@@ -1,0 +1,5 @@
+recursive-include corral/res *.md, *.jpg
+recursive-include corral/template/ *.mako *.txt *.ini
+include LICENSE.txt
+include README.md
+
