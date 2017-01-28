@@ -22,11 +22,10 @@ Download the Data
 -----------------
 
 First of all we need to download the csv_ file, with the raw data to feed the
-pipeline. We can get it from:
+pipeline. We can get it from: https://github.com/toros-astro/corral/raw/master/datasets/iris.csv
+and put it inside ``my_pipeline`` directory. 
 
-https://github.com/toros-astro/corral/raw/master/datasets/iris.csv
-
-and put it inside ``my_pipeline`` directory. Taking a glance of our files
+Taking a glance of our files
 at this point we should get::
 
     in_corral.py
@@ -47,7 +46,7 @@ Basic Configuration
 
 First thing to do is to edit ``settings.py``.
 
-Somethin that we need to be able is to find pahts dinamically, so we import
+Something that we need to be able is to find pahts dinamically, so we import
 the *os* module. So the import should look like
 
 .. code-block:: python
@@ -87,13 +86,11 @@ second line just creates a path to file *iris.csv* downloaded before.
 The Models
 ----------
 
-Now our 
-Ahora nuestro pipeline necesita una defeinicion de como seran los datos
-que guardaran la información sobre cada uno de los campos del iris data set.
+Now our pipeline needs to know the looks of our data stored in the
+database.
 
-Dentro del archivo ``my_pipeline/models.py`` borraremos la clase ahi definida
-como ``Example``. Luego modificaremos el arhivo para que se vea de la siguiente
-forma nueva para que se vea de la siguiente forma:
+In ``my_pipeline/models.py`` file we erase the ``Example`` class. 
+Then we modify the file so it looks just like this:
 
 .. code-block:: python
 
@@ -121,10 +118,11 @@ forma nueva para que se vea de la siguiente forma:
         petal_width = db.Column(db.Float, nullable=False)
 
 
-Como podemos ver la clase ``Name`` y ``Observarion`` hereda de  ``db.Model``,
-con esto informamos a corral que deseamos persistir estos objetos y que son
-de interes en nuestra base de datos.
+As we can se ``Name`` and ``Observation`` class inheritates from 
+``db.Model``, and by doing this we let Corral know that these are
+tables in our database.
 
+The ``Name`` model is in charge of storing every different
 El modelo ``Name`` sera el encargado de guardar cada nombre diferente que
 exista en nuestro dataset. Hay que recordar que el dataset tiene tres tipos
 distingos de flores iris: *setosa*, *versicolor* y *virginica* con lo cual
