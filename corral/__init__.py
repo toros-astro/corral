@@ -13,7 +13,7 @@ VERSION = ".".join(__version__)
 
 AUTHORS = "Cabral, Sanchez & Berois"
 
-EMAIL = "jbc.develop@gmail.com"
+EMAIL = "corral-users-forum@googlegroups.com"
 
 URL = "https://github.com/toros-astro/corral"
 
