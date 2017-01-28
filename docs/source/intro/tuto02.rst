@@ -1,32 +1,32 @@
 Tutorial - Part #2 - Models
 ===========================
 
-El caso: Iris Pipeline
-----------------------
+Study case: Iris Pipeline
+-------------------------
 
-Llevaremos adelante un ejemplo sencillo, utilizaremos nuestro pipeline recien
-creado para crear un pipeline para el calculo sencillo de estadisticas del
-famoso `Fisher Iris Dataset`_.
+We will carry out a simple exercise, using our recently initialized pipeline
+to develop a piepeline for statistic calculations of the famous `Fisher Iris Dataset`_.
 
-La idea global es que las estadisticas de cada tipo de Iris (Setosa, Virgínica
-y Versicolor) se ejecute por separado para aprovechar el multiprocesamiento de
-3 procesadores simultaneamente.
+The global idea is to obtain information for each class of Iris (
+Setosa, Virginica, and Versicolor) that is being calculated separatedly, 
+seizing the multi processing of 3 cores at the time.
 
-Finalmente definiremos unas alertas para informar algun estado deseado.
+Finally we will define some alerts, just to let us know if any expected 
+results are obtained.
 
-Así mismo definiremos algunos comandos para ver el estado general del pipeline.
+We will define some commands as well, to check the pipeline general
+status.
 
 
-Descargando los datos
----------------------
+Download the Data
+-----------------
 
-Primero es necesario descargar el archivo csv_ con los datos con los cuales
-alimentaremos el pipeline. Puede descargar desde:
+First of all we need to download the csv_ file, with the raw data to feed the
+pipeline. We can get it from: https://github.com/toros-astro/corral/raw/master/datasets/iris.csv
+and put it inside ``my_pipeline`` directory. 
 
-https://github.com/toros-astro/corral/raw/master/datasets/iris.csv
-
-Y ubicarlo dentro del directorio ``my_pipeline``. Nuestra estructura en este
-punto tiene la forma::
+Taking a glance of our files
+at this point we should get::
 
     in_corral.py
     my_pipeline/
@@ -41,14 +41,13 @@ punto tiene la forma::
     └── commands.py
 
 
-Configuración Básica
---------------------
+Basic Configuration
+-------------------
 
-El primer paso es editar el archivo ``settings.py``.
+First thing to do is to edit ``settings.py``.
 
-Primero debemos importar el modulo *os* que nos servira para determinar
-el path donde se encuentra nuestro pipeline de manera dinamica. Asi los imports
-deberian quedar con la forma
+Something that we need to be able is to find pahts dinamically, so we import
+the *os* module. So the import should look like
 
 .. code-block:: python
 
@@ -56,45 +55,42 @@ deberian quedar con la forma
     import os
 
 
-En la variable ``CONNECTION`` se encuentra especificada en el formato
-*RFC-1738* (utilizado por SQLAlchemy_) la conexcion a la base de datos. Por
-defecto deberia decir algo como:
+The ``CONNECTION`` variable specifies the *RFC-1738* (used by SQLAlchemy_)
+format for database connection. Default should look something like this:
 
 .. code-block:: python
 
     CONNECTION = "sqlite:///my_pipeline-dev.db"
 
-Con esto se creara un archivo ``pipeline-dev.db`` en la misma carpeta donde se
-encuentra ``in_corral.py`` que contendra la base de datos SQLite_.
+With this a ``pipeline-dev.db`` file will be created in the same directory where
+``in_corral.py`` is located, containing the SQLite_ database.
 
 .. seealso::
 
-    Para más informacón de que otras bases de datos se pueden utilizar lea
-    la documentación de SQLAlchemy:
+    For more information regarding another databases you can search the
+    SQLAlchemy documentation at:
     http://docs.sqlalchemy.org/en/latest/core/engines.html
 
 
-Al final del archivo agregaremos las siguientes lineas
+At the end of the file we will add the following lines
 
 .. code-block:: python
 
     PATH = os.path.abspath(os.path.dirname(__file__))
     IRIS_PATH = os.path.join(PATH, "iris.csv")
 
-La primer linea guarda en la variable ``PATH`` el directorio donde se encuentra
-el archivo ``settings.py`` la segunda linea crea un path al archivo *iris.csv*
-que bajamos en el paso anterior.
+First line stores in ``PATH`` the directory where ``settings.py`` is located,
+second line just creates a path to file *iris.csv* downloaded before.
 
 
-Los modelos
------------
+The Models
+----------
 
-Ahora nuestro pipeline necesita una defeinicion de como seran los datos
-que guardaran la información sobre cada uno de los campos del iris data set.
+Now our pipeline needs to know the looks of our data stored in the
+database.
 
-Dentro del archivo ``my_pipeline/models.py`` borraremos la clase ahi definida
-como ``Example``. Luego modificaremos el arhivo para que se vea de la siguiente
-forma nueva para que se vea de la siguiente forma:
+In ``my_pipeline/models.py`` file we erase the ``Example`` class. 
+Then we modify the file so it looks just like this:
 
 .. code-block:: python
 
@@ -122,10 +118,11 @@ forma nueva para que se vea de la siguiente forma:
         petal_width = db.Column(db.Float, nullable=False)
 
 
-Como podemos ver la clase ``Name`` y ``Observarion`` hereda de  ``db.Model``,
-con esto informamos a corral que deseamos persistir estos objetos y que son
-de interes en nuestra base de datos.
+As we can se ``Name`` and ``Observation`` class inheritates from 
+``db.Model``, and by doing this we let Corral know that these are
+tables in our database.
 
+The ``Name`` model is in charge of storing every different
 El modelo ``Name`` sera el encargado de guardar cada nombre diferente que
 exista en nuestro dataset. Hay que recordar que el dataset tiene tres tipos
 distingos de flores iris: *setosa*, *versicolor* y *virginica* con lo cual
