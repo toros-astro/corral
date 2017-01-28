@@ -94,7 +94,7 @@ This is the recommended way to install Corral.
    administrator privileges.
 
 3. After you've created and activated a virtual environment, enter the command
-   ``pip install corral`` at the shell prompt.
+   ``pip install -U corral-pipeline`` at the shell prompt.
 
 
 Installing the development version
