@@ -49,6 +49,9 @@ REQUIREMENTS = [
     'xmltodict>=0.10.1'
 ]
 
+with open('README.rst') as fp:
+    LONG_DESCRIPTION = fp.read()
+
 
 # =============================================================================
 # FUNCTIONS
@@ -59,6 +62,7 @@ def do_setup():
         name=corral.NAME,
         version=corral.VERSION,
         description=corral.DOC,
+        long_description=LONG_DESCRIPTION,
         author=corral.AUTHORS,
         author_email=corral.EMAIL,
         url=corral.URL,
