@@ -1,6 +1,6 @@
 BSD 3-Clause License
 
-Copyright (c) 2016-2017, TOROS Colaboration
+Copyright (c) 2016-2017, Cabral, Juan; Sanchez, Bruno & Berois, Martín
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
