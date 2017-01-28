@@ -2,10 +2,10 @@ Tutorial - Part #2 - Models
 ===========================
 
 Study case: Iris Pipeline
-----------------------
+-------------------------
 
 We will carry out a simple exercise, using our recently initialized pipeline
-to develop a piepeline for statistic calculations of the famous `Fisher Iris Dataset`.
+to develop a piepeline for statistic calculations of the famous `Fisher Iris Dataset`_.
 
 The global idea is to obtain information for each class of Iris (
 Setosa, Virginica, and Versicolor) that is being calculated separatedly, 
@@ -18,16 +18,16 @@ We will define some commands as well, to check the pipeline general
 status.
 
 
-Descargando los datos
----------------------
+Download the Data
+-----------------
 
-Primero es necesario descargar el archivo csv_ con los datos con los cuales
-alimentaremos el pipeline. Puede descargar desde:
+First of all we need to download the csv_ file, with the raw data to feed the
+pipeline. We can get it from:
 
 https://github.com/toros-astro/corral/raw/master/datasets/iris.csv
 
-Y ubicarlo dentro del directorio ``my_pipeline``. Nuestra estructura en este
-punto tiene la forma::
+and put it inside ``my_pipeline`` directory. Taking a glance of our files
+at this point we should get::
 
     in_corral.py
     my_pipeline/
@@ -42,8 +42,8 @@ punto tiene la forma::
     └── commands.py
 
 
-Configuración Básica
---------------------
+Basic Configuration
+-------------------
 
 El primer paso es editar el archivo ``settings.py``.
 
