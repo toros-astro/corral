@@ -1,4 +1,8 @@
-<img src='./docs/logo_corral.jpg' alt='Corral' width=260/>
+.. image:: docs/source/_static/logo_medium.jpg
+    :align: left
+    :scale: 50%
+    :alt: Corral
+
 
 The Powerful Pipeline Framework
 ===============================
@@ -16,6 +20,7 @@ interface with a MVC model, by making you able of editing your custom schemas
 and adding the possibility of writting specific processing steps following a
 intuitive data handling model.
 
+
 Features
 --------
 
@@ -25,6 +30,7 @@ Features
 *   Allows the introduction of Steps
 *   Follows the MVC (Model View Controller) pattern
 
+
 Support
 -------
 
@@ -33,25 +39,41 @@ Support
     https://groups.google.com/forum/#!forum/corral-users-forum
 -   **Issues:** If you have issues please report them as a issue
     here: https://github.com/toros-astro/corral/issues
+    
+    
+User Installation
+-----------------
 
-Installation
+The easiest way to install scikit-learn is using pip
+
+pip install -U corral-pipeline
+or conda:
+
+conda install scikit-learn
+The documentation includes more detailed 
+`installation instructions <http://corral.readthedocs.io/en/latest/intro/install.html>`__.
+
+
+Developmment
 ------------
-
 
 Install project by cloning from `Corral github <https://github.com/toros-astro/corral.git>`__:
 
-.. code-block: bash
+.. code-block:: bash
     
     $ git clone https://github.com/toros-astro/corral.git
 
-and by making `pip install -e .`, or the classic `python setup.py install`.
+and by making ``pip install -e .``, or the classic ``python setup.py install``.
 
 You can also run the install by giving the github link directly to pip:
 
-```pip install -e git+https://github.com/toros-astro/corral.git```.
+.. code-block:: bash
+
+    $ pip install -e git+https://github.com/toros-astro/corral.git
 
 
-##License
+License
+-------
 
 -   BSD-3: https://opensource.org/licenses/BSD-3-Clause
 -   BSD-3 Licence Explained: https://tldrlegal.com/license/bsd-3-clause-license-(revised)
