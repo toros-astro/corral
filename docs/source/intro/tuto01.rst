@@ -94,8 +94,8 @@ These files are:
   before going through any defined Steps.
 - ``my_pipeline/steps.py``: Every pipeline's step should be in this module,
  being this module one of the most important for data stream handling.
-- ``my_pipeline/alerts.py``: Modulo que contiene las alertas (anuncios para
-  los usuarios) de algun estado esperado del pipeline (por ejemplo enviar un
-  email cuando un proceso falle)
-- ``my_pipeline/commands.py``: Sirve para agregar comandos de consola
-  especificos para el pipeline.
+- ``my_pipeline/alerts.py``: Inside this module the Alerts define the 
+  user custom communication channel to report expected results (a 
+  email for instance).
+- ``my_pipeline/commands.py``: Used to add custom console commands, specific
+ for the pipeline.
