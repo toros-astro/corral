@@ -1,16 +1,23 @@
 <img src='./docs/logo_corral.jpg' alt='Corral' width=260/>
 
-#The Powerful Pipeline Framework
+The Powerful Pipeline Framework
+===============================
 
-[![Build Status](https://travis-ci.org/toros-astro/corral.svg?branch=master)](https://travis-ci.org/toros-astro/corral)
-[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+.. image:: https://travis-ci.org/toros-astro/corral.svg?branch=master
+    :target: https://travis-ci.org/toros-astro/corral
+    :alt: Build Status
+
+.. image:: https://img.shields.io/badge/License-BSD%203--Clause-blue.svg
+   :target: https://opensource.org/licenses/BSD-3-Clause
+   :alt: License
 
 Corral will solve your pipeline needs by merging a database full connection
 interface with a MVC model, by making you able of editing your custom schemas
 and adding the possibility of writting specific processing steps following a
 intuitive data handling model.
 
-##Features
+Features
+--------
 
 *   Command line interface with standard utilities
 *   Editable commands on your application
@@ -18,7 +25,8 @@ intuitive data handling model.
 *   Allows the introduction of Steps
 *   Follows the MVC (Model View Controller) pattern
 
-##Support
+Support
+-------
 
 -   **Full Documentation and Tutorial:** http://corral.readthedocs.io/
 -   **Community Forum:**
@@ -26,12 +34,15 @@ intuitive data handling model.
 -   **Issues:** If you have issues please report them as a issue
     here: https://github.com/toros-astro/corral/issues
 
-##Installation
+Installation
+------------
 
 
-Install project by cloning from [Corral github](https://github.com/toros-astro/corral.git):
+Install project by cloning from `Corral github <https://github.com/toros-astro/corral.git>`__:
 
-```git clone https://github.com/toros-astro/corral.git```
+.. code-block: bash
+    
+    $ git clone https://github.com/toros-astro/corral.git
 
 and by making `pip install -e .`, or the classic `python setup.py install`.
 
