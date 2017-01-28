@@ -75,8 +75,9 @@ Let's look at what ``create`` created::
 
 These files are:
 
-- ``in_corral.py``: Es el punto de acceso de tu pipeline, permite ejecutar
-  commandos dentro del entorno condigurado para el pipeline.
+- ``in_corral.py``: This is the acces point to your pipeline, 
+  and it allows commands to be executed inside the pipeline's
+  environment.
 - The inner ``my_pipeline/`` directory is the actual Python package for your
   project. Its name is the Python package name you’ll need to use to import
   anything inside it (e.g. ``my_pipeline.models``).
@@ -84,15 +85,15 @@ These files are:
   directory should be considered a Python package. (Read more about packages in
   the official Python docs if you’re a Python beginner.)
 - ``my_pipeline/settings.py``:  Settings/configuration for this Corral project.
-- ``my_pipeline/models.py``: Contiene todas las entidades (tablas) que seran
-  persistidas en la base de datos del pipeline
-- ``my_pipeline/pipeline.py``: Es el archivo sugerido para para llevar adelante
-  configuraciones globales "en tiempo de ejecucion".
-- ``my_pipeline/load.py``: Este módulo es el sugerido para contener el Loader
-  del pipeline. Esto es el punto de entrada donde se alimenta el stream de
-  datos al los sucecivos steps definidos.
-- ``my_pipeline/steps.py``: Este modulo es el cual contiene todos los steps que
-  manejan el stream de datos del pipeline.
+- ``my_pipeline/models.py``: This is the file that contains the entities (or tables)
+  that are stored in the pipeline's database. 
+- ``my_pipeline/pipeline.py``: This is the suggested file to globally configure the 
+  pipeline "on execution time".
+- ``my_pipeline/load.py``: This is where the pipeline's Loader lives.
+  This would be the entry point for raw data to the pipeline stream, 
+  before going through any defined Steps.
+- ``my_pipeline/steps.py``: Every pipeline's step should be in this module,
+ being this module one of the most important for data stream handling.
 - ``my_pipeline/alerts.py``: Modulo que contiene las alertas (anuncios para
   los usuarios) de algun estado esperado del pipeline (por ejemplo enviar un
   email cuando un proceso falle)
