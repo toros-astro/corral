@@ -24,6 +24,18 @@ intuitive data handling model.
 .. image:: https://img.shields.io/badge/License-BSD%203--Clause-blue.svg
    :target: https://opensource.org/licenses/BSD-3-Clause
    :alt: License
+   
+.. image:: https://img.shields.io/badge/python-2.7-blue.svg
+   :target: https://badge.fury.io/py/corral-pipeline
+   :alt: py27
+   
+.. image:: https://img.shields.io/badge/python-3.4-blue.svg
+   :target: https://badge.fury.io/py/corral-pipeline
+   :alt: py34
+   
+.. image:: https://img.shields.io/badge/python-3.5-blue.svg
+   :target: https://badge.fury.io/py/corral-pipeline
+   :alt: py3.5
 
 
 Help & discussion mailing list
