@@ -21,7 +21,7 @@ The Powerful Pipeline Framework
    
 .. image:: https://img.shields.io/badge/python-3.4-blue.svg
    :target: https://badge.fury.io/py/corral-pipeline
-   :alt: py27
+   :alt: py34
    
 .. image:: https://img.shields.io/badge/python-3.5-blue.svg
    :target: https://badge.fury.io/py/corral-pipeline
