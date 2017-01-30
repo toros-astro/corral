@@ -1,12 +1,14 @@
-Getting started
-===============
+Tutorial
+========
+
+This section contains a step-by-step by example tutorial to create your own
+data reduce pipeline with Corral
 
 Contents:
 
 .. toctree::
     :maxdepth: 1
 
-    install.rst
     tuto01.rst
     tuto02.rst
     tuto03.rst

@@ -17,30 +17,6 @@ interface with a MVC_ model, by making you able of editing your custom schemas
 and adding the possibility of writting specific processing steps following a
 intuitive data handling model.
 
-.. image:: https://travis-ci.org/toros-astro/corral.svg?branch=master
-    :target: https://travis-ci.org/toros-astro/corral
-    :alt: Build Status
-
-.. image:: https://img.shields.io/badge/License-BSD%203--Clause-blue.svg
-   :target: https://opensource.org/licenses/BSD-3-Clause
-   :alt: License
-
-.. image:: https://img.shields.io/badge/python-2.7-blue.svg
-   :target: https://badge.fury.io/py/corral-pipeline
-   :alt: py27
-
-.. image:: https://img.shields.io/badge/python-3.4-blue.svg
-   :target: https://badge.fury.io/py/corral-pipeline
-   :alt: py34
-
-.. image:: https://img.shields.io/badge/python-3.5-blue.svg
-   :target: https://badge.fury.io/py/corral-pipeline
-   :alt: py3.5
-
-.. image:: https://badge.fury.io/py/corral-pipeline.svg
-   :target: https://badge.fury.io/py/corral-pipeline
-   :alt: Pypi Package
-
 
 Help & discussion mailing list
 ------------------------------
@@ -69,7 +45,7 @@ If you are using Corral in your research, please cite:
     Sebastián Gurovich: “Corral Framework: Trustworthy and Fully Functional Data Intensive Parallel Astronomical Pipelines”, 2017; arXiv:1701.05566.
 
 
-.. code-block:: bibtext
+.. code-block:: bibtex
 
     @misc{
         1701.05566,
@@ -91,9 +67,9 @@ Contents:
 .. toctree::
     :maxdepth: 2
 
-    intro/index.rst
+    install.rst
+    tutorial/index.rst
     topics/index.rst
-    cli.rst
 
     glossary.rst
 

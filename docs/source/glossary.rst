@@ -12,6 +12,7 @@ Glossary
         configuration, Corral-specific options and application-specific
         settings.
         `[Read More] <https://en.wikipedia.org/wiki/Pipeline_(software)>`__
+
     MVC
         Model–view–controller (MVC) is a software design pattern for
         implementing user interfaces on computers. It divides a given software

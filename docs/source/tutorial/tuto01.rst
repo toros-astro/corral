@@ -6,7 +6,7 @@ Let's learn by example.
 Throughout this tutorial, we'll walk you through the creation of a basic
 application pipeline.
 
-We'll assume you have :doc:`Corral installed </intro/install>` already. You can
+We'll assume you have :doc:`Corral installed </install>` already. You can
 tell Corral is installed and which version by running the following command:
 
 .. code-block:: console
@@ -23,7 +23,7 @@ page, or update Corral to the newest version. If you are still using Python
 2.7, you will need to adjust the code samples slightly, as described in
 comments.
 
-See :doc:`How to install Corral </intro/install>` for advice on how to remove
+See :doc:`How to install Corral </install>` for advice on how to remove
 older versions of Corral and install a newer one.
 
 .. admonition:: Where to get help:
@@ -75,7 +75,7 @@ Let's look at what ``create`` created::
 
 These files are:
 
-- ``in_corral.py``: This is the acces point to your pipeline, 
+- ``in_corral.py``: This is the acces point to your pipeline,
   and it allows commands to be executed inside the pipeline's
   environment.
 - The inner ``my_pipeline/`` directory is the actual Python package for your
@@ -86,16 +86,16 @@ These files are:
   the official Python docs if you’re a Python beginner.)
 - ``my_pipeline/settings.py``:  Settings/configuration for this Corral project.
 - ``my_pipeline/models.py``: This is the file that contains the entities (or tables)
-  that are stored in the pipeline's database. 
-- ``my_pipeline/pipeline.py``: This is the suggested file to globally configure the 
+  that are stored in the pipeline's database.
+- ``my_pipeline/pipeline.py``: This is the suggested file to globally configure the
   pipeline "on execution time".
 - ``my_pipeline/load.py``: This is where the pipeline's Loader lives.
-  This would be the entry point for raw data to the pipeline stream, 
+  This would be the entry point for raw data to the pipeline stream,
   before going through any defined Steps.
 - ``my_pipeline/steps.py``: Every pipeline's step should be in this module,
- being this module one of the most important for data stream handling.
-- ``my_pipeline/alerts.py``: Inside this module the Alerts define the 
-  user custom communication channel to report expected results (a 
+  being this module one of the most important for data stream handling.
+- ``my_pipeline/alerts.py``: Inside this module the Alerts define the
+  user custom communication channel to report expected results (a
   email for instance).
 - ``my_pipeline/commands.py``: Used to add custom console commands, specific
- for the pipeline.
+  for the pipeline.

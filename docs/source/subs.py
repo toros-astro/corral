@@ -31,6 +31,13 @@ TARGETS = {
     "csv": "https://en.wikipedia.org/wiki/Comma-separated_values",
     "csv_module": "",
 
+    "hive": "https://hive.apache.org/",
+    "oracle": "https://en.wikipedia.org/wiki/Oracle_Database",
+    "mysql": "https://www.mysql.com/",
+    "iris": "https://en.wikipedia.org/wiki/Iris_flower_data_set",
+    "postgresql": "https://www.postgresql.org/",
+
+
 }
 
 

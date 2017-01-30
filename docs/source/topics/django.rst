@@ -45,7 +45,7 @@ Example
 
 
 Also if you want to exclude a view from the Corral scope you can
-add the decorator ``no_corral`
+add the decorator ``@no_corral``
 
 Example
 
