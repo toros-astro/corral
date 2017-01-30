@@ -14,15 +14,15 @@ The Powerful Pipeline Framework
 .. image:: https://img.shields.io/badge/License-BSD%203--Clause-blue.svg
    :target: https://opensource.org/licenses/BSD-3-Clause
    :alt: License
-   
+
 .. image:: https://img.shields.io/badge/python-2.7-blue.svg
    :target: https://badge.fury.io/py/corral-pipeline
    :alt: py27
-   
+
 .. image:: https://img.shields.io/badge/python-3.4-blue.svg
    :target: https://badge.fury.io/py/corral-pipeline
    :alt: py34
-   
+
 .. image:: https://img.shields.io/badge/python-3.5-blue.svg
    :target: https://badge.fury.io/py/corral-pipeline
    :alt: py3.5
@@ -51,19 +51,16 @@ Support
     https://groups.google.com/forum/#!forum/corral-users-forum
 -   **Issues:** If you have issues please report them as a issue
     here: https://github.com/toros-astro/corral/issues
-    
-    
+
+
 User Installation
 -----------------
 
-The easiest way to install scikit-learn is using pip
+The easiest way to install corral is using pip
 
-pip install -U corral-pipeline
-or conda:
+.. code-block:: bash
 
-conda install scikit-learn
-The documentation includes more detailed 
-`installation instructions <http://corral.readthedocs.io/en/latest/intro/install.html>`__.
+    $ pip install -U corral-pipeline
 
 
 Developmment
@@ -72,7 +69,7 @@ Developmment
 Install project by cloning from `Corral github <https://github.com/toros-astro/corral.git>`__:
 
 .. code-block:: bash
-    
+
     $ git clone https://github.com/toros-astro/corral.git
 
 and by making ``pip install -e .``, or the classic ``python setup.py install``.

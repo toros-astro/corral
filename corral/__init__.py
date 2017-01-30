@@ -31,14 +31,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Corral will solve your pipeline needs by merging a database full connection
-interface with a MVC model, by making you able of editing your custom schemas
-and adding the possibility of writting specific processing steps following a
-intuitive data handling model.
+"""MVC framework for create trustworthy pipelines"""
 
-"""
-
-__version__ = ("0", "2", "4")
+__version__ = ("0", "2", "5")
 
 NAME = "corral-pipeline"
 
