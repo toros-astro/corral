@@ -26,6 +26,10 @@ The Powerful Pipeline Framework
 .. image:: https://img.shields.io/badge/python-3.5-blue.svg
    :target: https://badge.fury.io/py/corral-pipeline
    :alt: py3.5
+   
+.. image:: https://badge.fury.io/py/corral-pipeline.svg
+   :target: https://badge.fury.io/py/corral-pipeline
+   :alt: Pypi Package
 
 Corral will solve your pipeline needs by merging a database full connection
 interface with a MVC model, by making you able of editing your custom schemas
