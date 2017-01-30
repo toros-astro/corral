@@ -37,6 +37,10 @@ intuitive data handling model.
    :target: https://badge.fury.io/py/corral-pipeline
    :alt: py3.5
 
+.. image:: https://badge.fury.io/py/corral-pipeline.svg
+   :target: https://badge.fury.io/py/corral-pipeline
+   :alt: Pypi Package
+
 
 Help & discussion mailing list
 ------------------------------
