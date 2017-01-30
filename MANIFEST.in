@@ -1,5 +1,9 @@
-recursive-include corral/ *
-recursive-include corral/template/ *
 include LICENSE.txt
-include README.md
+include README.rst
+include MANIFEST.in
+include AUTHORS.rst
+graft corral
+global-exclude __pycache__
+global-exclude *.py[co]
+
 

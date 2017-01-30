@@ -76,6 +76,10 @@ class Create(BaseCommand):
         "mode": "nopipe"}
 
     def setup(self):
+        from .. import core
+
+        logging.basicConfig(format='[%(levelname)s] %(message)s')
+        core.logger.setLevel(logging.INFO)
         self.parser.add_argument(
             "path", action="store", help="New Pipeline Path")
 

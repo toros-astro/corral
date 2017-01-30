@@ -116,6 +116,7 @@ def do_setup():
             if pkg.startswith("corral")],
         py_modules=["ez_setup"],
         install_requires=REQUIREMENTS,
+        include_package_data=True,
         entry_points={
             'console_scripts': [
                 'corral = corral.cli:run_from_command_line']}

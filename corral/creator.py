@@ -67,13 +67,16 @@ PATH = os.path.abspath(os.path.dirname(__file__))
 
 PIPELINE_TEMPLATE_PATH = os.path.join(PATH, "template")
 
+EXCLUDE_EXTS = (".pyc", ".pyo")
+
 UNSUGESTED_NAMES = set()
 
 TEMPLATES = []
 
 for dpath, dnames, fnames in os.walk(PIPELINE_TEMPLATE_PATH):
     for fname in fnames:
-        TEMPLATES.append(os.path.join(dpath, fname))
+        if os.path.splitext(fname)[-1] not in EXCLUDE_EXTS:
+            TEMPLATES.append(os.path.join(dpath, fname))
     UNSUGESTED_NAMES.update(os.path.splitext(fn)[0] for fn in fnames)
     UNSUGESTED_NAMES.update(os.path.splitext(dn)[0] for dn in dnames)
 
@@ -108,7 +111,7 @@ def create_pipeline(path):
     if os.path.isdir(fpath):
         raise ValidationError("directory '{}' already exists".format(fpath))
 
-    logger.info("Creating pipelin in '{}'...".format(fpath))
+    logger.info("Creating pipeline in '{}'...".format(fpath))
 
     context = {
         "project_name": basename,
@@ -117,7 +120,6 @@ def create_pipeline(path):
         "migration_script": os.path.join(basename, "migrations")}
 
     for tpl_path in TEMPLATES:
-
         rel_path = tpl_path.replace(
                 PIPELINE_TEMPLATE_PATH, "", 1)
         while rel_path.startswith(os.path.sep):
@@ -134,15 +136,19 @@ def create_pipeline(path):
             continue
 
         with codecs.open(tpl_path, encoding="utf-8") as fp:
-                tpl = string.Template(fp.read())
+            tpl = string.Template(fp.read())
 
         src = tpl.safe_substitute(context)
 
         with codecs.open(dest_path, "w", encoding="utf-8") as fp:
             fp.write(src)
 
+        logger.info(
+            "Created '{}'.".format(
+                os.path.relpath(dest_path.replace("template", basename))))
+
     rename_from = os.path.join(fpath, "template")
     rename_to = os.path.join(fpath, basename)
     shutil.move(rename_from, rename_to)
 
-    logger.info("Success!")
+    logger.info("Pipeline {} Ready!!!".format(basename))
