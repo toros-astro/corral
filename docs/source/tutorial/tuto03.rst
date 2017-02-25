@@ -1,38 +1,36 @@
 Tutorial - Part #3 - Loaders
 ============================
 
-Cargando Datos al Stream: Loader
---------------------------------
+Loading Data on the Stream: Loader
+----------------------------------
 
-Ya en este punto tenemos:
+At this point we already have:
 
-- Los datos en un archivo ``iris.csv``.
-- El ``settings.py`` contiene la ruta hacia el archivo.
-- Ya existen los modelos (en ``models.py``) para guardar los *Name* y las
+- Data in a file ``iris.csv``.
+- The ``settings.py`` containing the path to the file.
+- Models already defined (in ``models.py``) to store *Name* and the
   *Observations*
 
-Ahora el siguiente paso es cargar los datos desde el archivo ``iris.csv`` a los
-*modelos* a traves de lo que en corral se define como un **Loader**.
+Now the next step is to parse data in the ``iris.csv`` on the 
+*modelos* working with Corral's **Loader**.
 
-La idea de los loaders es servir de punto de entrada de los datos al pipeline
-del procesamiento. A diferencia de los *Steps* (que veremos en la
-siguiente parte), los *Loaders* no estas restringidos por los modelos que
-definamos para nuestro stream.
+The loaders idea is to work as an entry point for raw data to the pipeline 
+processing chain. Opposed to the *Steps* (on the next tutorial section), 
+the *Loaders* are not restricted by the defined models of our stream.
 
-Como todo en corral los **Loaders** se definen como una clase que se sugiere que
-este en el modulo ``load.py`` de tu proyecto. Asi mismo esta clase tiene que
-registrarse en el archivo ``settings.py`` para que sea el punto de partida para
-el procesamiento de los datos.
+As everythin in Corral, the **Loaders** are defined as a Class, suggested to be
+in a separated file named ``load.py`` of your project. Also this Class must be registered
+in the ``settings.py`` file.
 
-Leyendo los datos de iris.csv
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Reading iris.csv data
+^^^^^^^^^^^^^^^^^^^^^
 
-Python posee el modulo para los archivos CSV
-https://docs.python.org/3.5/library/csv.html el cual brinda
-un parser que transforma cada fila del archivo en un diccionario en el cual
-la llave se corresponde al valor de la primer fila en cada columna
+Python can work with CSV files module 
+https://docs.python.org/3.5/library/csv.html which contains a
+parser capable to transform each row in the file into a dictionary
+with it's keys as column names
 
-Asi por ejemplo si ejecutamos
+So for instance
 
 .. code-block:: pycon
 
