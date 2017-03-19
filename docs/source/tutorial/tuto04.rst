@@ -1,30 +1,31 @@
 Tutorial - Part #4 - Steps
 ==========================
 
-Steps: Procesando Datos
------------------------
+Steps: Processing Data
+----------------------
 
-Luego de ejecutar ``python in_corral load`` ya tenemos los datos de iris_
-en nuestra base de datos y ahora lo que queremos es calcular la media, minimos
-y máximos de  ``sepal_length``, ``sepal_width``,
-``petal_length``y ``petal_width`` en paralelo para cada especie.
+After we execute the line ``python in_corral load`` we have the iris_ data loaded
+in our database and now we want to calculate the mean, minimum and maximum 
+values for ``sepal_length``, ``sepal_width``, ``petal_length`` and ``petal_width``
+in parallel for each species.
 
 .. warning::
 
-    En todos el tutorial hemos usado como base de datos SQLite la cual
-    no sporta concurrencia. Tenga en cuenta que esto es solo un ejercicio y
-    en un verdadero Pipeline deberia usar alguna base de datos como
-    PostgreSQL_, MySQL_, Oracle_ o incluso algo mas pontente como Hive_
+    All throughout this tutorial we have used SQLite as our database. SQLite
+    does not support concurrency. Keep in mind this is just an excercise and
+    a real pipeline should use a database like PostgreSQL_, MySQL_, Oracle_ 
+    or something even more powerful like Hive_
 
 
-Modelo para las estadísticas
-----------------------------
+A Model for the Statistics
+--------------------------
 
-Para almacenar las estadisticas definiremos un modelo que defina las 3 medidas
-estadísticas para las 4 características de las obsrvaciones y a su ves
-referencia a que especie de iris correponde (una relacion a la tabla ``Name``)
+To hold the statistics, we will define a model with the three statistical
+measures for the four observed properties of the species.
+It will also hold a reference to the Iris species to which it belong
+(a relation to the ``Name`` table.)
 
-Asi que al final de ``my_pipeline/models.py`` agregaremos la clase
+To do so, we add at the end of ``my_pipeline/models.py``, the class
 
 .. code-block:: python
 
@@ -57,29 +58,28 @@ Asi que al final de ``my_pipeline/models.py`` agregaremos la clase
         def __repr__(self):
             return "<Statistics of '{}'>".format(self.name.name)
 
-Si ya se leyeron las explicaciones en el capitulo anterior las unicas
-diferencias que tiene este modelo con los anteriores, son los parametros
-``unique=True`` y ``userlist=False`` en las lineas donde se definen la
-relación para indicar que cada instancia de ``Name`` solo puede tener una
-instancia de ``Statistics``.
+If you have already read our last tutorial, the only differences this model has
+with the previous ones are the parameters ``unique=True`` and ``userlist=False``
+on the lines where we define the relation.
+These are used to enforce that each instance of ``Name`` has one and
+only one instance of ``Statistics``.
 
-Para crear la tabla ejecutamos en la linea de commandos nuevamente
-``python in_corral createdb`` y solo se creara la tabla nueva sin alterar
-la forma y el contenido de las anteriores.
+To create the table we execute once again on the command line
+``python in_corral createdb`` and only the new table will be crated without
+changing the shape and form of the previous ones.
 
-
-Los Steps
+The Steps
 ---------
 
-Crearemos  4 stapes dentro del módulo ``my_pypeline/steps.py``.
+We will create four steps in the ``my_pypeline/steps.py`` module.
 
 
-#. Step 1: Creando Statistics para cada Name
+#. Step 1: Creating Statistics for each Name
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-En primer lugar en la parte de imports descomentar la linea
-``# from . import models``; y luego editar la clase ``MyStep``
-para que luzca como la siguiente:
+First, uncomment on the import section the line 
+``# from . import models``; and then edit the class ``MyStep``
+so that it looks like the following:
 
 
 .. code-block:: python
@@ -103,24 +103,23 @@ para que luzca como la siguiente:
                     max_petal_length=0., max_petal_width=0.)
 
 
-Este step persigue el objetivo de crear una instancia de ``Statistics`` por
-cada nombre diference que encuentre en la tabla ``Name``.
+This step's goal is to create an instance of ``Statistics`` for each different
+name it finds on the ``Name`` table.
 
-En primer lugar se observa que en la variable ``model`` se le informa al
-*Step* que trabajara con las instancias del modelo ``Name`` sin ninguna
-condicion. Corral automaticamente enviará secuencialmente las instancias
-almacenadas (por el Loader) que cumplan las condiciones (Todas en nuestro caso)
-método process.
+Notice that we let the *Step* know in the variable ``model`` that it will
+be working with unconditioned instances of the model ``Name``.
+Corral will sequentially send the stored (by the Loader) instances, that
+meet the conditions (all of the instances in our case).
 
-``process()`` recibe por parámetro cada instancia de ``Name`` y de no existir
-una instancia de ``Statistics`` asociada la crea con todos los valores en *0*
-retornandola a corral (con ``yield``).
+The ``process()`` method receives each instance of ``Name`` and if there is no
+associated instance of ``Statistic``, it will create one with all the values
+set to *0*, yielding back the control to corral (with ``yield``).
 
-#. Step 2: Calculando Statistics para "Iris-Setosa"
+#. Step 2: Calculating Statistics for "Iris-Setosa"
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Si creamos un Step llamado ``SetosaStatistics`` y as u variable model le
-asigamos la clase ``Statistics`` y en ``conditions`` escribimos:
+If we create a Step ``SetosaStatistics`` and we assign to its model variable
+the class ``Statistics`` and we add the ``conditions``:
 
 .. code-block:: python
 
@@ -128,13 +127,12 @@ asigamos la clase ``Statistics`` y en ``conditions`` escribimos:
             models.Statistics.name.has(name="Iris-setosa"),
             models.Statistics.mean_sepal_length==0.]
 
-Lo que obtendremos es un step que solo calcule las estadisticas de
-**Iris-setosa** si es que no han sido calculadas
-(la media de ``sepal_length`` es ``0.``)
+we will create a step that only calculates the statistics of **Iris-setosa**
+if they were not previously calculated (the mean for ``sepal_length`` is ``0.``)
 
-Por otra parte el metodo ``process()`` recibiria por parametro dicha
-instancia de ``Statistics`` y para llenarla el codigo completo del step
-sería:
+The ``process()`` method will be passed by parameter said instance
+of ``Statistics``. To fill the statistics out, 
+the complete code for this step will be:
 
 .. code-block:: python
 
@@ -169,11 +167,11 @@ sería:
             stats.max_petal_width = max(petal_width)
 
 
-#. Step 3 y 4: Calculando Statistics para "Iris-Virginica" e "Iris-Versicolor"
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#. Step 3 and 4: Calculating Statistics for "Iris-Virginica" and "Iris-Versicolor"
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Los ultimos dos steps son exactamente iguales al enterior execptuando las
-variables ``model`` y  ``conditions``.
+The last two steps are exactly the same as the previous ones, except for the
+variables ``model`` and ``conditions``.
 
 .. code-block:: python
 
@@ -197,5 +195,4 @@ variables ``model`` y  ``conditions``.
 
         def process(self, stats):
             # SAME CODE AS SetosaStatistics.process
-
 
