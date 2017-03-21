@@ -5,28 +5,28 @@ Study case: Iris Pipeline
 -------------------------
 
 We will carry out a simple exercise, using our recently initialized pipeline
-to develop a piepeline for statistic calculations of the famous `Fisher Iris Dataset`_.
+to develop a pipeline for statistic calculations of the famous `Fisher Iris Dataset`_.
 
-The global idea is to obtain information for each class of Iris (
-Setosa, Virginica, and Versicolor) that is being calculated separatedly, 
-seizing the multi processing of 3 cores at the time.
+The plan is to obtain information for each class of the Iris species (
+Setosa, Virginica, and Versicolor) calculated separately,
+seizing the multi-processing of 3 cores at a time.
 
-Finally we will define some alerts, just to let us know if any expected 
+Finally we will set-up some alerts, just to let us know if any expected
 results are obtained.
 
 We will define some commands as well, to check the pipeline general
 status.
 
 
-Download the Data
------------------
+Downloading the Data
+--------------------
 
 First of all we need to download the csv_ file, with the raw data to feed the
-pipeline. We can get it from: https://github.com/toros-astro/corral/raw/master/datasets/iris.csv
-and put it inside ``my_pipeline`` directory. 
+pipeline. We can get it from https://github.com/toros-astro/corral/raw/master/datasets/iris.csv
+and copy it inside the ``my_pipeline`` directory.
 
-Taking a glance of our files
-at this point we should get::
+If we take a glance at our files
+at this point, it should look like::
 
     in_corral.py
     my_pipeline/
@@ -46,8 +46,8 @@ Basic Configuration
 
 First thing to do is to edit ``settings.py``.
 
-Something that we need to be able is to find pahts dinamically, so we import
-the *os* module. So the import should look like
+A thing we need to be able to do, is finding paths dynamically, so we import
+the *os* module. The import should look like
 
 .. code-block:: python
 
@@ -55,19 +55,19 @@ the *os* module. So the import should look like
     import os
 
 
-The ``CONNECTION`` variable specifies the *RFC-1738* (used by SQLAlchemy_)
-format for database connection. Default should look something like this:
+The ``CONNECTION`` variable specifies the *RFC-1738* format (used by SQLAlchemy_)
+for database connection. Default should look something like this:
 
 .. code-block:: python
 
     CONNECTION = "sqlite:///my_pipeline-dev.db"
 
-With this a ``pipeline-dev.db`` file will be created in the same directory where
-``in_corral.py`` is located, containing the SQLite_ database.
+With this instruction, a file ``pipeline-dev.db`` will be created in the same directory where
+``in_corral.py`` is located, containing the SQLite_ database that we just defined.
 
 .. seealso::
 
-    For more information regarding another databases you can search the
+    For more information regarding other databases, you can search the
     SQLAlchemy documentation at:
     http://docs.sqlalchemy.org/en/latest/core/engines.html
 
@@ -79,8 +79,8 @@ At the end of the file we will add the following lines
     PATH = os.path.abspath(os.path.dirname(__file__))
     IRIS_PATH = os.path.join(PATH, "iris.csv")
 
-First line stores in ``PATH`` the directory where ``settings.py`` is located,
-second line just creates a path to file *iris.csv* downloaded before.
+First line stores in the variable ``PATH`` the directory where ``settings.py`` is located.
+The second line just creates a path to the file *iris.csv* that we downloaded before.
 
 
 The Models
@@ -89,8 +89,8 @@ The Models
 Now our pipeline needs to know the looks of our data stored in the
 database.
 
-In ``my_pipeline/models.py`` file we erase the ``Example`` class. 
-Then we modify the file so it looks just like this:
+In ``my_pipeline/models.py`` file, we delete the ``Example`` class.
+Then we modify the file to look just like this:
 
 .. code-block:: python
 
@@ -118,52 +118,53 @@ Then we modify the file so it looks just like this:
         petal_width = db.Column(db.Float, nullable=False)
 
 
-As we can se ``Name`` and ``Observation`` class inheritates from 
-``db.Model``, and by doing this we let Corral know that these are
+As we can see, the ``Name`` and ``Observation`` classes inherit from
+``db.Model``, and by doing so, we let Corral know that these are
 tables in our database.
 
-The ``Name`` model is in charge of storing every different
-El modelo ``Name`` sera el encargado de guardar cada nombre diferente que
-exista en nuestro dataset. Hay que recordar que el dataset tiene tres tipos
-distingos de flores iris: *setosa*, *versicolor* y *virginica* con lo cual
-persistiremos 3 instancias de este modelo. En la misma clase solo tenemos
-tres atributos el primero ``__tablename__`` determinara cual será el nombre de
-la tabla que se creara en la base de datos para persitir esta informacion
-(*Name* sera el nombre en nuestro caso). ``id`` es una columna de la tabla
-*Nane* que sera la clave primaria de timpo entero. Finalmente la columna
-``name`` contendra el nombre propiamente dicho con una longitud máxima de 50
-caracteres y no podra repetirse.
+The ``Name`` model will be in charge of storing every different name on our
+dataset. Let's remember that the dataset has three different types of
+Iris flowers: *setosa*, *versicolor* and *virginica*, which will translate to
+three different instances of this model.
+In this same class we have only three attributes.
+The first one, ``__tablename__``, will determine the name of the table that will
+be created on the database to make our data persistent (*Name* in our case).
+``id`` is a column on the *Name* table for the primary key, with an integer
+type.
+Finally, the column ``name`` will hold the name of the species itself,
+with a maximum length of 50 characters, and this name cannot repeat across the
+column.
 
-El modelo ``Observation`` por otra parte ademas de los atributos
-``__tablename__`` y ``id``; posee una references_ al modelo ``Name`` (atributos
-``name_id`` y ``name``) con lo cual cada instancia de esta tabla tiene que
-tener un nombre y ademas 4 columnas en formato de numeros flotantes para
-almacenar las otras 4 columnas del dataset.
+On the other hand, the model ``Observation`` has, besides the attributes 
+``__tablename__`` and ``id``, references_ to the model ``Name`` (the attributes
+``name_id`` and ``name``).
+This implies that each instance of this table must have a name and 4 other columns
+with floating point numbers to hold the other 4 columns of the dataset.
 
 .. note::
 
-    Los modelos son en todo sentido modelos del ORM de SQLAlchemy; y
-    ``db.Model`` es un `declarative_base`_
+    The models are models of the SQLAlchemy ORM in every sense; and
+    ``db.Model`` is a `declarative_base`_
 
-    Para conocer mas sobre el orm de Sqlalchemy por favor lee la documentacion
+    To learn more about SQLAlchemy ORM please refer to their documentation on
     http://docs.sqlalchemy.org/en/rel_1_1/orm/tutorial.html
 
 .. note::
 
-    Al ejecutar ``from corral import db``, dentro del namespace ``db`` estan
-    disponibles los namespaces ``sqlalchemy``, ``sqlalchemy.orm`` y
-    ``sqlalchemy_utils``.
+    When we execute the line ``from corral import db``, we have available
+    inside the ``db`` namespace, the namespaces for ``sqlalchemy``, 
+    ``sqlalchemy.orm`` and ``sqlalchemy_utils``.
 
-    Para conocer mas sqlalchemy_utils: http://sqlalchemy-utils.readthedocs.org
+    Learn more about sqlalchemy_utils on: http://sqlalchemy-utils.readthedocs.org
 
 
-Ahora para crear la base de datos debemos ejecutar el comando
+To create the database, we need to execute the command:
 
 .. code-block:: bash
 
     $ python in_corral.py createdb
 
-Luego de una confirmación la salida deberia verse asi:
+After a confirmation question, the output should look like this:
 
 .. code-block:: bash
 
@@ -201,12 +202,12 @@ Luego de una confirmación la salida deberia verse asi:
     [my_pipeline-INFO @ 2016-01-08 01:44:01,334] ()
     [my_pipeline-INFO @ 2016-01-08 01:44:01,467] COMMIT
 
-En la salida podran ver las sentencias sql que crearon las tablas para persistir
-nuestros modelos mas algunas tablas de soporte utilizadas por corral como
-``__corral_alerted__``
+We can read in the output, the SQL instructions used to create the tables
+to make our models persistent, plus some extra tables used as support by corral,
+like ``__corral_alerted__``
 
-Podemos explorar nuestra base de datos recien creada y vacia ejecutando
-el comando ``python in_corral.py dbshell``
+We can explore our recently created empty database, with the 
+command ``python in_corral.py dbshell``
 
 
 .. code-block:: console
