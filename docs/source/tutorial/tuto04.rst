@@ -5,7 +5,7 @@ Steps: Processing Data
 ----------------------
 
 After we execute the line ``python in_corral load`` we have the iris_ data loaded
-in our database and now we want to calculate the mean, minimum and maximum 
+in our database and now we want to calculate the mean, minimum and maximum
 values for ``sepal_length``, ``sepal_width``, ``petal_length`` and ``petal_width``
 in parallel for each species.
 
@@ -13,7 +13,7 @@ in parallel for each species.
 
     All throughout this tutorial we have used SQLite as our database. SQLite
     does not support concurrency. Keep in mind this is just an excercise and
-    a real pipeline should use a database like PostgreSQL_, MySQL_, Oracle_ 
+    a real pipeline should use a database like PostgreSQL_, MySQL_, Oracle_
     or something even more powerful like Hive_
 
 
@@ -77,7 +77,7 @@ We will create four steps in the ``my_pypeline/steps.py`` module.
 #. Step 1: Creating Statistics for each Name
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-First, uncomment on the import section the line 
+First, uncomment on the import section the line
 ``# from . import models``; and then edit the class ``MyStep``
 so that it looks like the following:
 
@@ -115,6 +115,7 @@ The ``process()`` method receives each instance of ``Name`` and if there is no
 associated instance of ``Statistic``, it will create one with all the values
 set to *0*, yielding back the control to corral (with ``yield``).
 
+
 #. Step 2: Calculating Statistics for "Iris-Setosa"
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -131,7 +132,7 @@ we will create a step that only calculates the statistics of **Iris-setosa**
 if they were not previously calculated (the mean for ``sepal_length`` is ``0.``)
 
 The ``process()`` method will be passed by parameter said instance
-of ``Statistics``. To fill the statistics out, 
+of ``Statistics``. To fill the statistics out,
 the complete code for this step will be:
 
 .. code-block:: python
@@ -195,4 +196,199 @@ variables ``model`` and ``conditions``.
 
         def process(self, stats):
             # SAME CODE AS SetosaStatistics.process
+
+
+#. Step 5: Add the new steps to ``settings.STEPS``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The last piece is to make your pipelne aware of the new steps. To make
+this you need to add the full python path to the ``STEPS`` list inside
+the settings.py file.
+
+.. code-block:: python
+
+    # Pipeline processor steps
+    STEPS = [
+        "pipeline.steps.StatisticsCreator",
+        "pipeline.steps.SetosaStatistics",
+        "pipeline.steps.VirginicaStatistics",
+        "pipeline.steps.VersicolorStatistics"]
+
+Finally you can inspect the registered steps with the ``lssteps`` command
+
+.. code-block:: bash
+
+    $python in_corral.py lssteps
+    +----------------------+---------+---------+
+    |      Step Class      | Process | Groups  |
+    +======================+=========+=========+
+    | SetosaStatistics     | 1       | default |
+    | StatisticsCreator    | 1       | default |
+    | VersicolorStatistics | 1       | default |
+    | VirginicaStatistics  | 1       | default |
+    +----------------------+---------+---------+
+      TOTAL PROCESSES: 4
+      DEBUG PROCESS: Enabled
+
+You can also note that (by default) every steps is on **default** group.
+
+
+.. note::
+
+    The comman  ``python in_corral groups`` can show all available groups
+    in steps and alerts.
+
+
+Running The Steps
+-----------------
+
+The main command to run the corral steps is **run**.
+
+when you excecute ``python in_corral run`` all the steps are executed
+asynchronous. If for some particular case you need to run the steps sequentially
+(in the same order of ``settings.STEPS``) you can add the ``--sync`` flag.
+
+
+.. warning::
+
+    SQLite_ by disign is not capable of serve as multiprocess database. So
+    is highly recommended to run the steps with the ``--sync`` flag.
+
+Here is a **run** example output
+
+.. code-block:: bash
+
+    $ python in_corral.py run --sync
+    [INFO] Executing step '<class 'pipeline.steps.SetosaStatistics'>' #1
+    [INFO] SELECT CAST('test plain returns' AS VARCHAR(60)) AS anon_1
+    [INFO] ()
+    [INFO] SELECT CAST('test unicode returns' AS VARCHAR(60)) AS anon_1
+    [INFO] ()
+    [INFO] BEGIN (implicit)
+    [INFO] SELECT "Statistics".id AS "Statistics_id", "Statistics".name_id AS "Statistics_name_id", "Statistics".mean_sepal_length AS "Statistics_mean_sepal_length", "Statistics".mean_sepal_width AS "Statistics_mean_sepal_width", "Statistics".mean_petal_length AS "Statistics_mean_petal_length", "Statistics".mean_petal_width AS "Statistics_mean_petal_width", "Statistics".min_sepal_length AS "Statistics_min_sepal_length", "Statistics".min_sepal_width AS "Statistics_min_sepal_width", "Statistics".min_petal_length AS "Statistics_min_petal_length", "Statistics".min_petal_width AS "Statistics_min_petal_width", "Statistics".max_sepal_length AS "Statistics_max_sepal_length", "Statistics".max_sepal_width AS "Statistics_max_sepal_width", "Statistics".max_petal_length AS "Statistics_max_petal_length", "Statistics".max_petal_width AS "Statistics_max_petal_width"
+    FROM "Statistics"
+    WHERE (EXISTS (SELECT 1
+    FROM "Name"
+    WHERE "Name".id = "Statistics".name_id AND "Name".name = ?)) AND "Statistics".mean_sepal_length = ?
+    [INFO] ('Iris-setosa', 0.0)
+    [INFO] COMMIT
+    [INFO] Done Step '<class 'pipeline.steps.SetosaStatistics'>' #1
+    [INFO] Executing step '<class 'pipeline.steps.StatisticsCreator'>' #1
+    [INFO] BEGIN (implicit)
+    [INFO] SELECT "Name".id AS "Name_id", "Name".name AS "Name_name"
+    FROM "Name"
+    ...
+
+
+Selective Runs By Name and Groups
+---------------------------------
+
+In some cases is useful to run only a single or a group of steps.
+
+
+Run by Name
+^^^^^^^^^^^
+
+You can run a single step by using the ``--steps|-s`` flag followed by
+the class-names of the steps you want to run.
+
+.. code-block:: bash
+
+    $ python in_corral.py run --steps SetosaStatistics VersicolorStatistics
+    [INFO] Executing step '<class 'irispl.steps.SetosaStatistics'>' #1
+    [INFO] Executing step '<class 'irispl.steps.VersicolorStatistics'>' #1
+    ...
+
+
+Run by Groups
+^^^^^^^^^^^^^
+
+One of the most important concepts of run Corrals steps is grouping them
+in groups.
+
+
+Certain steps can be added to some group by adding ``groups`` attribute to
+a Step class. For exampe if we want to add the tree statiscis calculators
+steps to an ``statistics``
+
+
+.. code-block:: python
+
+    class SetosaStatistics(run.Step):
+        model = models.Statistics
+        conditions = [
+            models.Statistics.name.has(name="Iris-versicolor"),
+            models.Statistics.mean_sepal_length==0.]
+        groups = ["default", "statistics"]
+
+        ...
+
+
+    class VersicolorStatistics(run.Step):
+
+        model = models.Statistics
+        conditions = [
+            models.Statistics.name.has(name="Iris-versicolor"),
+            models.Statistics.mean_sepal_length==0.]
+        groups = ["default", "statistics"]
+
+        ...
+
+
+    class VirginicaStatistics(run.Step):
+
+        model = models.Statistics
+        conditions = [
+            models.Statistics.name.has(name="Iris-virginica"),
+            models.Statistics.mean_sepal_length==0.]
+        groups = ["default", "statistics"]
+
+You can check the changes by running ``lssteps`` again
+
+.. code-block:: bash
+
+    $ python in_corral.py lssteps
+    +----------------------+---------+--------------------+
+    |      Step Class      | Process |       Groups       |
+    +======================+=========+====================+
+    | SetosaStatistics     | 1       | default:statistics |
+    | StatisticsCreator    | 1       | default            |
+    | VersicolorStatistics | 1       | default:statistics |
+    | VirginicaStatistics  | 1       | default:statistics |
+    +----------------------+---------+--------------------+
+      TOTAL PROCESSES: 4
+      DEBUG PROCESS: Enabled
+
+Or by listing only the steps of some groups with the ``--groups|-g`` flag
+
+.. code-block:: bash
+
+    $ python in_corral.py lssteps -g statistics
+    +----------------------+---------+--------------------+
+    |      Step Class      | Process |       Groups       |
+    +======================+=========+====================+
+    | SetosaStatistics     | 1       | default:statistics |
+    | VersicolorStatistics | 1       | default:statistics |
+    | VirginicaStatistics  | 1       | default:statistics |
+    +----------------------+---------+--------------------+
+      TOTAL PROCESSES: 3
+      DEBUG PROCESS: Enabled
+
+Finally you can run a desired group with the ``--step-groups|--sg`` flag on
+the **run** command
+
+
+.. code-block:: bash
+
+    $ python in_corral.py run -sg statistics
+    [INFO] Executing step '<class 'irispl.steps.SetosaStatistics'>' #1
+    [INFO] Executing step '<class 'irispl.steps.VersicolorStatistics'>' #1
+    [INFO] Executing step '<class 'irispl.steps.VirginicaStatistics'>' #1
+    ...
+
+As you can see the ``StatisticsCreator`` step don't run.
+
+
+
+
 

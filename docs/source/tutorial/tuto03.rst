@@ -11,11 +11,11 @@ At this point we already have:
 - Models already defined (in ``models.py``) to store *Name* and the
   *Observations*
 
-Now the next step is to parse data in the ``iris.csv`` on the 
+Now the next step is to parse data in the ``iris.csv`` on the
 *modelos* working with Corral's **Loader**.
 
-The loaders idea is to work as an entry point for raw data to the pipeline 
-processing chain. Opposed to the *Steps* (on the next tutorial section), 
+The loaders idea is to work as an entry point for raw data to the pipeline
+processing chain. Opposed to the *Steps* (on the next tutorial section),
 the *Loaders* are not restricted by the defined models of our stream.
 
 As everythin in Corral, the **Loaders** are defined as a Class, suggested to be
@@ -25,7 +25,7 @@ in the ``settings.py`` file.
 Reading iris.csv data
 ^^^^^^^^^^^^^^^^^^^^^
 
-Python can work with CSV files module 
+Python can work with CSV files module
 https://docs.python.org/3.5/library/csv.html which contains a
 parser capable to transform each row in the file into a dictionary
 with it's keys as column names
@@ -202,7 +202,6 @@ partes:
 
     Este tutorial va a asumir conocimiento del manejo de sessiones y
     queries de SQLAlchemy_.
-
     Si tiene dudas por favor dirigirse al `orm tutorial`_
 
 
