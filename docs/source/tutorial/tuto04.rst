@@ -201,8 +201,8 @@ variables ``model`` and ``conditions``.
 #. Step 5: Add the new steps to ``settings.STEPS``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The last piece is to make your pipelne aware of the new steps. To make
-this you need to add the full python path to the ``STEPS`` list inside
+The last piece is to make your pipelne aware of the new steps. For
+this, you need to add the full python path to the ``STEPS`` list inside
 the settings.py file.
 
 .. code-block:: python
@@ -230,12 +230,12 @@ Finally you can inspect the registered steps with the ``lssteps`` command
       TOTAL PROCESSES: 4
       DEBUG PROCESS: Enabled
 
-You can also note that (by default) every steps is on **default** group.
+Also note that (by default) every step is on the **default** group.
 
 
 .. note::
 
-    The comman  ``python in_corral groups`` can show all available groups
+    The command  ``python in_corral groups`` shows all available groups
     in steps and alerts.
 
 
@@ -251,7 +251,7 @@ asynchronous. If for some particular case you need to run the steps sequentially
 
 .. warning::
 
-    SQLite_ by disign is not capable of serve as multiprocess database. So
+    By design, SQLite_ is not capable to serve as a multiprocess database, so it
     is highly recommended to run the steps with the ``--sync`` flag.
 
 Here is a **run** example output
@@ -283,7 +283,7 @@ Here is a **run** example output
 Selective Runs By Name and Groups
 ---------------------------------
 
-In some cases is useful to run only a single or a group of steps.
+In some cases it is useful to run only a single or a group of steps.
 
 
 Run by Name
@@ -303,13 +303,11 @@ the class-names of the steps you want to run.
 Run by Groups
 ^^^^^^^^^^^^^
 
-One of the most important concepts of run Corrals steps is grouping them
-in groups.
+One of the most important concepts with Corral steps is the notion of groups.
 
-
-Certain steps can be added to some group by adding ``groups`` attribute to
-a Step class. For exampe if we want to add the tree statiscis calculators
-steps to an ``statistics``
+Certain steps can be grouped together by adding a ``groups`` attribute to
+a Step class. For exampe, if we want to add the tree statiscis calculators
+steps to a ``statistics`` group, we'd write:
 
 
 .. code-block:: python
@@ -343,7 +341,7 @@ steps to an ``statistics``
             models.Statistics.mean_sepal_length==0.]
         groups = ["default", "statistics"]
 
-You can check the changes by running ``lssteps`` again
+You can check the changes on the column ``Groups`` by running ``lssteps`` again
 
 .. code-block:: bash
 
@@ -359,7 +357,8 @@ You can check the changes by running ``lssteps`` again
       TOTAL PROCESSES: 4
       DEBUG PROCESS: Enabled
 
-Or by listing only the steps of some groups with the ``--groups|-g`` flag
+You can also list only the steps of a particular group with the 
+``--groups|-g`` flag
 
 .. code-block:: bash
 
@@ -374,8 +373,8 @@ Or by listing only the steps of some groups with the ``--groups|-g`` flag
       TOTAL PROCESSES: 3
       DEBUG PROCESS: Enabled
 
-Finally you can run a desired group with the ``--step-groups|--sg`` flag on
-the **run** command
+Finally, you can run the group of your choice with the ``--step-groups|--sg`` 
+flag on the **run** command
 
 
 .. code-block:: bash
@@ -386,7 +385,7 @@ the **run** command
     [INFO] Executing step '<class 'irispl.steps.VirginicaStatistics'>' #1
     ...
 
-As you can see the ``StatisticsCreator`` step don't run.
+As you can see, the ``StatisticsCreator`` step didn't run.
 
 
 
