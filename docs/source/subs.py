@@ -37,7 +37,7 @@ TARGETS = {
     "iris": "https://en.wikipedia.org/wiki/Iris_flower_data_set",
     "postgresql": "https://www.postgresql.org/",
 
-
+    "SMTP": "https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol"
 }
 
 

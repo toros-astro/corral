@@ -280,8 +280,10 @@ Here is a **run** example output
     ...
 
 
-Selective Runs By Name and Groups
----------------------------------
+.. _selective_steps_run:
+
+Selective Steps Runs By Name and Groups
+---------------------------------------
 
 In some cases it is useful to run only a single or a group of steps.
 
@@ -357,7 +359,7 @@ You can check the changes on the column ``Groups`` by running ``lssteps`` again
       TOTAL PROCESSES: 4
       DEBUG PROCESS: Enabled
 
-You can also list only the steps of a particular group with the 
+You can also list only the steps of a particular group with the
 ``--groups|-g`` flag
 
 .. code-block:: bash
@@ -373,7 +375,7 @@ You can also list only the steps of a particular group with the
       TOTAL PROCESSES: 3
       DEBUG PROCESS: Enabled
 
-Finally, you can run the group of your choice with the ``--step-groups|--sg`` 
+Finally, you can run the group of your choice with the ``--step-groups|--sg``
 flag on the **run** command
 
 
