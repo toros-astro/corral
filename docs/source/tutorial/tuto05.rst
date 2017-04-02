@@ -4,31 +4,34 @@ Tutorial - Part #5 - Alerts
 Alerts: Inform about some desired State
 ---------------------------------------
 
-En una sola frase::
+In a single phrase::
 
-    Una Alerta es un step que no guarda información, sino que la envia a
-    algun lugar ajeno al pipeline.
+    An Alert is a step that does not store information, but it will send it to
+    some other place, away from the pipeline.
 
-En nuestra infraestructura ocupa el lugar e los Views en el patron MVC, ya que
-es la responsable de informar a un potencial usuario final de algun estado
-anomalo (deseado o no) dentro de los datos del pipeline.
+In our infrastructure, an Alert is a View in the MVC pattern, since it is
+responsible to inform some potential final user about some anomalous state
+(desired or not) within the pipeline data.
+
+The idea behind alerts is to design them as steps, but to add them one
+or several destinations (Endpoints) on top; in the chosen models (?)
 
 La idea detras de las alerts es diseñarlas como steps, pero ademas agregarles
 uno varios destinos (Endpoint); en los modelos escogidos por   se serializen
 
-Por defecto Corral ofrece dos endpoints:
+Corral offers two default endpoints:
 
--   ``Email``: Los datos del modelo se envian por emails.
--   ``File``: Los datos del modelo se escriben en un archvo local.
+-   ``Email``: The model data is sent by email.
+-   ``File``: The model data are written to a local file.
 
 
-Creando una alerta
-------------------
+Creating an Alert
+-----------------
 
-En nuestro ejemplo vamos a escribir una Alert que escriba
-cada estadística de los datos en un archivo.
+In our example, we will write an Alert that writes each statistics of the data
+to a file.
 
-To do so, we aedit  the class MyAlert in ``my_pipeline/alerts.py``
+To do so, we edit the class MyAlert in ``my_pipeline/alerts.py``
 
 .. code-block:: python
 
@@ -43,23 +46,23 @@ To do so, we aedit  the class MyAlert in ``my_pipeline/alerts.py``
         conditions = []
         alert_to = [ep.File("statistics.log")]
 
-los endpoits en una Alert se agregan en la variable ``alert_to``.
-El endpoint ``File`` recibe como parametros obligatorios unicamente
-el ``path`` al archivo donde escribir, y como opcionales ``mode`` que
-es el modo de apertura del archivo (por defecto ``a`` append);
-``encoding`` que se refiere al encoding del archivo abierto (por defecto
-``utf-8``)
+An Alert's endpoints are added to the variable ``alert_to``.
+The endpoint ``File`` only receives as a required parameter the path to the
+file to write to, and optional parameters ``mode`` and ``enconding``.
+The mode parameter refers to the mode the file is opened (``a`` append by
+default); ``encoding`` refers to the encoding of the file to open (``utf-8`` by
+default).
 
-Finalmente el ultimo paso es ir a ``settings.py`` y editar la variable
-``ALERTS`` para que contenga nuestra nueva alert.
+Finally, the last step is editing the variable ``ALERTS`` in ``settings.py``
+so that it contains our new alert.
 
 .. code-block:: python
 
     # The alerts
     ALERTS = ["irispl.alerts.StatisticsAlert"]
 
-Hecho esto último, podemos verificar si nuestra Alert se agrego correctamente
-con el comando ``lsalerts``
+Once it's done, we can verify if out Alert is addded correctly by running the
+command ``lsalerts``
 
 .. code-block:: bash
 
@@ -72,8 +75,7 @@ con el comando ``lsalerts``
       TOTAL PROCESSES: 1
       DEBUG PROCESS: Enabled
 
-
-y para correrla alerta solo es necesario ejecutar
+To run the alert we just need to execute
 
 .. code-block:: bash
 
@@ -101,7 +103,8 @@ y para correrla alerta solo es necesario ejecutar
     [INFO] Done Alert '<class 'irispl.alerts.StatisticsAlert'>' #1
 
 
-ahora si vemos el contenido del archivo *statistics.log* veremos lo siguiente
+If we now check the content of the *statistics.log* file, we'll see the
+following
 
 .. code-block:: bash
 
@@ -224,14 +227,3 @@ Alert); y ejecutar estos grupos de manera selectiva con el flag
 
 Cualquier duda remitirse al tutorial de
 :ref:`selective_steps_run`
-
-
-
-
-
-
-
-
-
-
-
