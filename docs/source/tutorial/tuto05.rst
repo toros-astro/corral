@@ -113,20 +113,19 @@ following
     [irispl-ALERT @ 2017-03-30T02:43:36.124799-15s] Check the object '<Statistics of 'Iris-versicolor'>'
     [irispl-ALERT @ 2017-03-30T02:43:36.126659-15s] Check the object '<Statistics of 'Iris-virginica'>'
 
-Como se esperabase creo un registo por cada estadística creada. Si tramos
-de volver a correr la Alert veremos que no se crean mas registros, ya que
-corral mantiene un registro interno de los modelos alertados.
+As expected, we created a register of each created statistic. If we run
+the Alert again, we'll see that no more registers are added, since Corral
+keeps an internal record of the alerted models.
 
-Si queremos mejorar el mensaje de alerta Podemos hacerlo redefiniendo el
-método ``render_alert()`` de nuestra Alert; el cual recibe 3 parámetros:
+If we want to improve the alert message we can do so, redefining the method
+``render_alert()`` of our Alert. This method receives three parameters:
 
-- ``utcnow`` fecha y hora actual en formato utc.
-- ``endpoint`` el endpoint para el cual estamos renderizando el mensaje.
--  ``obj`` el objeto sobre el cual hay que alertar.
+- ``utcnow`` current date and time in UTC format.
+- ``endpoint`` the endpoint to which we render the message.
+-  ``obj`` the object we alert about.
 
-Por ejemplo si quisieramos mejorar el mensaje para que informe sobre todas
-las estadísticas se podria hacer:
-
+For instance, if we wanted to improve the message so that it informs us about
+all the statistics, we could write:
 
 .. code-block:: python
 
@@ -151,7 +150,7 @@ las estadísticas se podria hacer:
                     mean_petal_length=obj.mean_petal_length,
                     mean_petal_width=obj.mean_petal_width)
 
-Esto generaria un archivo como este:
+This will generate a file like this:
 
 .. code-block:: bash
 
@@ -179,10 +178,10 @@ Esto generaria un archivo como este:
 Email Endpoint
 ^^^^^^^^^^^^^^
 
-El endpoint ``Email`` conlleva un poco mas configuración.
+The ``Email`` endpoint takes a little bit more configuration.
 
-Primero es necesario configurar el servido SMTP_ (email server)
-en ``settings.py`` de la siguiente forma
+First we need to configure the SMTP_ server (email server)
+in ``settings.py``, like so
 
 .. code-block:: python
 
@@ -193,8 +192,8 @@ en ``settings.py`` de la siguiente forma
         "password": "secret"  # Password
     }
 
-Luego al agregar el endpoint al alerta es obligatorio agregar una lista
-de destinos en el parámetro ``to``.
+Then when we add the endpoint to the alert, it is mandatory to add a list of
+destinations in the ``to`` parameter.
 
 .. code-block:: python
 
@@ -205,25 +204,26 @@ de destinos en el parámetro ``to``.
             alert_to = [ep.File("statistics.log"),
                         ep.Email(to=["dest0@host.com", "dest1@host.com", ...])]
 
-Opcionalmente ``Email`` soporta tres parámetros mas:
+``Email`` accepts three other optional parameters:
 
--   ``sent_from`` un email origen (por defecto se construye con la
-    *user* + *host* de la configuración del SMTP_.)
--   ``subject`` una subject para los emails enviados (default:
-    nombre de la alerta + nombre del proyecto)
--   ``message``: un string que puede tener un espacio para renderizar el
-    objeto para que sirva de template para crear los mensajes
-    (por defecto usa el metodo ``render_alert()`` de la alerta)
+-   ``sent_from`` a from email (by default we build one with the *user* and
+    *host* of the SMTP_ configuration)
+-   ``subject`` a subject for the sent emails (default:
+    name of the alert + name of the project)
+-   ``message`` a string that can have a slot to render the object, so that it
+    can be used as a template to create the messages (it will use the method
+    ``render_alert()`` of the alert by default.)
 
 
 Selective Runs By Name and Groups
 ---------------------------------
 
-Asi como los steps pueden ejecutarse Alerts por su nombre agregando
-el parámetro ``--alerts|-a`` al comando ``check-alerts``; y a su ves
-es posible agregar alertas a grupos (con el atributo ``groups`` en la
-Alert); y ejecutar estos grupos de manera selectiva con el flag
-``--alert-groups|-ag``
+Just like the steps can be run by their names, Alerts can also be run this way
+by adding the parameter ``--alerts|-a`` to the ``check-alerts`` command.
+It is also possible to add alerts to groups with the attribute ``groups`` in
+Alert).
+We can selectively run this groups using the flag ``--alert-groups|-ag``.
 
-Cualquier duda remitirse al tutorial de
+
+If you need more information, please check the tutorial for
 :ref:`selective_steps_run`
