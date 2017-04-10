@@ -42,8 +42,12 @@ TARGETS = {
     "HTML": "https://en.wikipedia.org/wiki/HTML",
     "LaTeX": "https://en.wikipedia.org/wiki/LaTeX",
     "PDF": "https://en.wikipedia.org/wiki/Portable_Document_Format",
-    "Pandoc": "http://pandoc.org/"
+    "Pandoc": "http://pandoc.org/",
 
+    "class diagram": "https://en.wikipedia.org/wiki/Class_diagram",
+    "graphviz dot": "http://graphviz.org/",
+    "PNG": "https://en.wikipedia.org/wiki/Portable_Network_Graphics",
+    "dot": "https://en.wikipedia.org/wiki/DOT_(graph_description_language)",
 
 }
 

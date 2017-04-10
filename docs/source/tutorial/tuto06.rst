@@ -445,6 +445,7 @@ inferir una vision global de la calidad y arquitectura del pipeline.
 Para acceder a esta información podemos utilizar 3 comandos
 
 1. ``create-doc``
+^^^^^^^^^^^^^^^^^
 
 This command generates a Markdown version
 of an automatic manual for the pipeline, about Models,
@@ -470,16 +471,175 @@ Ejemplo:
      $ pandoc doc.md -o doc.tex  # LaTeX
      $ pandoc doc.md -o doc.pdf  # PDF via LaTeX
 
-
-Puede ver ejemplos de estas salidass en `aqui <http://>`_
-
-
+Puede ver ejemplos de estas salidass en
+aqui: https://github.com/toros-astro/corral/tree/master/docs/doc_output_examples
 
 
-2. create-models-diagram This creates a Class Diagram
-Booch et al. (2006) in Graphviz (Ellson et al., 2001) dot
-format.
-3. qareport Runs every test and Code Coverage evaluation,
+2. ``create-models-diagram``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This creates a `Class Diagram`_ in `Graphviz dot`_ format.
+
+Si se utiliza el parámetro ``-o`` se puede redirecionar la salida
+de la documentacion a un archivo. Si lo hacemos corral sugerira renderizar
+su informacion a a PNG_ utilizando Graphviz
+(usted es responsable de su intalación)
+
+
+.. code-block:: bash
+
+    $ python in_corral.py create-models-diagram -o models.dot
+    Your graph file 'models.dot' was created.
+
+    Render graph by graphviz:
+     $ dot -Tpng models.dot > models.png
+
+    More Help: http://www.graphviz.org/
+
+Ejemplos de la salida en dot_ y PNG_ pueden verse
+aqui: https://github.com/toros-astro/corral/tree/master/docs/models_output_examples
+
+
+3. qareport
+^^^^^^^^^^^
+
+Runs every test and Code Coverage evaluation,
 and uses this to create a Markdown document detailing
 the particular results of each testing stage, and finally calculates
 the QAI index outcome.
+
+Si se utiliza el parámetro ``-o`` se puede redirecionar la salida
+de la documentacion a un archivo. Si lo hacemos corral sugerira renderizar
+su informacion a 3 formatos de ejemplo (HTML_, LaTeX_ y PDF_) utilizando
+la herramienta Pandoc_ (usted es responsable de instalar Pandoc).
+
+.. code-block:: bash
+
+    $ python in_corral.py qareport -o report.md
+    [INFO] Running Test, Coverage and Style Check. Please Wait...
+    Your documentaton file 'report.md' was created.
+
+    To convert your documentation to more suitable formats we sugest Pandoc (http://pandoc.org/). Example:
+     $ pandoc report.md -o report.html # HTML
+     $ pandoc report.md -o report.tex  # LaTeX
+     $ pandoc report.md -o report.pdf  # PDF via LaTeX
+
+Puede ver ejemplos de estas salidas en
+aqui: https://github.com/toros-astro/corral/tree/master/docs/qareport_output_examples
+
+
+Notes about QAI (Quality Assurance Index)
+-----------------------------------------
+
+We recognize the need of a value to quantify the pipeline
+software quality. For example, using different estimators for
+the stability and maintainability of the code, we arrived to the
+following Quality Index **includes in the QA Report**:
+
+.. math::
+
+    QAI = 2 \times \frac{TP \times \frac{T}{PN} \times COV}{1+exp(\frac{MSE}{\tau \times PFN})}
+
+The number of test passes and failures are the unit-testing results,
+that provide a reproducible and upda\-table manner
+to decide whether your code is working as expected or not.
+The *TP* factor is a critical feature of the index, since it is discrete,
+and if a single unit test fails it sets the QAI to zero, displaying that if
+your own tests fail then no result is guaranteed to be reproducible.
+
+The :math:`\frac{T}{PN}` factor is a measure of how many of the different
+processing stages critical to the pipeline
+are being tested (a low value on this parameter should be interpreted as a need to
+write new tests for each pipeline stage).
+
+The :math:`COV` factor shows the percentage of code that is being executed in
+the sum of every unit test;
+this displays the "quality of the testing" (a low value should be interpreted
+as a need to write more extensive tests).
+
+The last factor is the one involving the exponential of the :math:`\frac{MSE}{\tau}`
+value. It comprises the information regarding style errors, attenuated
+by a default or a user-defined tolerance :math:`\tau` times the number of
+files in the project :math:`PFN`
+The factor $2$ is a normalization constant, so that :math:`QAI \in [0, 1]`.
+
+.. note::
+
+    By default :math:`\tau = 13` (the number of style errors on a single python
+    script) is empirically determined from a
+    random sample of more than 4000 python scripts.
+
+    You can change it by defining a variable on ``settings.py`` called
+    ``QAI_TAU`` and asigned some number to it.
+
+    As you can see in the graph the slope (penalization) of the QAI curve
+    is lower when :math:`\tau` is bigger.
+
+    .. image:: /_static/qais.png
+        :align: center
+        :scale: 50 %
+
+
+Notes about QA Qualification
+----------------------------
+
+The QA Qualification (QAQ) is a quantitave scale based on QAI.
+Its a single symbol asigned to some range of a QAI to
+decide is your code aproves or not your expeted level
+of confidence. By default the top limits of the QAQ are
+the
+`same system used by three different colleges in the United States <https://en.wikipedia.org/wiki/Academic_grading_in_the_United_State>`_:
+
+- `Dutchess Community College <https://www.sunydutchess.edu/academics/academic_policies/grading_system.html>`_
+- `Carleton College <http://apps.carleton.edu/handbook/academics/?policy_id=21464>`_
+- `Wellesley College <http://www.wellesley.edu/registrar/grading/grading_policy>`_
+
+Where
+
+- If your :math:`QAI >= 0.00%`` then the :math:`QAQ = F`
+- If your :math:`QAI >= 60.00%` then the :math:`QAQ = D-`
+- If your :math:`QAI >= 63.00%` then the :math:`QAQ = D`
+- If your :math:`QAI >= 67.00%` then the :math:`QAQ = D+`
+- If your :math:`QAI >= 70.00%` then the :math:`QAQ = C-`
+- If your :math:`QAI >= 73.00%` then the :math:`QAQ = C`
+- If your :math:`QAI >= 77.00%` then the :math:`QAQ = C+`
+- If your :math:`QAI >= 80.00%` then the :math:`QAQ = B-`
+- If your :math:`QAI >= 83.00%` then the :math:`QAQ = B`
+- If your :math:`QAI >= 87.00%` then the :math:`QAQ = B+`
+- If your :math:`QAI >= 90.00%` then the :math:`QAQ = A-`
+- If your :math:`QAI >= 93.00%` then the :math:`QAQ = A`
+- If your :math:`QAI >= 95.00%` then the :math:`QAQ = A+`
+
+This values are defined by a dictionary in the form
+
+.. code-block:: python
+
+    {
+        0: "F",
+        60: "D-",
+        63: "D",
+        67: "D+",
+        70: "C-",
+        73: "C",
+        77: "C+",
+        80: "B-",
+        83: "B",
+        87: "B+",
+        90: "A-",
+        93: "A",
+        95: "A+"
+    }
+
+As you can see every key is the lower limit of the QAQ, you can change this
+by adding the ``SCORE_CUALIFITACIONS`` variable to the ``settings.py`` of
+your pipeline.
+
+For example if you want to simple send a "**fail**" or "**pass**" message when
+your pipeline QAI are below or under :math:`60%` you can add to your settings.py
+
+.. code-block:: python
+
+    SCORE_CUALIFICATIONS = {
+        0: "FAIL",
+        60: "PASS"
+    }

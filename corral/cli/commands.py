@@ -818,7 +818,7 @@ class CreateModelsDiagram(BaseCommand):
             action="store", help="destination of the diagram")
 
     def handle(self, out):
-        data = docs.models_diagram(fmt="dot")
+        data = docs.models_diagram()
         out.write(data)
         if out == sys.stdout:
             print("\n")

@@ -1,0 +1,89 @@
+<h1 id="pipeline-quality-report">pipeline Quality Report</h1>
+<ul>
+<li><strong>Created at:</strong> 2017-04-10 20:20:14.275414</li>
+<li><strong>Corral Version:</strong> 0.2.6</li>
+</ul>
+<h2 id="summary">1. Summary</h2>
+<ul>
+<li><strong>Tests Success:</strong> <code>Yes</code></li>
+<li><strong>Tests Ran:</strong> <code>1</code></li>
+<li><strong>Processors:</strong> <code>6</code></li>
+<li><strong>Coverage:</strong> <code>62.63%</code></li>
+<li><strong>Maintainability &amp; Style Errors:</strong> <code>8</code></li>
+</ul>
+<!-- -->
+<ul>
+<li><strong>QA Index:</strong> <code>8.64%</code></li>
+<li><strong>QA Qualification:</strong> <code>F</code></li>
+</ul>
+<h3 id="about-the-corral-quality-assurance-index-qai">1.1 About The Corral Quality Assurance Index (QAI)</h3>
+<pre><code>QAI = 2 * (TP * (T/PNC) * COV) / (1 + exp(MSE/tau))
+
+        Where:
+            TP: If all tests passes is 1, 0 otherwise.
+            T: The number of test cases.
+            PCN: The number number of processors (Loader, Steps and Alerts)
+                 and commands.
+            COV: The code coverage (between 0 and 1).
+            MSE: The Maintainability and Style Errors.
+            tau: Tolerance of style errors per file
+
+</code></pre>
+<p><strong>Current Value of Tau:</strong>: <code>13.00</code> per file</p>
+<h3 id="about-the-qualification">1.2 About The Qualification</h3>
+<p>The Corral qualification is a quantitave scale based on QAI</p>
+<ul>
+<li>QAI &gt;= 0.00% -- <code>F</code></li>
+<li>QAI &gt;= 60.00% -- <code>D-</code></li>
+<li>QAI &gt;= 63.00% -- <code>D</code></li>
+<li>QAI &gt;= 67.00% -- <code>D+</code></li>
+<li>QAI &gt;= 70.00% -- <code>C-</code></li>
+<li>QAI &gt;= 73.00% -- <code>C</code></li>
+<li>QAI &gt;= 77.00% -- <code>C+</code></li>
+<li>QAI &gt;= 80.00% -- <code>B-</code></li>
+<li>QAI &gt;= 83.00% -- <code>B</code></li>
+<li>QAI &gt;= 87.00% -- <code>B+</code></li>
+<li>QAI &gt;= 90.00% -- <code>A-</code></li>
+<li>QAI &gt;= 93.00% -- <code>A</code></li>
+<li>QAI &gt;= 95.00% -- <code>A+</code></li>
+</ul>
+<h2 id="full-output">2. Full Output</h2>
+<h3 id="tests">2.1 Tests</h3>
+<pre><code>runTest (pipeline.tests.StatisticsCreateAnyNameTest) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.481s
+
+OK
+</code></pre>
+<hr />
+<h3 id="coverage">2.2 Coverage</h3>
+<pre><code>Name                   Stmts   Miss  Cover
+------------------------------------------
+pipeline/__init__.py       1      0   100%
+pipeline/alerts.py        10      1    90%
+pipeline/commands.py       6      1    83%
+pipeline/load.py          25     14    44%
+pipeline/models.py        34      1    97%
+pipeline/pipeline.py       4      0   100%
+pipeline/settings.py      17      0   100%
+pipeline/steps.py         79     54    32%
+pipeline/tests.py         14      0   100%
+------------------------------------------
+TOTAL                    190     71    63%
+</code></pre>
+<hr />
+<h3 id="maintainability-style">2.3 MAINTAINABILITY &amp; STYLE</h3>
+<pre><code>Found pep8-style errors.
+Please check the Python code style reference: https://www.python.org/dev/peps/pep-0008/
+
+Errors found:
+pipeline/alerts.py:51:0: W391 blank line at end of file
+pipeline/commands.py:27:0: E302 expected 2 blank lines, found 1
+pipeline/settings.py:41:8: E126 continuation line over-indented for hanging indent
+pipeline/steps.py:36:37: E225 missing whitespace around operator
+pipeline/steps.py:53:43: E225 missing whitespace around operator
+pipeline/steps.py:85:43: E225 missing whitespace around operator
+pipeline/steps.py:117:43: E225 missing whitespace around operator
+pipeline/tests.py:39:41: E225 missing whitespace around operator
+pipeline/tests.py:45:56: E225 missing whitespace around operator</code></pre>

@@ -1,0 +1,141 @@
+\section{pipeline Quality Report}\label{pipeline-quality-report}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Created at:} 2017-04-10 20:20:14.275414
+\item
+  \textbf{Corral Version:} 0.2.6
+\end{itemize}
+
+\subsection{1. Summary}\label{summary}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Tests Success:} \texttt{Yes}
+\item
+  \textbf{Tests Ran:} \texttt{1}
+\item
+  \textbf{Processors:} \texttt{6}
+\item
+  \textbf{Coverage:} \texttt{62.63\%}
+\item
+  \textbf{Maintainability \& Style Errors:} \texttt{8}
+\end{itemize}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{QA Index:} \texttt{8.64\%}
+\item
+  \textbf{QA Qualification:} \texttt{F}
+\end{itemize}
+
+\subsubsection{1.1 About The Corral Quality Assurance Index
+(QAI)}\label{about-the-corral-quality-assurance-index-qai}
+
+\begin{verbatim}
+QAI = 2 * (TP * (T/PNC) * COV) / (1 + exp(MSE/tau))
+
+        Where:
+            TP: If all tests passes is 1, 0 otherwise.
+            T: The number of test cases.
+            PCN: The number number of processors (Loader, Steps and Alerts)
+                 and commands.
+            COV: The code coverage (between 0 and 1).
+            MSE: The Maintainability and Style Errors.
+            tau: Tolerance of style errors per file
+
+\end{verbatim}
+
+\textbf{Current Value of Tau:}: \texttt{13.00} per file
+
+\subsubsection{1.2 About The
+Qualification}\label{about-the-qualification}
+
+The Corral qualification is a quantitave scale based on QAI
+
+\begin{itemize}
+\tightlist
+\item
+  QAI \textgreater{}= 0.00\% -- \texttt{F}
+\item
+  QAI \textgreater{}= 60.00\% -- \texttt{D-}
+\item
+  QAI \textgreater{}= 63.00\% -- \texttt{D}
+\item
+  QAI \textgreater{}= 67.00\% -- \texttt{D+}
+\item
+  QAI \textgreater{}= 70.00\% -- \texttt{C-}
+\item
+  QAI \textgreater{}= 73.00\% -- \texttt{C}
+\item
+  QAI \textgreater{}= 77.00\% -- \texttt{C+}
+\item
+  QAI \textgreater{}= 80.00\% -- \texttt{B-}
+\item
+  QAI \textgreater{}= 83.00\% -- \texttt{B}
+\item
+  QAI \textgreater{}= 87.00\% -- \texttt{B+}
+\item
+  QAI \textgreater{}= 90.00\% -- \texttt{A-}
+\item
+  QAI \textgreater{}= 93.00\% -- \texttt{A}
+\item
+  QAI \textgreater{}= 95.00\% -- \texttt{A+}
+\end{itemize}
+
+\subsection{2. Full Output}\label{full-output}
+
+\subsubsection{2.1 Tests}\label{tests}
+
+\begin{verbatim}
+runTest (pipeline.tests.StatisticsCreateAnyNameTest) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.481s
+
+OK
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{\linethickness}\end{center}
+
+\subsubsection{2.2 Coverage}\label{coverage}
+
+\begin{verbatim}
+Name                   Stmts   Miss  Cover
+------------------------------------------
+pipeline/__init__.py       1      0   100%
+pipeline/alerts.py        10      1    90%
+pipeline/commands.py       6      1    83%
+pipeline/load.py          25     14    44%
+pipeline/models.py        34      1    97%
+pipeline/pipeline.py       4      0   100%
+pipeline/settings.py      17      0   100%
+pipeline/steps.py         79     54    32%
+pipeline/tests.py         14      0   100%
+------------------------------------------
+TOTAL                    190     71    63%
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{\linethickness}\end{center}
+
+\subsubsection{2.3 MAINTAINABILITY \&
+STYLE}\label{maintainability-style}
+
+\begin{verbatim}
+Found pep8-style errors.
+Please check the Python code style reference: https://www.python.org/dev/peps/pep-0008/
+
+Errors found:
+pipeline/alerts.py:51:0: W391 blank line at end of file
+pipeline/commands.py:27:0: E302 expected 2 blank lines, found 1
+pipeline/settings.py:41:8: E126 continuation line over-indented for hanging indent
+pipeline/steps.py:36:37: E225 missing whitespace around operator
+pipeline/steps.py:53:43: E225 missing whitespace around operator
+pipeline/steps.py:85:43: E225 missing whitespace around operator
+pipeline/steps.py:117:43: E225 missing whitespace around operator
+pipeline/tests.py:39:41: E225 missing whitespace around operator
+pipeline/tests.py:45:56: E225 missing whitespace around operator
+\end{verbatim}
