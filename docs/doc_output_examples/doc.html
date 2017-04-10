@@ -1,0 +1,83 @@
+<h1 id="pipeline-documentation">pipeline Documentation</h1>
+<ul>
+<li><strong>Created at:</strong> 2017-04-10 16:46:13.277706</li>
+<li><strong>Corral Version:</strong> 0.2.6</li>
+</ul>
+<p><code>&lt;EMPTY DOC&gt;</code> ## Models</p>
+<h3 id="model-statistics">Model <strong>Statistics</strong></h3>
+<ul>
+<li><strong>Table:</strong> <code>Statistics</code></li>
+</ul>
+<p><code>&lt;EMPTY DOC&gt;</code></p>
+<h3 id="model-name">Model <strong>Name</strong></h3>
+<ul>
+<li><strong>Table:</strong> <code>Name</code></li>
+</ul>
+<p><code>&lt;EMPTY DOC&gt;</code></p>
+<h3 id="model-observation">Model <strong>Observation</strong></h3>
+<ul>
+<li><strong>Table:</strong> <code>Observation</code></li>
+</ul>
+<p><code>&lt;EMPTY DOC&gt;</code></p>
+<h2 id="loader">Loader:</h2>
+<ul>
+<li><strong>Python Path</strong> <code>pipeline.load.Loader</code></li>
+</ul>
+<p><code>&lt;EMPTY DOC&gt;</code></p>
+<h2 id="steps">Steps</h2>
+<h3 id="step-setosastatistics">Step <strong>SetosaStatistics</strong></h3>
+<ul>
+<li><strong>Python Path</strong> <code>pipeline.steps.SetosaStatistics</code></li>
+</ul>
+<p><code>&lt;EMPTY DOC&gt;</code></p>
+<h3 id="step-statisticscreator">Step <strong>StatisticsCreator</strong></h3>
+<ul>
+<li><strong>Python Path</strong> <code>pipeline.steps.StatisticsCreator</code></li>
+</ul>
+<p><code>&lt;EMPTY DOC&gt;</code></p>
+<h3 id="step-versicolorstatistics">Step <strong>VersicolorStatistics</strong></h3>
+<ul>
+<li><strong>Python Path</strong> <code>pipeline.steps.VersicolorStatistics</code></li>
+</ul>
+<p><code>&lt;EMPTY DOC&gt;</code></p>
+<h3 id="step-virginicastatistics">Step <strong>VirginicaStatistics</strong></h3>
+<ul>
+<li><strong>Python Path</strong> <code>pipeline.steps.VirginicaStatistics</code></li>
+</ul>
+<p><code>&lt;EMPTY DOC&gt;</code></p>
+<h2 id="alerts">Alerts</h2>
+<h3 id="alert-statisticsalert">Alert <strong>StatisticsAlert</strong></h3>
+<ul>
+<li><strong>Python Path</strong> <code>pipeline.alerts.StatisticsAlert</code></li>
+</ul>
+<p><code>&lt;EMPTY DOC&gt;</code></p>
+<h1 id="command-line-interface">Command Line Interface</h1>
+<p>run 'python in_corral.py <COMMAND> --help'</p>
+<p>Available subcommands</p>
+<p><strong>CORRAL</strong></p>
+<ul>
+<li><code>alembic</code>: Execute all the Alembic migration tool commands under Corral enviroment</li>
+<li><code>check-alerts</code>: Run the alerts and announce to the endpoint if something is found</li>
+<li><code>create</code>: Create a new corral pipeline</li>
+<li><code>create-doc</code>: Generate a Markdown documentation for your pipeline</li>
+<li><code>create-models-diagram</code>: Generates a class diagram in 'dot' format of the models classes</li>
+<li><code>createdb</code>: Create all the database structure</li>
+<li><code>dbshell</code>: Run an SQL shell throught sqlalchemy</li>
+<li><code>exec</code>: Execute file inside corral environment</li>
+<li><code>groups</code>: List all existent groups for Steps and Alerts</li>
+<li><code>load</code>: Excecute the loader class</li>
+<li><code>lsalerts</code>: List all available alert classes</li>
+<li><code>lssteps</code>: List all available step classes</li>
+<li><code>makemigrations</code>: Generate a database migration script for your current pipeline</li>
+<li><code>migrate</code>: Synchronizes the database state with the current set of models and migrations</li>
+<li><code>notebook</code>: Run the Jupyter notebook inside Corral enviroment</li>
+<li><code>qareport</code>: Run the QA test for your pipeline and make a reports of errors, maintanability, coverage and a full QA index.</li>
+<li><code>run</code>: Excecute the steps in order or one step in particular</li>
+<li><code>run-all</code>: Shortcut command to run the loader, steps and alerts asynchronous. For more control check the commands 'load', 'run' and 'check-alerts'.</li>
+<li><code>shell</code>: Run the Python shell inside Corral enviroment</li>
+<li><code>test</code>: Run all unittests for your pipeline</li>
+</ul>
+<p><strong>pipeline</strong></p>
+<ul>
+<li><code>ls</code>: hace el ls macho</li>
+</ul>

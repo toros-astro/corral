@@ -1,0 +1,182 @@
+\section{pipeline Documentation}\label{pipeline-documentation}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Created at:} 2017-04-10 16:46:13.277706
+\item
+  \textbf{Corral Version:} 0.2.6
+\end{itemize}
+
+\texttt{\textless{}EMPTY\ DOC\textgreater{}} \#\# Models
+
+\subsubsection{\texorpdfstring{Model
+\textbf{Statistics}}{Model Statistics}}\label{model-statistics}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Table:} \texttt{Statistics}
+\end{itemize}
+
+\texttt{\textless{}EMPTY\ DOC\textgreater{}}
+
+\subsubsection{\texorpdfstring{Model
+\textbf{Name}}{Model Name}}\label{model-name}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Table:} \texttt{Name}
+\end{itemize}
+
+\texttt{\textless{}EMPTY\ DOC\textgreater{}}
+
+\subsubsection{\texorpdfstring{Model
+\textbf{Observation}}{Model Observation}}\label{model-observation}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Table:} \texttt{Observation}
+\end{itemize}
+
+\texttt{\textless{}EMPTY\ DOC\textgreater{}}
+
+\subsection{Loader:}\label{loader}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Python Path} \texttt{pipeline.load.Loader}
+\end{itemize}
+
+\texttt{\textless{}EMPTY\ DOC\textgreater{}}
+
+\subsection{Steps}\label{steps}
+
+\subsubsection{\texorpdfstring{Step
+\textbf{SetosaStatistics}}{Step SetosaStatistics}}\label{step-setosastatistics}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Python Path} \texttt{pipeline.steps.SetosaStatistics}
+\end{itemize}
+
+\texttt{\textless{}EMPTY\ DOC\textgreater{}}
+
+\subsubsection{\texorpdfstring{Step
+\textbf{StatisticsCreator}}{Step StatisticsCreator}}\label{step-statisticscreator}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Python Path} \texttt{pipeline.steps.StatisticsCreator}
+\end{itemize}
+
+\texttt{\textless{}EMPTY\ DOC\textgreater{}}
+
+\subsubsection{\texorpdfstring{Step
+\textbf{VersicolorStatistics}}{Step VersicolorStatistics}}\label{step-versicolorstatistics}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Python Path} \texttt{pipeline.steps.VersicolorStatistics}
+\end{itemize}
+
+\texttt{\textless{}EMPTY\ DOC\textgreater{}}
+
+\subsubsection{\texorpdfstring{Step
+\textbf{VirginicaStatistics}}{Step VirginicaStatistics}}\label{step-virginicastatistics}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Python Path} \texttt{pipeline.steps.VirginicaStatistics}
+\end{itemize}
+
+\texttt{\textless{}EMPTY\ DOC\textgreater{}}
+
+\subsection{Alerts}\label{alerts}
+
+\subsubsection{\texorpdfstring{Alert
+\textbf{StatisticsAlert}}{Alert StatisticsAlert}}\label{alert-statisticsalert}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Python Path} \texttt{pipeline.alerts.StatisticsAlert}
+\end{itemize}
+
+\texttt{\textless{}EMPTY\ DOC\textgreater{}}
+
+\section{Command Line Interface}\label{command-line-interface}
+
+run `python in\_corral.py --help'
+
+Available subcommands
+
+\textbf{CORRAL}
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{alembic}: Execute all the Alembic migration tool commands
+  under Corral enviroment
+\item
+  \texttt{check-alerts}: Run the alerts and announce to the endpoint if
+  something is found
+\item
+  \texttt{create}: Create a new corral pipeline
+\item
+  \texttt{create-doc}: Generate a Markdown documentation for your
+  pipeline
+\item
+  \texttt{create-models-diagram}: Generates a class diagram in `dot'
+  format of the models classes
+\item
+  \texttt{createdb}: Create all the database structure
+\item
+  \texttt{dbshell}: Run an SQL shell throught sqlalchemy
+\item
+  \texttt{exec}: Execute file inside corral environment
+\item
+  \texttt{groups}: List all existent groups for Steps and Alerts
+\item
+  \texttt{load}: Excecute the loader class
+\item
+  \texttt{lsalerts}: List all available alert classes
+\item
+  \texttt{lssteps}: List all available step classes
+\item
+  \texttt{makemigrations}: Generate a database migration script for your
+  current pipeline
+\item
+  \texttt{migrate}: Synchronizes the database state with the current set
+  of models and migrations
+\item
+  \texttt{notebook}: Run the Jupyter notebook inside Corral enviroment
+\item
+  \texttt{qareport}: Run the QA test for your pipeline and make a
+  reports of errors, maintanability, coverage and a full QA index.
+\item
+  \texttt{run}: Excecute the steps in order or one step in particular
+\item
+  \texttt{run-all}: Shortcut command to run the loader, steps and alerts
+  asynchronous. For more control check the commands `load', `run' and
+  `check-alerts'.
+\item
+  \texttt{shell}: Run the Python shell inside Corral enviroment
+\item
+  \texttt{test}: Run all unittests for your pipeline
+\end{itemize}
+
+\textbf{pipeline}
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{ls}: hace el ls macho
+\end{itemize}

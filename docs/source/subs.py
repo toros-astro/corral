@@ -37,7 +37,14 @@ TARGETS = {
     "iris": "https://en.wikipedia.org/wiki/Iris_flower_data_set",
     "postgresql": "https://www.postgresql.org/",
 
-    "SMTP": "https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol"
+    "SMTP": "https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol",
+
+    "HTML": "https://en.wikipedia.org/wiki/HTML",
+    "LaTeX": "https://en.wikipedia.org/wiki/LaTeX",
+    "PDF": "https://en.wikipedia.org/wiki/Portable_Document_Format",
+    "Pandoc": "http://pandoc.org/"
+
+
 }
 
 

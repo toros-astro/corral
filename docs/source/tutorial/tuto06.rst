@@ -186,6 +186,88 @@ Tenga en cuenta que puede creear mas Test con el subject variando el
     puede ser una imagen bien formada, un stream de bytes vacio o una imagen que
     no entra en memoria.
 
+Ejecutando Los Tests
+^^^^^^^^^^^^^^^^^^^^
+
+Para correr el test descripto arriba se utiliza el comando ``test``:
+
+.. code-block:: bash
+
+    $ python in_corral.py test -vv
+    runTest (pipeline.tests.StatisticsCreateAnyNameTest) ... ok
+
+    ----------------------------------------------------------------------
+    Ran 1 test in 0.441s
+
+    OK
+
+El parámetro ``-vv`` incrementa la cantidad de informacion que se imprime en
+pantalla.
+
+ahora bien si cambiamos el test por ejemplo la linea **16** por la siguiente
+
+.. code-block:: python
+    :linenos:
+    :emphasize-lines: 16
+
+    from corral import qa
+
+    from . import models, steps
+
+    class StatisticsCreateAnyNameTest(qa.TestCase):
+
+        subject = steps.StatisticsCreator
+
+        def setup(self):
+            name = models.Name(name="foo")
+            self.save(name)
+
+        def validate(self):
+            self.assertStreamHas(
+                models.Name, models.Name.name=="foo")
+            self.assertStreamCount(2, models.Name)
+
+            name = self.session.query(models.Name).first()
+
+            self.assertStreamHas(
+                models.Statistics, models.Statistics.name_id==name.id)
+            self.assertStreamCount(1, models.Statistics)
+
+
+y volvemos a ejecutar el comando ``test`` obtendremos la siguiente salida:
+
+.. code-block:: bash
+
+    $ python in_corral.py test -vv
+    runTest (pipeline.tests.StatisticsCreateAnyNameTest) ... FAIL
+
+    ======================================================================
+    FAIL: runTest (pipeline.tests.StatisticsCreateAnyNameTest)
+    ----------------------------------------------------------------------
+    Traceback (most recent call last):
+      File "corral/qa.py", line 171, in runTest
+        self.validate()
+      File "/irispl/tests.py", line 40, in validate
+        self.assertStreamCount(2, models.Name)
+      File "/corral/qa.py", line 251, in assertStreamCount
+        self.assertEquals(query.count(), expected)
+    AssertionError: 1 != 2
+
+    ----------------------------------------------------------------------
+    Ran 1 test in 0.445s
+
+    FAILED (failures=1)
+
+Esto debido a que no hay 2 instancias de ``Name`` en el stream en ese momento.
+
+
+.. note::
+
+    el comando ``test`` soporta una multitud de parametros para activar
+    o desactivar tests segun su subject o parar la ejecución del mismo
+    al primer error. Por favor ejecute ``python in_corral test --help``
+    para ver todas las alternativas disponibles
+
 
 Mocks
 ^^^^^
@@ -301,10 +383,103 @@ ejecuta los siguientes pasos para **CADA** caso de prueba.
 Code-Coverage
 -------------
 
+Los unittest, son una tecnica sencilla para evaluar el correcto funcionamiento
+del pipeline. Mientras que el Code-Coverage (CC) es una forma de medir la
+calidad de los test en funcion de cuanto codigo ejecutan del pipeline.
+
+.. important::
+
+    **Que tan importante es el Code-coverage?**
+
+    El CC es una medida muy importante en calidad, al punto de que ha sido incluida
+    en:
+
+    -   The guidelines by which avionics gear is certified by the
+        `Federal Aviation Administration <https://en.wikipedia.org/wiki/Federal_Aviation_Administration>`_
+        is documented in `DO-178B <https://en.wikipedia.org/wiki/DO-178B>`_
+        and `DO-178C <https://en.wikipedia.org/wiki/DO-178C>`_.
+
+    -   is a requirement in part 6 of the automotive safety standard
+        `ISO 26262 <https://en.wikipedia.org/wiki/ISO_26262>`_
+        Road Vehicles - Functional Safety.
+
+En Corral el CC se presenta como un porcentaje de ejecucion de lineas de codigo
+sobre el total de lineas escritas en el pipeline (incluido los propios tests)
+
+Corral gestiona sola la ejecucion del coverage en la herramienta de reporte
+descrita mas adelante.
+
 
 Code Style
 ----------
 
+The programming style (CS) is a set of rules or guidelines used when writing the
+source code for a computer program.
+
+Python favorece la legibilidad del codigo como una de sus filofias de diseño
+establecida en el `PEP20 <https://www.python.org/dev/peps/pep-0020/>`_.
+El estilo a seguir que establece que
+es bello (otra de sus filosofias) y que es legible se presenta en el
+`PEP8 <https://www.python.org/dev/peps/pep-0008/>`_
+
+CS it is often claimed that following a particular programming style will help
+programmers to read and understand source code conforming to the style, and
+help to avoid introducing errors.
+
+In some ways CS is some kine of
+`Maintainability <https://en.wikipedia.org/wiki/Software_maintenance>`_
+
+As in coverage CS is managed by Corral integrating the
+`Flake 8 Tool <http://flake8.pycqa.org/en/latest/>`_ and is informed inside
+the result of the reporting tool
+
 
 Reporting
 ---------
+
+Como pude apreciarse Corral puede  solo escribiendo Unit-Testing.
+
+Corral inspecciona el codigo, la documentación y el testing para
+inferir una vision global de la calidad y arquitectura del pipeline.
+
+Para acceder a esta información podemos utilizar 3 comandos
+
+1. ``create-doc``
+
+This command generates a Markdown version
+of an automatic manual for the pipeline, about Models,
+Loader, Steps, Alerts, and command line interface utilities,
+using the docstrings from the code itself.
+
+Si se utiliza el parámetro ``-o`` se puede redirecionar la salida
+de la documentacion a un archivo. Si lo hacemos corral sugerira renderizar
+su informacion a 3 formatos de ejemplo (HTML_, LaTeX_ y PDF_) utilizando
+la herramienta Pandoc_ (usted es responsable de instalar Pandoc).
+
+Ejemplo:
+
+.. code-block:: bash
+
+    $ python in_corral.py create-doc -o doc.md
+    Your documentaton file 'doc.md' was created.
+
+    To convert your documentation to more suitable formats we sugest Pandoc
+    (http://pandoc.org/). Example:
+
+     $ pandoc doc.md -o doc.html # HTML
+     $ pandoc doc.md -o doc.tex  # LaTeX
+     $ pandoc doc.md -o doc.pdf  # PDF via LaTeX
+
+
+Puede ver ejemplos de estas salidass en `aqui <http://>`_
+
+
+
+
+2. create-models-diagram This creates a Class Diagram
+Booch et al. (2006) in Graphviz (Ellson et al., 2001) dot
+format.
+3. qareport Runs every test and Code Coverage evaluation,
+and uses this to create a Markdown document detailing
+the particular results of each testing stage, and finally calculates
+the QAI index outcome.
