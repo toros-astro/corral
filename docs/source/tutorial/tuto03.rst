@@ -390,7 +390,7 @@ To do this, we can redefine the ``__repr__`` method for each model
 Improving the interactive session instance feedback
 ----------------------------------------------------
 
-Podemos definir el ``__repr__`` de ``Name`` como:
+We can definir el ``__repr__`` de ``Name`` como:
 
 .. code-block:: python
 
