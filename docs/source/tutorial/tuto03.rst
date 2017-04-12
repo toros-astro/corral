@@ -382,14 +382,13 @@ Or more easily with Python:
     <my_pipeline.models.Name object at 0x7fd14f414b10>
     <my_pipeline.models.Name object at 0x7fd14f414bd0>
 
-As 
-Como se ve la salida es muy poco representativa de que son los datos que
-estamos viendo. Podeos mejorar esto redefiniendo los métodos ``__repr__`` de
-los modelos (https://docs.python.org/2/reference/datamodel.html#object.__repr__)
+This output could be improved, since it doesn't give much information.
+To do this, we can redefine the ``__repr__`` method for each model 
+(https://docs.python.org/2/reference/datamodel.html#object.__repr__)
 
 
-Mejorando el feedback de las instancias en la session iteractiva
-----------------------------------------------------------------
+Improving the interactive session instance feedback
+----------------------------------------------------
 
 Podemos definir el ``__repr__`` de ``Name`` como:
 
