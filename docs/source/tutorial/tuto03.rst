@@ -60,8 +60,8 @@ So for instance
     {'SepalLength': '5.0', 'PetalLength': '1.5', 'PetalWidth': '0.2', 'SepalWidth': '3.4', 'Name': 'Iris-setosa'}
     # ... MANY MORE LINES ... #
 
-Para escribir el loader lo que debemos hacer es abrir el archivo
-``pipeline/load.py`` que deberia verse en un principio asi:
+To write the loader what we should do is to open the file
+``pipeline/load.py`` which should look like this:
 
 .. code-block:: python
 
@@ -95,10 +95,10 @@ Para escribir el loader lo que debemos hacer es abrir el archivo
             pass
 
 
-Primero hay que agregar a los imports los modulos ``csv`` de python,
-el ``settings`` de corral e importar desde nuestro pipeline el modulo de
-modelos para poder generarlos en el loader con lo cual nuestro bloque de
-imports deberia quedar.
+First we need to import the python module ``csv``, the ``settings`` from
+corral and import from our pipeline the models module, in order to
+generate them using the loader. With all this the import block should 
+have this looks:
 
 .. code-block:: python
 
