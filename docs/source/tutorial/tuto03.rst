@@ -151,17 +151,17 @@ We will get an output just like the following:
     {'SepalLength': '5.9', 'PetalLength': '5.1', 'PetalWidth': '1.8', 'SepalWidth': '3.0', 'Name': 'Iris-virginica'}
     [my_pipeline-INFO @ 2016-01-10 17:59:00,396] Done Loader '<class 'my_pipeline.load.Loader'>' #1
 
-Con lo cual vemos que el proceso de loader esta accediendo e imprimiendo por
-pantalla todo lo que encuentra en ``iris.csv``.
+Which tells us that the loader is able to acces the ``iris.csv`` file, and printing
+its content.
 
-Por una cuestion de orden y seguridad es conveniente que los archivos se
-cierren explicitamente una sola ves por proceso. Para esto
-podemos redefinidr los metodos ``setup`` y ``teardow`` de la clase ``Loader``.
+As a matter of order and safety it is convenient that files close
+explicitly just one time per process. To get this we could just redefine
+the ``Loader`` method's ``setup`` and ``teardown``.
 
-Setup se ejecuta antes de generate y es el mejor lugar para abrir nuestro
-archivo. Por otra parte ``teardown`` recibe información de si sucedio algun
-error durante la ejecucion de ``generate`` y se ejecuta luego de que este
-termine. La forma mas simple de implementar esto es la siguiente:
+``setup`` is executed just before ``generate`` and it is the best place
+to open our file. On the other hand ``teardown`` gets information related to
+the error state of the ``generate`` method, and runs just after this one ends.
+The simplest way to implement this is the following:
 
 .. code-block:: python
 
