@@ -114,11 +114,8 @@ have this looks:
     from my_pipeline import models
 
 
-Ahora dentro del metodo ``Loader.generate()`` podemos leer el archivo csv
-e imprimirlo por pantalla tal cual como lo hicimos en la session interactiva
-
-con lo cual el metodo quedaria
-
+The ``Loader.generate()`` method now could start reading the csv file
+and screen print it, as like we did in the interactive session:
 
 .. code-block:: python
 
@@ -128,13 +125,13 @@ con lo cual el metodo quedaria
             for row in csv.DictReader(open(settings.IRIS_PATH)):
                 print row
 
-Si ahora desde la consola ejecutamos el comando
+Now if we go to the command line and execute
 
 .. code-block:: bash
 
     $ python in_corral.py load
 
-Veremos una salida como la siguiente:
+We will get an output just like the following:
 
 .. code-block:: bash
 
