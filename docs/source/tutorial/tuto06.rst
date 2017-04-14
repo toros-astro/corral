@@ -140,12 +140,12 @@ each new instance of a ``Statistics`` for each instance of ``Name``.
             self.assertStreamCount(1, models.Statistics)
 
 
-Desglozando el código tenemos:
+Breaking the code into pieces we have:
 
--   En la lines **5** declaramos el caso de testeo poniendole un nombre
-    descriptivo y heredando de la clase ``corral.qa.TestCase``.
--   En la **7**, enlazamos que subject queremos evaluar.
--   Entre las lineas **9** y **11** (metodo ``setup()``), preparamos agregamos al
+-   On line number **5** we declare the test case, by setting a descriptive name 
+    and inhering from class ``corral.qa.TestCase``.
+-   On line **7**, we link to the desired subject.
+-   From lines **9** and **11** (``setup()`` method), we prepare preparamos agregamos al
     stream de datos una instancia de ``Name`` con cualquier nombre, ya que
     sabemos por la definicion del steps ``StatisticsCreator`` que este modelo
     sera seleccionado para crear una estadistica.
