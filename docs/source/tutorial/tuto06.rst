@@ -46,30 +46,28 @@ maintainability.
 What is QA for Corral
 ---------------------
 
-Como diimos en el parrafo anterior, la QA es una medida subjetiva.
-Por consiguiente Corral ofrece herramientas para dejar el al autor de un
-pipeline que desee tener un cordigo de mas calidad evaluar 3 caracteristicas
-relacionadas a la funcionalidad Esperada (unit-testing), cantidad de codigo
-probada por los tests (coverage) y una medida de cuan legible es el codigo
-y por ende que tan mantenible es el pipeline por developers que no sean
-el autor original (style). Finalmente se ofrece 3 herramientas ara genear
-un reporte de estado global para tner una idea de la calidad del pipeline
-y poder informarla a todos los stackholders.
+As we said in the last paragraph, QA is subjective measure.
+That is the reason why Corral offers to the pipeline's author tools
+to deliver higher quality code. This tools can measure three 
+quantities: 
+- Unit-test results, measuring the expected functionality
+- Coverage, which stands for the amount of code being tested
+- Style, as a estimator of the mantainability
 
-En resumen, es trabajo del desarrolador del pipeline estblecer:
+Corral offers three tools to generate a global status report 
+that brings an idea about the pipeline's quality, so it is possible
+to share it to the stackholders.
 
-- Cuales son los test minimos para probar el funcionamiento de su pipeline
-  (si no programe cosas que no valen)
-- Asumir que esos test establecen la linea base de toda la calidad del
-  pipeline
-- Asumir riesgos de su propio codigo.
+Summarizing, is a pipeline's developer job to define:
+- Which are the minimum tests to check the pipeline's functionality
+- Assume that this testing set the baseline of the pipeline's quality
+- Assume the risks of deploying it's own code
 
 .. note::
-
-    Siguiendo la idea de sujetividad, esta herramienta es opcional, nuestro
-    diseño original parte de saber a priori con que confianza deplegamos
-    nuevas versiones de un pipeline basados en una "linea-base" bien
-    establecida.
+    Following the subjectivity idea, this tool is optional, 
+    our original design comes from knowing ahead the amount
+    of trust we put on deploying new versions of a pipeline, 
+    having settled before the "baseline"
 
 
 Unit-Testing
@@ -105,19 +103,16 @@ From Wikipedia:
     `Wikipedia <https://en.wikipedia.org/wiki/Unit_testing>`_
 
 
-En el caso de corral, se ofrece un sub-framework en el cual se propone
-probar por separado en uno o mas test, el loader, cada step y cada alert.
+In Corral's case, a sub-framework is offered, in which is proposed to
+test separatedly in one or many test, the loader, each step and each alert.
 
-Por ejemplo si quisieramos probar si el **subject**
-``StatisticsCreator`` crea una nueva instancia de una ``Statistics`` para
-cada da instancia de ``Name``
+For instance if we would like to test if the **subject** ``StatisticsCreator``
+each new instance of a ``Statistics`` for each instance of ``Name``.
 
 .. note::
+    We call **subject** to each step, loader and alert being put up to testing
 
-    Llamamos **subject** a todo step, loader o alert el cual va a ser sujeto a
-    una prueba.
-
-
+ 
 .. code-block:: python
     :linenos:
 

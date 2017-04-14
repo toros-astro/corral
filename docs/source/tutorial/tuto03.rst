@@ -390,7 +390,7 @@ To do this, we can redefine the ``__repr__`` method for each model
 Improving the interactive session instance feedback
 ----------------------------------------------------
 
-We can define the ``__repr__`` from ``Name`` as:
+We can define the ``__repr__`` of ``Name`` as:
 
 .. code-block:: python
 
@@ -401,7 +401,7 @@ We can define the ``__repr__`` from ``Name`` as:
         def __repr__(self):
             return "<Name '{}' {}>".format(self.name, self.id)
 
-y el de ``Observation`` como:
+and of ``Observation`` like this:
 
 .. code-block:: python
 
@@ -429,7 +429,7 @@ y el de ``Observation`` como:
     <Observation (Iris-setosa, 4.9, 3.0, 1.4, 0.2) 2>
     <Observation (Iris-setosa, 4.7, 3.2, 1.3, 0.2) 3>
 
-    # O podriamos buscar todas las versicolor
+    # Or we could search for every versicolor
     >>> name_versicolor = session.query(Name).filter(Name.name=="Iris-versicolor").first()
     >>>  name_versicolor.observations
     ...
