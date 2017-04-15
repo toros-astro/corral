@@ -145,46 +145,44 @@ Breaking the code into pieces we have:
 -   On line number **5** we declare the test case, by setting a descriptive name 
     and inhering from class ``corral.qa.TestCase``.
 -   On line **7**, we link to the desired subject.
--   From lines **9** and **11** (``setup()`` method), we prepare preparamos agregamos al
-    stream de datos una instancia de ``Name`` con cualquier nombre, ya que
-    sabemos por la definicion del steps ``StatisticsCreator`` que este modelo
-    sera seleccionado para crear una estadistica.
--   En el metodo ``validate()`` (linea **13** en adelante) se evalua en que
-    estado quedo el el **stream** luego de ejecutar ``StatisticsCreator``:
+-   From lines **9** and **11** (``setup()`` method), we prepare and add to the
+    data stream an instance of ``Name`` with any name, since we know from the
+    step ``StatisticCreator`` definition that this model is being selected for 
+    an statistic.
+-   On ``validate()`` method (from line **13**) the data stream status after
+    executing ``StatisticCreator`` is checked:
+    - First of all on **14** and **15** lines it is verified that a effectively
+      exists a ``Name`` instance in the stream with "foo" name.
+    - In **16** it is checked that only one instance of ``Name`` exists on the
+      stream (recall that each unit-test is executed isolated from every other, 
+      so whatever we added in ``setup()`` or whatever is being created by
+      the **subject** are the only entities allowed to exist on the stream)
+    - In line **18** we extract this one instance of ``Name`` from the stream
+    - Finally on lines **20** - **22**, we verify that ``StatisticsCreator``
+      has created an instance of ``Statistics`` linked to the ``Name`` instance
+      recently recovered, and that there is not any other instance in the Stream.
 
-    -   En primer lugar en las **14** y **15**, se verifica que efectivamente
-        exista una en el stream una instancia de ``Name`` con el nombre "foo".
-    -   En **16** se evalua que solo exista una instancia de ``Name`` en el
-        Stream (recordemos que cada unittest se ejecuta aislado de los demas,
-        por lo cual lo que hayamos agregado en ``setup()`` o
-        lo que cree el **subject**, es todo lo que deberia haber en el stream)
-    -   Luego, en la linea **18** extraemos esta unica instancia
-        de ``Name`` del Stream
-    -   Finalmente en las lineas **20** a la **22**, verificamos que
-        ``StatisticsCreator`` haya creado una instancia de ``Statistics``
-        enlazada a la instancia de ``Name`` recuperada, y que no haya mas
-        de una instancia en el Stream.
-
-Este ejemplo de testeo verifica el correcto funcionamiento de una step simple.
-Tenga en cuenta que puede creear mas Test con el subject variando el
-``setup()`` y por consiguiente logrando diferentes estados de inicio en el
-*subject* generalizando todos los estados posibles.
+This testing example verifies the correct functioning of a simple step.
+Take into account that it is possible to create more than one test with each
+*subject*, by making variations on ``setup()``, allowing to test different
+initialization parameters for *subject* and generalizing to each possible state.
 
 .. important::
 
-    Tenga en cuenta que un test **no solamente** verifica el correcto
-    funcionamiento de su código. En muchos casos es interesante evaluar
-    si su algoritmo falla como es devido.
+    Take into account that a test is not **only** to check that the code
+    works properly. In many cases it is key to check that the software
+    *fails* just as it should.
 
-    **Por ejemplo** si usted crea un Step que convierta imagenes
-    cree varios tests teniendo en cuenta los tipos de imagenes mas comunes, como
-    puede ser una imagen bien formada, un stream de bytes vacio o una imagen que
-    no entra en memoria.
+    **For example** if you code a Step that converts images, you probably
+    want several tests taking into account the most common images, such as
+    a properly formatted image, as well as an empty bytes string, or an 
+    image that cannot fit into memory.
 
-Ejecutando Los Tests
-^^^^^^^^^^^^^^^^^^^^
+    
+Executing Tests
+^^^^^^^^^^^^^^^
 
-Para correr el test descripto arriba se utiliza el comando ``test``:
+To run the previously descripted test the ``test`` command is used:
 
 .. code-block:: bash
 
