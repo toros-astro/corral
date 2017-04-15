@@ -194,10 +194,8 @@ To run the previously descripted test the ``test`` command is used:
 
     OK
 
-El parámetro ``-vv`` incrementa la cantidad de informacion que se imprime en
-pantalla.
-
-ahora bien si cambiamos el test por ejemplo la linea **16** por la siguiente
+The ``-vv`` parameter increases the amount of information being screen printed.
+Now if we change the test, for instance the **16** line, and insert the following:
 
 .. code-block:: python
     :linenos:
@@ -227,7 +225,7 @@ ahora bien si cambiamos el test por ejemplo la linea **16** por la siguiente
             self.assertStreamCount(1, models.Statistics)
 
 
-y volvemos a ejecutar el comando ``test`` obtendremos la siguiente salida:
+and execute ``test`` again, we should get the following:
 
 .. code-block:: bash
 
@@ -251,36 +249,33 @@ y volvemos a ejecutar el comando ``test`` obtendremos la siguiente salida:
 
     FAILED (failures=1)
 
-Esto debido a que no hay 2 instancias de ``Name`` en el stream en ese momento.
+This is due there are not 2 instances of ``Name`` in the Stream at that time.
 
 
 .. note::
 
-    el comando ``test`` soporta una multitud de parametros para activar
-    o desactivar tests segun su subject o parar la ejecución del mismo
-    al primer error. Por favor ejecute ``python in_corral test --help``
-    para ver todas las alternativas disponibles
+    The ``test`` command supports a enormous quantity of parameters
+    to activate or deactivate tests, depend its subject, or stopping the
+    execution at the first error. Please execute ``python in_corral test --help``
+    to get every possible alternative
 
 
 Mocks
 ^^^^^
 
-Muchas veces nos vemos en la obligación de utilizar ciertas funcionalidades de
-Python (o de alguna biblioteca de terceros) que exede al scope del subject
-que queremos probar, o utilizarlo implicaria algun tipo de penalización
+In many situations it is compulsory to make use of certain Python functionalities
+(or another third party library), that exceeds subject's test scope, or
+any other kind of penalization with its use.
 
-Por ejemplo si tenemos definida alguna variable en ``settings.py`` llamada
-``DATA_PATH`` que indica donde guardar algun archivo procesado por el pipeline,
-y nuestro subject crea datos en ese path. Si utilizaramos esto sin cuidado
-nuestros casos de testeo ensuciarian de archivos basura nuestro directorio de
-trabajo.
+For example if we have any defined variable on ``settings.py`` called
+``DATA_PATH`` which points where to store any processed file,
+and our subject creates data on that place. If we use this without caution
+our testing cases might get filled with trash files in our working directory.
 
-Para ayudarnos en estos casos existen los
-`Mock Objects <https://en.wikipedia.org/wiki/Mock_object>`_, los cuales
-ya vienen integrados en los TestCases de Corral; y cuya mayor ventaja es
-que luego de salir del test case donde fueron creados no dejan rastros de
-su utilización.
-
+`Mock Objects <https://en.wikipedia.org/wiki/Mock_object>`_ might be
+useful in such times. These come already integrated inside ``TestCase``
+from Corral, and their key advantage is that after getting out of the 
+test case they are automatically whiped out.
 
 
 .. code-block:: python
@@ -294,28 +289,26 @@ su utilización.
 
         def setup(self):
 
-            # creamos un directorio temporal
+            # create a temporary directory
             self.data_path = tempfile.tempdir()
 
-            # cambiamos el settings.DATA_PATH por el directorio temporal
+            # change the settings.DATA_PATH and set it as our temporary directory
             self.patch("corral.conf.settings.DATA_PATH", self.data_path)
 
         def validate(self):
-            # aqui adentro todo lo que suceda y utilice DATA_PATH
-            # utilizara el mock
+            # here, everything that makes use of DATA_PATH is being mocked
 
         def teardown(self):
-            # aqui adentro todo lo que suceda y utilice DATA_PATH
-            # utilizara el mock
+            # here, everything that makes use of DATA_PATH is being mocked
 
-            # eliminamos el directorio temporal para no dejar basura en
-            # el disco
+            # clean the temporary file so we do not leave trash behind us
             shutil.rmtree(self.data_path)
 
 
-El metodo ``teardown()`` no necesita encargarse de restaurar ``DATA_PATH`` a
-su valor original, solamente se usa (en este caso) para liberar espacio
-en disco que solo se utiliza durante el test.
+The ``teardown()`` method does not need to restore ``DATA_PATH``
+to its original value, we just use it (in that case) to set free
+disk space being utilized only inside the test.
+
 
 .. note::
 
