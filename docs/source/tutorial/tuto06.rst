@@ -142,25 +142,26 @@ each new instance of a ``Statistics`` for each instance of ``Name``.
 
 Breaking the code into pieces we have:
 
--   On line number **5** we declare the test case, by setting a descriptive name 
-    and inhering from class ``corral.qa.TestCase``.
--   On line **7**, we link to the desired subject.
--   From lines **9** and **11** (``setup()`` method), we prepare and add to the
-    data stream an instance of ``Name`` with any name, since we know from the
-    step ``StatisticCreator`` definition that this model is being selected for 
-    an statistic.
--   On ``validate()`` method (from line **13**) the data stream status after
-    executing ``StatisticCreator`` is checked:
-    - First of all on **14** and **15** lines it is verified that a effectively
-      exists a ``Name`` instance in the stream with "foo" name.
-    - In **16** it is checked that only one instance of ``Name`` exists on the
-      stream (recall that each unit-test is executed isolated from every other, 
-      so whatever we added in ``setup()`` or whatever is being created by
-      the **subject** are the only entities allowed to exist on the stream)
-    - In line **18** we extract this one instance of ``Name`` from the stream
-    - Finally on lines **20** - **22**, we verify that ``StatisticsCreator``
-      has created an instance of ``Statistics`` linked to the ``Name`` instance
-      recently recovered, and that there is not any other instance in the Stream.
+- On line number **5** we declare the test case, by setting a descriptive name 
+  and inhering from class ``corral.qa.TestCase``.
+- On line **7**, we link to the desired subject.
+- From lines **9** and **11** (``setup()`` method), we prepare and add to the
+  data stream an instance of ``Name`` with any name, since we know from the
+  step ``StatisticCreator`` definition that this model is being selected for 
+  an statistic.
+- On ``validate()`` method (from line **13**) the data stream status after
+  executing ``StatisticCreator`` is checked:
+
+  - First of all on **14** and **15** lines it is verified that a effectively
+    exists a ``Name`` instance in the stream with "foo" name.
+  - In **16** it is checked that only one instance of ``Name`` exists on the
+    stream (recall that each unit-test is executed isolated from every other, 
+    so whatever we added in ``setup()`` or whatever is being created by
+    the **subject** are the only entities allowed to exist on the stream)
+  - In line **18** we extract this one instance of ``Name`` from the stream
+  - Finally on lines **20** - **22**, we verify that ``StatisticsCreator``
+    has created an instance of ``Statistics`` linked to the ``Name`` instance
+    recently recovered, and that there is not any other instance in the Stream.
 
 This testing example verifies the correct functioning of a simple step.
 Take into account that it is possible to create more than one test with each
@@ -312,7 +313,7 @@ disk space being utilized only inside the test.
 
 .. note::
 
-    Los mocks de corral implementan gran parte de la funcionalidad de los mocks
+    Corral mocks implement a big portion of Python mocks functionality, mainly
     de python, principalmente:
 
     -   ``patch``
@@ -320,28 +321,27 @@ disk space being utilized only inside the test.
     -   ``patch.dict``
     -   ``patch.multiple``
 
-    Para mas información sobre como utilizar los mocks por favor dirijase a
+    For more information on how to use mocks pleas go to
     https://docs.python.org/3/library/unittest.mock.html
 
 
 Corral  Unit-Test Life cycle
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Cada unit test se ejecuta de manera aislada, para garantizar esto corral
-ejecuta los siguientes pasos para **CADA** caso de prueba.
+Each unit-test is executed in isolation, to guarantee this Corral executes each
+of the following steps for **EACH** test case:
 
-1.  Se recolectan todos los clases que heredan de ``corral.qa.TestCase`` en el
-    modulo ``tests.py``
-2.  Para cada *TestCase* se ejecuta:
+1.  Every class which inherit from ``corral.qa.TestCase`` are collected in ``tests.py`` module
+2.  For each *TestCase* is being executed:
 
-        #.  Se crea una base de datos de testeo para contener el Stream.
-        #.  Se crean todas los modelos en el Stream.
-        #.  Se crea una ``session`` para interactuar con la DB y se la asigna al
-            caso de testeo.
-        #.  Se ejecuta el metodo ``setup()`` del caso de testeo.
-        #.  Se confirman los cambios en la base de datos y se cierra la session.
-        #.  Se ejecuta el ``subject`` con su propia ``session``.
-        #.  Se crea una nueva ``session`` y se la asigna al caso de testeo.
+        #.  A testing database to contain the Stream is created.
+        #.  Every model is created on the Stream.
+        #.  A ``session`` is being created, to interact with the DB, and a 
+            test case is being assigned to it.
+        #.  The ``setup()`` method is executed for the current testing case.
+        #.  Database changes are confirmed and ``session`` is closed.
+        #.  The ``subject`` is executed, and it comes with its own ``session``.
+        #.  A Se crea una nueva ``session`` y se la asigna al caso de testeo.
         #.  Se ejecuta el metodo ``validate()`` y se cierra la ``session``.
         #.  Se crea una nueva ``session`` y se la asigna al caso de testeo.
         #.  Se ejecuta el metodo ``teardown()`` del caso de testeo (Este método es
