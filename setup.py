@@ -71,7 +71,8 @@ REQUIREMENTS = [
     'SQLAlchemy-Utils>=0.31.0',
     'termcolor>=1.1.0',
     'texttable>=0.8.3',
-    'xmltodict>=0.10.1'
+    'xmltodict>=0.10.1',
+    'snakeviz>=0.4.1'
 ]
 
 with open('README.rst') as fp:

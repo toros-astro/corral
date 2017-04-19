@@ -607,3 +607,12 @@ def qa_report(processors, commands, *args, **kwargs):
         ts_result, ts_stream.getvalue(), cov_result, style_result)
 
     return report
+
+
+def run_profile():
+    profile = sh.Command("python").bake(m="cProfile")
+    with tempfile.NamedTemporaryFile() as tfp:
+        profile("-o", tfp.name, "in_corral.py", "test", _no_out=True)
+        with open(tfp.name) as fp:
+            report = fp.read()
+    return report

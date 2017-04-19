@@ -50,6 +50,10 @@ import logging
 import sys
 import argparse
 import shutil
+import pstats
+import tempfile
+
+import sh
 
 import six
 
@@ -867,3 +871,65 @@ class CreateDoc(BaseCommand):
             print(self.epilogue.format(filename=out.name, basename=basename))
             print("")
         out.flush()
+
+
+class Profile(BaseCommand):
+    """Run a CPU profile (with cProfile) and then open the report with
+    your default browser
+
+    """
+
+    options = {"mode": "out"}
+
+    def setup(self):
+        self.parser.add_argument(
+            "-o", "--output", dest="out", nargs="?", default=None,
+            action="store", help="destination of the cProfile report")
+        self.parser.add_argument(
+            "-ns", "--no-serve", action="store_false",
+            dest="serve", help="only pritn the stats on console")
+        self.parser.add_argument(
+            '-H', '--hostname', metavar='ADDR', default='127.0.0.1',
+            help='hostname to bind to (default: 127.0.0.1')
+        self.parser.add_argument(
+            '-p', '--port', type=int, metavar='PORT', default=8080,
+            help=('port to bind to; if this port is already in use a '
+                  'free port will be selected automatically '
+                  '(default: %default)'))
+        self.parser.add_argument(
+            '-b', '--browser', metavar='PATH',
+            help=('name of webbrowser to launch as described in '
+                  'the documentation of Python\'s webbrowser module: '
+                  'https://docs.python.org/3/library/webbrowser.html'))
+        self.parser.add_argument(
+            '-s', '--server', action="store_true", dest="server",
+            default=False,
+            help='start SnakeViz in server-only mode--'
+                 'no attempt will be to open a browser')
+
+    def _print(self, report_file, **kwargs):
+        ps = pstats.Stats(report_file, stream=sys.stdout)
+        ps.strip_dirs().print_stats(.3)
+
+    def _serve(self, report_file, kwargs):
+        if "browser" in kwargs and kwargs["browser"] is None:
+            kwargs.pop("browser")
+        sh.snakeviz(report_file, **kwargs)
+
+    def handle(self, out, serve, **snakeviz_kwargs):
+        print("Running tests for profile, please wait...")
+        report = qa.run_profile()
+        out_func = self._serve if serve else self._print
+
+        if out is None:
+            with tempfile.NamedTemporaryFile() as tfp:
+                with open(tfp.name, "w"):
+                    tfp.write(report)
+                tfp.seek(0)
+                out_func(tfp.name, snakeviz_kwargs)
+        else:
+            with open(out, "w") as fp:
+                fp.write(report)
+            print("Your profile file '{}' was created.".format(out))
+            print("")
+            out_func(out, snakeviz_kwargs)
