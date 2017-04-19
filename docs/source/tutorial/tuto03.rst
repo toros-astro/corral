@@ -60,8 +60,8 @@ So for instance
     {'SepalLength': '5.0', 'PetalLength': '1.5', 'PetalWidth': '0.2', 'SepalWidth': '3.4', 'Name': 'Iris-setosa'}
     # ... MANY MORE LINES ... #
 
-Para escribir el loader lo que debemos hacer es abrir el archivo
-``pipeline/load.py`` que deberia verse en un principio asi:
+To write the loader what we should do is to open the file
+``pipeline/load.py`` which should look like this:
 
 .. code-block:: python
 
@@ -95,10 +95,10 @@ Para escribir el loader lo que debemos hacer es abrir el archivo
             pass
 
 
-Primero hay que agregar a los imports los modulos ``csv`` de python,
-el ``settings`` de corral e importar desde nuestro pipeline el modulo de
-modelos para poder generarlos en el loader con lo cual nuestro bloque de
-imports deberia quedar.
+First we need to import the python module ``csv``, the ``settings`` from
+corral and import from our pipeline the models module, in order to
+generate them using the loader. With all this the import block should 
+have this looks:
 
 .. code-block:: python
 
@@ -114,11 +114,8 @@ imports deberia quedar.
     from my_pipeline import models
 
 
-Ahora dentro del metodo ``Loader.generate()`` podemos leer el archivo csv
-e imprimirlo por pantalla tal cual como lo hicimos en la session interactiva
-
-con lo cual el metodo quedaria
-
+The ``Loader.generate()`` method now could start reading the csv file
+and screen print it, as like we did in the interactive session:
 
 .. code-block:: python
 
@@ -128,13 +125,13 @@ con lo cual el metodo quedaria
             for row in csv.DictReader(open(settings.IRIS_PATH)):
                 print row
 
-Si ahora desde la consola ejecutamos el comando
+Now if we go to the command line and execute
 
 .. code-block:: bash
 
     $ python in_corral.py load
 
-Veremos una salida como la siguiente:
+We will get an output just like the following:
 
 .. code-block:: bash
 
@@ -154,58 +151,57 @@ Veremos una salida como la siguiente:
     {'SepalLength': '5.9', 'PetalLength': '5.1', 'PetalWidth': '1.8', 'SepalWidth': '3.0', 'Name': 'Iris-virginica'}
     [my_pipeline-INFO @ 2016-01-10 17:59:00,396] Done Loader '<class 'my_pipeline.load.Loader'>' #1
 
-Con lo cual vemos que el proceso de loader esta accediendo e imprimiendo por
-pantalla todo lo que encuentra en ``iris.csv``.
+Which tells us that the loader is able to acces the ``iris.csv`` file, and printing
+its content.
 
-Por una cuestion de orden y seguridad es conveniente que los archivos se
-cierren explicitamente una sola ves por proceso. Para esto
-podemos redefinidr los metodos ``setup`` y ``teardow`` de la clase ``Loader``.
+As a matter of order and safety it is convenient that files close
+explicitly just one time per process. To get this we could just redefine
+the ``Loader`` method's ``setup`` and ``teardown``.
 
-Setup se ejecuta antes de generate y es el mejor lugar para abrir nuestro
-archivo. Por otra parte ``teardown`` recibe información de si sucedio algun
-error durante la ejecucion de ``generate`` y se ejecuta luego de que este
-termine. La forma mas simple de implementar esto es la siguiente:
+``setup`` is executed just before ``generate`` and it is the best place
+to open our file. On the other hand ``teardown`` gets information related to
+the error state of the ``generate`` method, and runs just after this one ends.
+The simplest way to implement this is the following:
 
 .. code-block:: python
 
     class Loader(run.Loader):
 
     def setup(self):
-        # abrimos el archivo aqui y lo asignamos a una variable de instancia
+        # we open the file and assign it to an instance variable
         self.fp = open(settings.IRIS_PATH)
 
     def teardown(self, *args):
-        # verificamos que el archivo este abierto
+        # checking that the file is really open
         if self.fp and not self.fp.closed:
             self.fp.close()
 
     def generate(self):
-        # ahora usamos "self.fp" para el reader
+        # now we make use of "self.fp" for the reader
         for row in csv.DictReader(self.fp):
             print row
 
-Por una cuestion de simplicidad ahora dividiremos el procesamiento en dos
-partes:
+For the sake of simplicity now we split the processing into two sides:
 
-#. Un metodo que se llame ``get_name_instance`` que reciba la fila por
-   parametro y retorne una instancia de ``my_pipeline.models.Name`` referida
-   al *name* de esa fila (*Iris-virginica*, *Iris-versicolor* o *Iris-stosa*)
-   Hay que tener en cuenta que cada ves que un nombre no exista este metodo
-   tiene que crear uno y guardar el modelo antes de retornarlo.
-#. Un metodo que se llame ``store_observation`` que reciba por parametro la
-   fila y la instancia de ``my_pipeline.models.Name`` creada por el metodo
-   anterior. Este metodo solo tiene que devolver la instancia y delegarsela
-   al loader sin grabarla.
+#. A method named ``get_name_instance`` which receives the row as a parameter
+   and returns a ``my_pipeline.models.Name`` instance referred to the *name*
+   of such file (*Iris-virginica*, *Iris-versicolor*, or *Iris-setosa*).
+   Something to take into account is that every time a name is non existant
+   this method must create a new one and to store this model before returning it.
+#. A method named ``store_observation`` which receives the row as a parameter, and
+   also the instance of ``my_pipeline.models.Name`` just created by the previous
+   model. This method just needs to return the instance and deliver it to the 
+   loader without saving it.
 
 
 .. warning::
 
-    Este tutorial va a asumir conocimiento del manejo de sessiones y
-    queries de SQLAlchemy_.
-    Si tiene dudas por favor dirigirse al `orm tutorial`_
+    This tutorial is going to assume a certain level of knowledge in sessions,
+    queries from SQLAlchemy_.
+    If any doubts arise, please go to `orm tutorial`_
 
 
-primero definiremos el metodo ``get_name_instance``
+First of all we define the method ``get_name_instance``
 
 
 .. code-block:: python
@@ -224,7 +220,7 @@ primero definiremos el metodo ``get_name_instance``
 
         return name
 
-ahora ``store_observation``:
+now ``store_observation``:
 
 .. code-block:: python
 
@@ -235,29 +231,31 @@ ahora ``store_observation``:
             petal_length=row["PetalLength"], petal_width=row["PetalWidth"])
 
 
-Finalmente el metodo generate quedaría definido como:
+Finally the ``generate`` method would be defined as:
 
 .. code-block:: python
 
     def generate(self):
-        # ahora usamos "self.fp" para el reader
+        # now we use the "self.fp" for the reader
         for row in csv.DictReader(self.fp):
             name = self.get_name_instance(row)
             obs = self.store_observation(row, name)
             yield obs
 
-En la ultima linea con el comando ``yield`` delegamos la instancia creada
-por ``store_observation`` a corral para que la persista llegado el momento.
+In the very last line with the ``yield`` command,
+we deliver the instance created by ``store_observation`` 
+to corral so it would be persisted when the time comes.
 
 
 .. warning::
 
-    Tenga en cuenta que ``generate`` *por defecto* solo puede retornar ``None``
-    o una *iterador* de instancias de *models* o un unico *model*. Si desea
-    que pueda generar otra cosa es necesario redefinir el método ``validate``
-    que no sera tratado en este tutorial.
+    Bare in mind that ``generate`` *by default* can only return ``None``
+    or an *models* instances *iterator* or a single *model*. 
+    If you wish for it to generate another object it is necessary to redefine
+    the ``validate`` method which is not treated on this tutorial.
 
-Finalmente el loader debería quedar definido como:
+
+Finally the loader should be defined as:
 
 
 .. code-block:: python
@@ -265,11 +263,11 @@ Finalmente el loader debería quedar definido como:
     class Loader(run.Loader):
 
     def setup(self):
-        # abrimos el archivo aqui y lo asignamos a una variable de instancia
+        # we open the file and assign it to an instance variable
         self.fp = open(settings.IRIS_PATH)
 
     def teardown(self, *args):
-        # verificamos que el archivo este abierto
+        # checking that the file is really open
         if self.fp and not self.fp.closed:
             self.fp.close()
 
@@ -294,7 +292,7 @@ Finalmente el loader debería quedar definido como:
             petal_length=row["PetalLength"], petal_width=row["PetalWidth"])
 
     def generate(self):
-        # ahora usamos "self.fp" para el reader
+        # now we make use of "self.fp" for the reader
         for row in csv.DictReader(self.fp):
             name = self.get_name_instance(row)
             obs = self.store_observation(row, name)
@@ -303,17 +301,16 @@ Finalmente el loader debería quedar definido como:
 
 .. note::
 
-    Si quiere ver como registrar otro nombre de clase como loader, simplemente
-    cambie el valor de la variable ``LOADER`` en ``setings.py``.
+    If you wish to register another name for the loader class, just update the value
+    of the ``LOADER`` variable in ``settings.py``.
 
-
-Ahora cuando ejecutamos:
+Now when we run 
 
 .. code-block:: bash
 
     $ python in_corral load
 
-El resultado sera una serie de comandos sql parecidos al siguiente:
+the result will be a list of sql commands that should look like this:
 
 .. code-block:: bash
 
@@ -330,8 +327,7 @@ El resultado sera una serie de comandos sql parecidos al siguiente:
     [my_pipeline-INFO @ 2016-01-10 19:10:21,804] (1, 5.0, 3.4, 1.5, 0.2)
     ...
 
-
-Podemos explorar los datos cargados con:
+We can explore the loaded data with:
 
 .. code-block:: bash
 
@@ -356,7 +352,7 @@ Podemos explorar los datos cargados con:
     +----+---------+--------------+-------------+--------------+-------------+
     SQL>
 
-O más comodamente con Python:
+Or more easily with Python:
 
 .. code-block:: python
 
@@ -386,15 +382,15 @@ O más comodamente con Python:
     <my_pipeline.models.Name object at 0x7fd14f414b10>
     <my_pipeline.models.Name object at 0x7fd14f414bd0>
 
-Como se ve la salida es muy poco representativa de que son los datos que
-estamos viendo. Podeos mejorar esto redefiniendo los métodos ``__repr__`` de
-los modelos (https://docs.python.org/2/reference/datamodel.html#object.__repr__)
+This output could be improved, since it doesn't give much information.
+To do this, we can redefine the ``__repr__`` method for each model 
+(https://docs.python.org/2/reference/datamodel.html#object.__repr__)
 
 
-Mejorando el feedback de las instancias en la session iteractiva
-----------------------------------------------------------------
+Improving the interactive session instance feedback
+----------------------------------------------------
 
-Podemos definir el ``__repr__`` de ``Name`` como:
+We can define the ``__repr__`` of ``Name`` as:
 
 .. code-block:: python
 
@@ -405,7 +401,7 @@ Podemos definir el ``__repr__`` de ``Name`` como:
         def __repr__(self):
             return "<Name '{}' {}>".format(self.name, self.id)
 
-y el de ``Observation`` como:
+and of ``Observation`` like this:
 
 .. code-block:: python
 
@@ -433,7 +429,7 @@ y el de ``Observation`` como:
     <Observation (Iris-setosa, 4.9, 3.0, 1.4, 0.2) 2>
     <Observation (Iris-setosa, 4.7, 3.2, 1.3, 0.2) 3>
 
-    # O podriamos buscar todas las versicolor
+    # Or we could search for every versicolor
     >>> name_versicolor = session.query(Name).filter(Name.name=="Iris-versicolor").first()
     >>>  name_versicolor.observations
     ...

@@ -46,30 +46,28 @@ maintainability.
 What is QA for Corral
 ---------------------
 
-Como diimos en el parrafo anterior, la QA es una medida subjetiva.
-Por consiguiente Corral ofrece herramientas para dejar el al autor de un
-pipeline que desee tener un cordigo de mas calidad evaluar 3 caracteristicas
-relacionadas a la funcionalidad Esperada (unit-testing), cantidad de codigo
-probada por los tests (coverage) y una medida de cuan legible es el codigo
-y por ende que tan mantenible es el pipeline por developers que no sean
-el autor original (style). Finalmente se ofrece 3 herramientas ara genear
-un reporte de estado global para tner una idea de la calidad del pipeline
-y poder informarla a todos los stackholders.
+As we said in the last paragraph, QA is subjective measure.
+That is the reason why Corral offers to the pipeline's author tools
+to deliver higher quality code. This tools can measure three 
+quantities: 
+- Unit-test results, measuring the expected functionality
+- Coverage, which stands for the amount of code being tested
+- Style, as a estimator of the mantainability
 
-En resumen, es trabajo del desarrolador del pipeline estblecer:
+Corral offers three tools to generate a global status report 
+that brings an idea about the pipeline's quality, so it is possible
+to share it to the stackholders.
 
-- Cuales son los test minimos para probar el funcionamiento de su pipeline
-  (si no programe cosas que no valen)
-- Asumir que esos test establecen la linea base de toda la calidad del
-  pipeline
-- Asumir riesgos de su propio codigo.
+Summarizing, is a pipeline's developer job to define:
+- Which are the minimum tests to check the pipeline's functionality
+- Assume that this testing set the baseline of the pipeline's quality
+- Assume the risks of deploying it's own code
 
 .. note::
-
-    Siguiendo la idea de sujetividad, esta herramienta es opcional, nuestro
-    diseño original parte de saber a priori con que confianza deplegamos
-    nuevas versiones de un pipeline basados en una "linea-base" bien
-    establecida.
+    Following the subjectivity idea, this tool is optional, 
+    our original design comes from knowing ahead the amount
+    of trust we put on deploying new versions of a pipeline, 
+    having settled before the "baseline"
 
 
 Unit-Testing
@@ -105,19 +103,16 @@ From Wikipedia:
     `Wikipedia <https://en.wikipedia.org/wiki/Unit_testing>`_
 
 
-En el caso de corral, se ofrece un sub-framework en el cual se propone
-probar por separado en uno o mas test, el loader, cada step y cada alert.
+In Corral's case, a sub-framework is offered, in which is proposed to
+test separatedly in one or many test, the loader, each step and each alert.
 
-Por ejemplo si quisieramos probar si el **subject**
-``StatisticsCreator`` crea una nueva instancia de una ``Statistics`` para
-cada da instancia de ``Name``
+For instance if we would like to test if the **subject** ``StatisticsCreator``
+each new instance of a ``Statistics`` for each instance of ``Name``.
 
 .. note::
+    We call **subject** to each step, loader and alert being put up to testing
 
-    Llamamos **subject** a todo step, loader o alert el cual va a ser sujeto a
-    una prueba.
-
-
+ 
 .. code-block:: python
     :linenos:
 
@@ -145,51 +140,50 @@ cada da instancia de ``Name``
             self.assertStreamCount(1, models.Statistics)
 
 
-Desglozando el código tenemos:
+Breaking the code into pieces we have:
 
--   En la lines **5** declaramos el caso de testeo poniendole un nombre
-    descriptivo y heredando de la clase ``corral.qa.TestCase``.
--   En la **7**, enlazamos que subject queremos evaluar.
--   Entre las lineas **9** y **11** (metodo ``setup()``), preparamos agregamos al
-    stream de datos una instancia de ``Name`` con cualquier nombre, ya que
-    sabemos por la definicion del steps ``StatisticsCreator`` que este modelo
-    sera seleccionado para crear una estadistica.
--   En el metodo ``validate()`` (linea **13** en adelante) se evalua en que
-    estado quedo el el **stream** luego de ejecutar ``StatisticsCreator``:
+- On line number **5** we declare the test case, by setting a descriptive name 
+  and inhering from class ``corral.qa.TestCase``.
+- On line **7**, we link to the desired subject.
+- From lines **9** and **11** (``setup()`` method), we prepare and add to the
+  data stream an instance of ``Name`` with any name, since we know from the
+  step ``StatisticCreator`` definition that this model is being selected for 
+  an statistic.
+- On ``validate()`` method (from line **13**) the data stream status after
+  executing ``StatisticCreator`` is checked:
 
-    -   En primer lugar en las **14** y **15**, se verifica que efectivamente
-        exista una en el stream una instancia de ``Name`` con el nombre "foo".
-    -   En **16** se evalua que solo exista una instancia de ``Name`` en el
-        Stream (recordemos que cada unittest se ejecuta aislado de los demas,
-        por lo cual lo que hayamos agregado en ``setup()`` o
-        lo que cree el **subject**, es todo lo que deberia haber en el stream)
-    -   Luego, en la linea **18** extraemos esta unica instancia
-        de ``Name`` del Stream
-    -   Finalmente en las lineas **20** a la **22**, verificamos que
-        ``StatisticsCreator`` haya creado una instancia de ``Statistics``
-        enlazada a la instancia de ``Name`` recuperada, y que no haya mas
-        de una instancia en el Stream.
+  - First of all on **14** and **15** lines it is verified that a effectively
+    exists a ``Name`` instance in the stream with "foo" name.
+  - In **16** it is checked that only one instance of ``Name`` exists on the
+    stream (recall that each unit-test is executed isolated from every other, 
+    so whatever we added in ``setup()`` or whatever is being created by
+    the **subject** are the only entities allowed to exist on the stream)
+  - In line **18** we extract this one instance of ``Name`` from the stream
+  - Finally on lines **20** - **22**, we verify that ``StatisticsCreator``
+    has created an instance of ``Statistics`` linked to the ``Name`` instance
+    recently recovered, and that there is not any other instance in the Stream.
 
-Este ejemplo de testeo verifica el correcto funcionamiento de una step simple.
-Tenga en cuenta que puede creear mas Test con el subject variando el
-``setup()`` y por consiguiente logrando diferentes estados de inicio en el
-*subject* generalizando todos los estados posibles.
+This testing example verifies the correct functioning of a simple step.
+Take into account that it is possible to create more than one test with each
+*subject*, by making variations on ``setup()``, allowing to test different
+initialization parameters for *subject* and generalizing to each possible state.
 
 .. important::
 
-    Tenga en cuenta que un test **no solamente** verifica el correcto
-    funcionamiento de su código. En muchos casos es interesante evaluar
-    si su algoritmo falla como es devido.
+    Take into account that a test is not **only** to check that the code
+    works properly. In many cases it is key to check that the software
+    *fails* just as it should.
 
-    **Por ejemplo** si usted crea un Step que convierta imagenes
-    cree varios tests teniendo en cuenta los tipos de imagenes mas comunes, como
-    puede ser una imagen bien formada, un stream de bytes vacio o una imagen que
-    no entra en memoria.
+    **For example** if you code a Step that converts images, you probably
+    want several tests taking into account the most common images, such as
+    a properly formatted image, as well as an empty bytes string, or an 
+    image that cannot fit into memory.
 
-Ejecutando Los Tests
-^^^^^^^^^^^^^^^^^^^^
+    
+Executing Tests
+^^^^^^^^^^^^^^^
 
-Para correr el test descripto arriba se utiliza el comando ``test``:
+To run the previously descripted test the ``test`` command is used:
 
 .. code-block:: bash
 
@@ -201,10 +195,8 @@ Para correr el test descripto arriba se utiliza el comando ``test``:
 
     OK
 
-El parámetro ``-vv`` incrementa la cantidad de informacion que se imprime en
-pantalla.
-
-ahora bien si cambiamos el test por ejemplo la linea **16** por la siguiente
+The ``-vv`` parameter increases the amount of information being screen printed.
+Now if we change the test, for instance the **16** line, and insert the following:
 
 .. code-block:: python
     :linenos:
@@ -234,7 +226,7 @@ ahora bien si cambiamos el test por ejemplo la linea **16** por la siguiente
             self.assertStreamCount(1, models.Statistics)
 
 
-y volvemos a ejecutar el comando ``test`` obtendremos la siguiente salida:
+and execute ``test`` again, we should get the following:
 
 .. code-block:: bash
 
@@ -258,36 +250,33 @@ y volvemos a ejecutar el comando ``test`` obtendremos la siguiente salida:
 
     FAILED (failures=1)
 
-Esto debido a que no hay 2 instancias de ``Name`` en el stream en ese momento.
+This is due there are not 2 instances of ``Name`` in the Stream at that time.
 
 
 .. note::
 
-    el comando ``test`` soporta una multitud de parametros para activar
-    o desactivar tests segun su subject o parar la ejecución del mismo
-    al primer error. Por favor ejecute ``python in_corral test --help``
-    para ver todas las alternativas disponibles
+    The ``test`` command supports a enormous quantity of parameters
+    to activate or deactivate tests, depend its subject, or stopping the
+    execution at the first error. Please execute ``python in_corral test --help``
+    to get every possible alternative
 
 
 Mocks
 ^^^^^
 
-Muchas veces nos vemos en la obligación de utilizar ciertas funcionalidades de
-Python (o de alguna biblioteca de terceros) que exede al scope del subject
-que queremos probar, o utilizarlo implicaria algun tipo de penalización
+In many situations it is compulsory to make use of certain Python functionalities
+(or another third party library), that exceeds subject's test scope, or
+any other kind of penalization with its use.
 
-Por ejemplo si tenemos definida alguna variable en ``settings.py`` llamada
-``DATA_PATH`` que indica donde guardar algun archivo procesado por el pipeline,
-y nuestro subject crea datos en ese path. Si utilizaramos esto sin cuidado
-nuestros casos de testeo ensuciarian de archivos basura nuestro directorio de
-trabajo.
+For example if we have any defined variable on ``settings.py`` called
+``DATA_PATH`` which points where to store any processed file,
+and our subject creates data on that place. If we use this without caution
+our testing cases might get filled with trash files in our working directory.
 
-Para ayudarnos en estos casos existen los
-`Mock Objects <https://en.wikipedia.org/wiki/Mock_object>`_, los cuales
-ya vienen integrados en los TestCases de Corral; y cuya mayor ventaja es
-que luego de salir del test case donde fueron creados no dejan rastros de
-su utilización.
-
+`Mock Objects <https://en.wikipedia.org/wiki/Mock_object>`_ might be
+useful in such times. These come already integrated inside ``TestCase``
+from Corral, and their key advantage is that after getting out of the 
+test case they are automatically whiped out.
 
 
 .. code-block:: python
@@ -301,32 +290,30 @@ su utilización.
 
         def setup(self):
 
-            # creamos un directorio temporal
+            # create a temporary directory
             self.data_path = tempfile.tempdir()
 
-            # cambiamos el settings.DATA_PATH por el directorio temporal
+            # change the settings.DATA_PATH and set it as our temporary directory
             self.patch("corral.conf.settings.DATA_PATH", self.data_path)
 
         def validate(self):
-            # aqui adentro todo lo que suceda y utilice DATA_PATH
-            # utilizara el mock
+            # here, everything that makes use of DATA_PATH is being mocked
 
         def teardown(self):
-            # aqui adentro todo lo que suceda y utilice DATA_PATH
-            # utilizara el mock
+            # here, everything that makes use of DATA_PATH is being mocked
 
-            # eliminamos el directorio temporal para no dejar basura en
-            # el disco
+            # clean the temporary file so we do not leave trash behind us
             shutil.rmtree(self.data_path)
 
 
-El metodo ``teardown()`` no necesita encargarse de restaurar ``DATA_PATH`` a
-su valor original, solamente se usa (en este caso) para liberar espacio
-en disco que solo se utiliza durante el test.
+The ``teardown()`` method does not need to restore ``DATA_PATH``
+to its original value, we just use it (in that case) to set free
+disk space being utilized only inside the test.
+
 
 .. note::
 
-    Los mocks de corral implementan gran parte de la funcionalidad de los mocks
+    Corral mocks implement a big portion of Python mocks functionality, mainly
     de python, principalmente:
 
     -   ``patch``
@@ -334,28 +321,27 @@ en disco que solo se utiliza durante el test.
     -   ``patch.dict``
     -   ``patch.multiple``
 
-    Para mas información sobre como utilizar los mocks por favor dirijase a
+    For more information on how to use mocks pleas go to
     https://docs.python.org/3/library/unittest.mock.html
 
 
 Corral  Unit-Test Life cycle
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Cada unit test se ejecuta de manera aislada, para garantizar esto corral
-ejecuta los siguientes pasos para **CADA** caso de prueba.
+Each unit-test is executed in isolation, to guarantee this Corral executes each
+of the following steps for **EACH** test case:
 
-1.  Se recolectan todos los clases que heredan de ``corral.qa.TestCase`` en el
-    modulo ``tests.py``
-2.  Para cada *TestCase* se ejecuta:
+1.  Every class which inherit from ``corral.qa.TestCase`` are collected in ``tests.py`` module
+2.  For each *TestCase* is being executed:
 
-        #.  Se crea una base de datos de testeo para contener el Stream.
-        #.  Se crean todas los modelos en el Stream.
-        #.  Se crea una ``session`` para interactuar con la DB y se la asigna al
-            caso de testeo.
-        #.  Se ejecuta el metodo ``setup()`` del caso de testeo.
-        #.  Se confirman los cambios en la base de datos y se cierra la session.
-        #.  Se ejecuta el ``subject`` con su propia ``session``.
-        #.  Se crea una nueva ``session`` y se la asigna al caso de testeo.
+        #.  A testing database to contain the Stream is created.
+        #.  Every model is created on the Stream.
+        #.  A ``session`` is being created, to interact with the DB, and a 
+            test case is being assigned to it.
+        #.  The ``setup()`` method is executed for the current testing case.
+        #.  Database changes are confirmed and ``session`` is closed.
+        #.  The ``subject`` is executed, and it comes with its own ``session``.
+        #.  A Se crea una nueva ``session`` y se la asigna al caso de testeo.
         #.  Se ejecuta el metodo ``validate()`` y se cierra la ``session``.
         #.  Se crea una nueva ``session`` y se la asigna al caso de testeo.
         #.  Se ejecuta el metodo ``teardown()`` del caso de testeo (Este método es
