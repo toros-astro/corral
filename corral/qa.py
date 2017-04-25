@@ -290,11 +290,12 @@ class TestCase(unittest.TestCase):
 
 class QAResult(object):
 
-    def __init__(self, project_modules, processors, commands,
+    def __init__(self, project_modules, processors, commands, tests_by_proc,
                  ts_report, ts_out, cov_report, style_report):
         self._project_modules = tuple(project_modules)
         self._processors = tuple(processors)
         self._commands = tuple(commands)
+        self._tests_by_proc = tuple(tests_by_proc)
         self._ts_report = ts_report
         self._ts_out = ts_out
         self._cov_report, self._cov_xml = cov_report
@@ -307,11 +308,11 @@ class QAResult(object):
 
     @property
     def qai(self):
-        """QAI = 2 * (TP * (T/PNC) * COV) / (1 + exp(MSE/tau))
+        """QAI = 2 * (TP * (PT/PNC) * COV) / (1 + exp(MSE/tau))
 
         Where:
             TP: If all tests passes is 1, 0 otherwise.
-            T: The number of test cases.
+            PT: Processors and commands tested.
             PCN: The number number of processors (Loader, Steps and Alerts)
                  and commands.
             COV: The code coverage (between 0 and 1).
@@ -321,14 +322,14 @@ class QAResult(object):
         """
         TP = 1. if self.is_test_sucess else 0.
         PCN = self.processors_number + self.commands_number
-        T_div_PCN = float(self.test_runs) / PCN
+        PT_div_PCN = float(self.pc_tested_number) / PCN
         COV = self.coverage_line_rate
         tau = get_tau()
 
         total_tau = float(tau) * len(self.project_modules)
         style = 1 + math.exp(self.style_errors / total_tau)
 
-        result = (2 * TP * T_div_PCN * COV) / style
+        result = (2 * TP * PT_div_PCN * COV) / style
         return result
 
     @property
@@ -338,6 +339,11 @@ class QAResult(object):
         for lowlimit, c in sorted(score_cualifications.items(), reverse=True):
             if qai_100 >= lowlimit:
                 return c
+
+    @property
+    def pc_tested_number(self):
+        return len([
+            subject for subject, tests in self._tests_by_proc if tests])
 
     @property
     def project_modules(self):
@@ -476,7 +482,7 @@ def run_tests(processors, commands, failfast, verbosity,
     runner = unittest.runner.TextTestRunner(
         stream=stream, verbosity=verbosity, failfast=failfast)
     suite_result = runner.run(suite)
-    return suite_result
+    return suite_result, testcases
 
 
 def run_coverage(failfast, verbosity, default_logging=False):
@@ -592,7 +598,7 @@ def run_style():
 def qa_report(processors, commands, *args, **kwargs):
     core.logger.info("Running Test, Coverage and Style Check. Please Wait...")
     ts_stream = six.StringIO()
-    ts_result = run_tests(
+    ts_result, tests_by_proc = run_tests(
         processors, commands, failfast=False, stream=ts_stream, verbosity=2,
         *args, **kwargs)
 
@@ -603,8 +609,10 @@ def qa_report(processors, commands, *args, **kwargs):
     project_modules = retrieve_all_pipeline_modules_names()
 
     report = QAResult(
-        project_modules, processors, commands,
-        ts_result, ts_stream.getvalue(), cov_result, style_result)
+        project_modules=project_modules, processors=processors,
+        commands=commands, tests_by_proc=tests_by_proc, ts_report=ts_result,
+        ts_out=ts_stream.getvalue(), cov_report=cov_result,
+        style_report=style_result)
 
     return report
 

@@ -742,7 +742,7 @@ class Test(BaseCommand):
                 commands = cli.load_project_commands()
 
         result = qa.run_tests(
-            processors, commands, failfast, verbosity, default_logging)
+            processors, commands, failfast, verbosity, default_logging)[0]
         if not result.wasSuccessful():
             self.exit_with(1)
 

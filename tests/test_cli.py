@@ -715,8 +715,8 @@ class Test(BaseTest):
     @mock.patch("sys.stdout")
     @mock.patch("sys.exit")
     def test_test_fail(self, sys_exit, *args):
-        fresult = mock.MagicMock()
-        with mock.patch.object(fresult, "wasSuccessful") as ws:
+        fresult = mock.MagicMock(), None
+        with mock.patch.object(fresult[0], "wasSuccessful") as ws:
             ws.return_value = False
             with mock.patch("corral.docs.qa.run_tests", return_value=fresult):
                 cli.run_from_command_line()

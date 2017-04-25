@@ -142,7 +142,7 @@ class TestRunTest(BaseTest):
         test_cases = qa.get_testcases([steps.Step1], [], tests)
         expected = len(test_cases[0][1])
         result = qa.run_tests([steps.Step1], [],
-                              failfast=False, verbosity=0)
+                              failfast=False, verbosity=0)[0]
         self.assertEquals(result.testsRun, expected)
 
 
@@ -173,7 +173,9 @@ class TestRunStyle(BaseTest):
 
 class TestQAReport(BaseTest):
 
-    @mock.patch("corral.qa.run_tests")
+    @mock.patch(
+        "corral.qa.run_tests",
+        return_value=(mock.MagicMock(), mock.MagicMock()))
     @mock.patch("corral.qa.run_coverage")
     @mock.patch("corral.qa.run_style")
     def test_qa_report(self, run_style, run_coverage, run_test):
