@@ -125,7 +125,7 @@ def qa_report(report, full_output, explain_qai):
         template = jinja2.Template(fp.read())
     ctx = {
         "report": report, "full_output": full_output,
-        "explain_qai": explain_qai, "qai_doc": report.__class__.qai.__doc__,
+        "explain_qai": explain_qai, "qai_doc": qa.get_qai_function().__doc__,
         "tau": qa.get_tau(), "core": core,
         "cualifications": sorted(score_cualifications.items()),
         "pipeline_setup": setup.load_pipeline_setup()}

@@ -308,29 +308,8 @@ class QAResult(object):
 
     @property
     def qai(self):
-        """QAI = 2 * (TP * (PT/PNC) * COV) / (1 + exp(MSE/tau))
-
-        Where:
-            TP: If all tests passes is 1, 0 otherwise.
-            PT: Processors and commands tested.
-            PCN: The number number of processors (Loader, Steps and Alerts)
-                 and commands.
-            COV: The code coverage (between 0 and 1).
-            MSE: The Maintainability and Style Errors.
-            tau: Tolerance of style errors per file
-
-        """
-        TP = 1. if self.is_test_sucess else 0.
-        PCN = self.processors_number + self.commands_number
-        PT_div_PCN = float(self.pc_tested_number) / PCN
-        COV = self.coverage_line_rate
-        tau = get_tau()
-
-        total_tau = float(tau) * len(self.project_modules)
-        style = 1 + math.exp(self.style_errors / total_tau)
-
-        result = (2 * TP * PT_div_PCN * COV) / style
-        return result
+        qai_func = get_qai_function()
+        return qai_func(self)
 
     @property
     def cualification(self):
@@ -396,6 +375,36 @@ def get_test_module_name():
 
 def get_test_module():
     return util.dimport(get_test_module_name())
+
+
+def default_qai(qareport):
+    """QAI = 2 * (TP * (PT/PNC) * COV) / (1 + exp(MSE/tau))
+
+    Where:
+        TP: If all tests passes is 1, 0 otherwise.
+        PT: Processors and commands tested.
+        PCN: The number number of processors (Loader, Steps and Alerts)
+             and commands.
+        COV: The code coverage (between 0 and 1).
+        MSE: The Maintainability and Style Errors.
+        tau: Tolerance of style errors per file
+
+    """
+    TP = 1. if qareport.is_test_sucess else 0.
+    PCN = qareport.processors_number + qareport.commands_number
+    PT_div_PCN = float(qareport.pc_tested_number) / PCN
+    COV = qareport.coverage_line_rate
+    tau = get_tau()
+
+    total_tau = float(tau) * len(qareport.project_modules)
+    style = 1 + math.exp(qareport.style_errors / total_tau)
+
+    result = (2 * TP * PT_div_PCN * COV) / style
+    return result
+
+
+def get_qai_function():
+    return conf.settings.get("qai_function", default_qai)
 
 
 def get_tau():
