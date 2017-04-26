@@ -49,4 +49,4 @@ URL = "https://github.com/toros-astro/corral"
 
 LICENSE = "3 Clause BSD"
 
-KEYWORDS = "pipeline etl sql rdbms"
+KEYWORDS = "pipeline etl sql rdbms mvc"
