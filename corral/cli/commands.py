@@ -907,7 +907,7 @@ class Profile(BaseCommand):
             help='start SnakeViz in server-only mode--'
                  'no attempt will be to open a browser')
 
-    def _print(self, report_file, **kwargs):
+    def _print(self, report_file, kwargs):
         ps = pstats.Stats(report_file, stream=sys.stdout)
         ps.strip_dirs().print_stats(.3)
 
