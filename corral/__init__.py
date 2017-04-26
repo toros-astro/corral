@@ -33,7 +33,7 @@
 
 """MVC framework for create trustworthy pipelines"""
 
-__version__ = ("0", "2", "6")
+__version__ = ("0", "2", "7")
 
 NAME = "corral-pipeline"
 
