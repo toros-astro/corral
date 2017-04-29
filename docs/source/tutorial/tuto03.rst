@@ -167,19 +167,19 @@ The simplest way to implement this is the following:
 
     class Loader(run.Loader):
 
-    def setup(self):
-        # we open the file and assign it to an instance variable
-        self.fp = open(settings.IRIS_PATH)
+        def setup(self):
+            # we open the file and assign it to an instance variable
+            self.fp = open(settings.IRIS_PATH)
 
-    def teardown(self, *args):
-        # checking that the file is really open
-        if self.fp and not self.fp.closed:
-            self.fp.close()
+        def teardown(self, *args):
+            # checking that the file is really open
+            if self.fp and not self.fp.closed:
+                self.fp.close()
 
-    def generate(self):
-        # now we make use of "self.fp" for the reader
-        for row in csv.DictReader(self.fp):
-            print row
+        def generate(self):
+            # now we make use of "self.fp" for the reader
+            for row in csv.DictReader(self.fp):
+                print row
 
 For the sake of simplicity now we split the processing into two sides:
 
