@@ -260,43 +260,43 @@ Finally the loader should be defined as:
 
 .. code-block:: python
 
-class Loader(run.Loader):
+    class Loader(run.Loader):
 
-    def setup(self):
-        # we open the file and assign it to an instance variable
-        self.fp = open(settings.IRIS_PATH)
+        def setup(self):
+            # we open the file and assign it to an instance variable
+            self.fp = open(settings.IRIS_PATH)
 
-    def teardown(self, *args):
-        # checking that the file is really open
-        if self.fp and not self.fp.closed:
-            self.fp.close()
+        def teardown(self, *args):
+            # checking that the file is really open
+            if self.fp and not self.fp.closed:
+                self.fp.close()
 
-    def get_name_instance(self, row):
-        name = self.session.query(models.Name).filter(
-            models.Name.name == row["Name"]).first()
+        def get_name_instance(self, row):
+            name = self.session.query(models.Name).filter(
+                models.Name.name == row["Name"]).first()
 
-        # if exists we need don't need to create one
-        if name is None:
-            name = models.Name(name=row["Name"])
+            # if exists we need don't need to create one
+            if name is None:
+                name = models.Name(name=row["Name"])
 
-            # we need to add the new instance and save it
-            self.save(name)
-            self.session.commit()
+                # we need to add the new instance and save it
+                self.save(name)
+                self.session.commit()
 
-        return name
+            return name
 
-    def store_observation(self, row, name):
-        return models.Observation(
-            name=name,
-            sepal_length=row["SepalLength"], sepal_width=row["SepalWidth"],
-            petal_length=row["PetalLength"], petal_width=row["PetalWidth"])
+        def store_observation(self, row, name):
+            return models.Observation(
+                name=name,
+                sepal_length=row["SepalLength"], sepal_width=row["SepalWidth"],
+                petal_length=row["PetalLength"], petal_width=row["PetalWidth"])
 
-    def generate(self):
-        # now we make use of "self.fp" for the reader
-        for row in csv.DictReader(self.fp):
-            name = self.get_name_instance(row)
-            obs = self.store_observation(row, name)
-            yield obs
+        def generate(self):
+            # now we make use of "self.fp" for the reader
+            for row in csv.DictReader(self.fp):
+                name = self.get_name_instance(row)
+                obs = self.store_observation(row, name)
+                yield obs
 
 
 .. note::
