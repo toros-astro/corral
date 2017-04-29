@@ -260,7 +260,7 @@ Finally the loader should be defined as:
 
 .. code-block:: python
 
-    class Loader(run.Loader):
+class Loader(run.Loader):
 
     def setup(self):
         # we open the file and assign it to an instance variable
