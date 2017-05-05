@@ -418,8 +418,10 @@ the result of the reporting tool
 Reporting
 ---------
 
-Como pude apreciarse Corral puede  solo escribiendo Unit-Testing.
+Corral is capable of generating a quality report over 
+any pipeline with testing.
 
+Corral inspects 
 Corral inspecciona el codigo, la documentación y el testing para
 inferir una vision global de la calidad y arquitectura del pipeline.
 
