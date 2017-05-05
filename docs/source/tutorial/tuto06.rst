@@ -421,11 +421,10 @@ Reporting
 Corral is capable of generating a quality report over 
 any pipeline with testing.
 
-Corral inspects 
-Corral inspecciona el codigo, la documentación y el testing para
-inferir una vision global de la calidad y arquitectura del pipeline.
+Corral inspects the code, documentation, and testing in order to
+infer a global view of the pipeline's quality and architecture.
 
-Para acceder a esta información podemos utilizar 3 comandos
+To get access to this information we could use three commands.
 
 1. ``create-doc``
 ^^^^^^^^^^^^^^^^^
@@ -435,12 +434,11 @@ of an automatic manual for the pipeline, about Models,
 Loader, Steps, Alerts, and command line interface utilities,
 using the docstrings from the code itself.
 
-Si se utiliza el parámetro ``-o`` se puede redirecionar la salida
-de la documentacion a un archivo. Si lo hacemos corral sugerira renderizar
-su informacion a 3 formatos de ejemplo (HTML_, LaTeX_ y PDF_) utilizando
-la herramienta Pandoc_ (usted es responsable de instalar Pandoc).
+When using the ``-o`` parameter we can switch the output to a file.
+In this case Corral will suggest render the information in 3 formats
+(HTML_, LaTeX_ y PDF_) using Pandoc_ (you will need to have Pandoc installed).
 
-Ejemplo:
+Example:
 
 .. code-block:: bash
 
@@ -454,8 +452,8 @@ Ejemplo:
      $ pandoc doc.md -o doc.tex  # LaTeX
      $ pandoc doc.md -o doc.pdf  # PDF via LaTeX
 
-Puede ver ejemplos de estas salidass en
-aqui: https://github.com/toros-astro/corral/tree/master/docs/doc_output_examples
+Output examples can be found at: 
+https://github.com/toros-astro/corral/tree/master/docs/doc_output_examples
 
 
 2. ``create-models-diagram``
@@ -463,10 +461,9 @@ aqui: https://github.com/toros-astro/corral/tree/master/docs/doc_output_examples
 
 This creates a `Class Diagram`_ in `Graphviz dot`_ format.
 
-Si se utiliza el parámetro ``-o`` se puede redirecionar la salida
-de la documentacion a un archivo. Si lo hacemos corral sugerira renderizar
-su informacion a a PNG_ utilizando Graphviz
-(usted es responsable de su intalación)
+When using the ``-o`` flag we can switch the output to a file.
+In this case Corral will attempt to render the diagram in a PNG_ 
+using Graphviz_ (you must install this library first).
 
 
 .. code-block:: bash
@@ -479,8 +476,8 @@ su informacion a a PNG_ utilizando Graphviz
 
     More Help: http://www.graphviz.org/
 
-Ejemplos de la salida en dot_ y PNG_ pueden verse
-aqui: https://github.com/toros-astro/corral/tree/master/docs/models_output_examples
+Examples of output diagrams in dot_ and PNG_ can be found at: 
+https://github.com/toros-astro/corral/tree/master/docs/models_output_examples
 
 
 3. qareport
@@ -491,10 +488,9 @@ and uses this to create a Markdown document detailing
 the particular results of each testing stage, and finally calculates
 the QAI index outcome.
 
-Si se utiliza el parámetro ``-o`` se puede redirecionar la salida
-de la documentacion a un archivo. Si lo hacemos corral sugerira renderizar
-su informacion a 3 formatos de ejemplo (HTML_, LaTeX_ y PDF_) utilizando
-la herramienta Pandoc_ (usted es responsable de instalar Pandoc).
+When using the ``-o`` parameter we can switch the output to a file.
+In this case Corral will suggest render the information in 3 formats
+(HTML_, LaTeX_ y PDF_) using Pandoc_ (you will need to have Pandoc installed).
 
 .. code-block:: bash
 
@@ -507,8 +503,8 @@ la herramienta Pandoc_ (usted es responsable de instalar Pandoc).
      $ pandoc report.md -o report.tex  # LaTeX
      $ pandoc report.md -o report.pdf  # PDF via LaTeX
 
-Puede ver ejemplos de estas salidas en
-aqui: https://github.com/toros-astro/corral/tree/master/docs/qareport_output_examples
+Examples of reporting output available at:
+https://github.com/toros-astro/corral/tree/master/docs/qareport_output_examples
 
 
 Notes about QAI (Quality Assurance Index)
