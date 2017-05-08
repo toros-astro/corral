@@ -341,45 +341,41 @@ of the following steps for **EACH** test case:
         #.  The ``setup()`` method is executed for the current testing case.
         #.  Database changes are confirmed and ``session`` is closed.
         #.  The ``subject`` is executed, and it comes with its own ``session``.
-        #.  A Se crea una nueva ``session`` y se la asigna al caso de testeo.
-        #.  Se ejecuta el metodo ``validate()`` y se cierra la ``session``.
-        #.  Se crea una nueva ``session`` y se la asigna al caso de testeo.
-        #.  Se ejecuta el metodo ``teardown()`` del caso de testeo (Este método es
-            opcional y puede usarse por ejemplo para eliminar archivos creados
-            sin sentido)
-        #.  Se destruye la base de datos y se eliminan todos los mocks que puedan
-            haberse creado.
+        #.  A new ``session`` is created, and a testing case is assigned to it.
+        #.  The ``validate()`` method is executed and ``session`` closes.
+        #.  A new ``session`` is created and testing case is assigned.
+        #.  The testing case's ``teardown()`` method is executed. This method
+            is optional, and could be used for example to clean auxiliary files if
+            needed.
+        #.  The database is destroyed, and every mock is erased.
 
-3.  Se recupera los resultados de todos los tests ejecutados.
+3.  Results for each test are recovered.
 
 .. important::
 
-    El hecho de que se creen **4** ``session`` distintas para interatuar con las bases
-    de datos, garantiza que toda la comunicacón dentro del caso de testeo se haga
-    justamente a traves del stream y no a travez de algun objeto mantenido en
-    memoria por Python.
+    The fact of creating **4** different ``session`` to interact with the databases
+    is guaranting that every communication inside the testing case is through the stream, 
+    and not through any other in-memory Python object.
 
 .. note::
 
-    La base de datos de testeo es po por defecto es un SQLite_ en memoria
-    (``"sqlite:///:memory:"``),  pero puede configurarse en la variable.
-    ``TEST_CONNECTION`` en el módulo ``settings.py``
+    The default testing database is an in-memory  SQLite_ (``"sqlite:///:memory:"``),  
+    but this can be overriden by setting the ``TEST_CONNECTION`` variable in
+    the ``settings.py`` module
 
 
 Code-Coverage
 -------------
 
-Los unittest, son una tecnica sencilla para evaluar el correcto funcionamiento
-del pipeline. Mientras que el Code-Coverage (CC) es una forma de medir la
-calidad de los test en funcion de cuanto codigo ejecutan del pipeline.
+The unittest are a simple tool to check the correct functioning of the pipeline.
+To get an idea of how well are doing our tests we compute the Code-Coverage (CC), 
+and is equal to the percentage of lines of code being executed in the tests.
 
 .. important::
+    **How important is Code-Coverage?**
 
-    **Que tan importante es el Code-coverage?**
-
-    El CC es una medida muy importante en calidad, al punto de que ha sido incluida
-    en:
-
+    CC is of so important in quality, that has been included in:
+ 
     -   The guidelines by which avionics gear is certified by the
         `Federal Aviation Administration <https://en.wikipedia.org/wiki/Federal_Aviation_Administration>`_
         is documented in `DO-178B <https://en.wikipedia.org/wiki/DO-178B>`_
@@ -389,11 +385,11 @@ calidad de los test en funcion de cuanto codigo ejecutan del pipeline.
         `ISO 26262 <https://en.wikipedia.org/wiki/ISO_26262>`_
         Road Vehicles - Functional Safety.
 
-En Corral el CC se presenta como un porcentaje de ejecucion de lineas de codigo
-sobre el total de lineas escritas en el pipeline (incluido los propios tests)
+Corral calculates CC as the ratio of lines executed in testing, with respect
+to the total number of code lines in the pipeline (also including tests).
 
-Corral gestiona sola la ejecucion del coverage en la herramienta de reporte
-descrita mas adelante.
+Corral is capable of self calculating the CC in the quality report tool described
+below.
 
 
 Code Style
@@ -402,10 +398,9 @@ Code Style
 The programming style (CS) is a set of rules or guidelines used when writing the
 source code for a computer program.
 
-Python favorece la legibilidad del codigo como una de sus filofias de diseño
-establecida en el `PEP20 <https://www.python.org/dev/peps/pep-0020/>`_.
-El estilo a seguir que establece que
-es bello (otra de sus filosofias) y que es legible se presenta en el
+Python favours the legibility of code as a design idiosincracy, stablished on
+`PEP20 <https://www.python.org/dev/peps/pep-0020/>`_.
+The style guide which dictates beauty and legible code is presented on
 `PEP8 <https://www.python.org/dev/peps/pep-0008/>`_
 
 CS it is often claimed that following a particular programming style will help
@@ -423,12 +418,13 @@ the result of the reporting tool
 Reporting
 ---------
 
-Como pude apreciarse Corral puede  solo escribiendo Unit-Testing.
+Corral is capable of generating a quality report over 
+any pipeline with testing.
 
-Corral inspecciona el codigo, la documentación y el testing para
-inferir una vision global de la calidad y arquitectura del pipeline.
+Corral inspects the code, documentation, and testing in order to
+infer a global view of the pipeline's quality and architecture.
 
-Para acceder a esta información podemos utilizar 3 comandos
+To get access to this information we could use three commands.
 
 1. ``create-doc``
 ^^^^^^^^^^^^^^^^^
@@ -438,12 +434,11 @@ of an automatic manual for the pipeline, about Models,
 Loader, Steps, Alerts, and command line interface utilities,
 using the docstrings from the code itself.
 
-Si se utiliza el parámetro ``-o`` se puede redirecionar la salida
-de la documentacion a un archivo. Si lo hacemos corral sugerira renderizar
-su informacion a 3 formatos de ejemplo (HTML_, LaTeX_ y PDF_) utilizando
-la herramienta Pandoc_ (usted es responsable de instalar Pandoc).
+When using the ``-o`` parameter we can switch the output to a file.
+In this case Corral will suggest render the information in 3 formats
+(HTML_, LaTeX_ y PDF_) using Pandoc_ (you will need to have Pandoc installed).
 
-Ejemplo:
+Example:
 
 .. code-block:: bash
 
@@ -457,8 +452,8 @@ Ejemplo:
      $ pandoc doc.md -o doc.tex  # LaTeX
      $ pandoc doc.md -o doc.pdf  # PDF via LaTeX
 
-Puede ver ejemplos de estas salidass en
-aqui: https://github.com/toros-astro/corral/tree/master/docs/doc_output_examples
+Output examples can be found at: 
+https://github.com/toros-astro/corral/tree/master/docs/doc_output_examples
 
 
 2. ``create-models-diagram``
@@ -466,10 +461,9 @@ aqui: https://github.com/toros-astro/corral/tree/master/docs/doc_output_examples
 
 This creates a `Class Diagram`_ in `Graphviz dot`_ format.
 
-Si se utiliza el parámetro ``-o`` se puede redirecionar la salida
-de la documentacion a un archivo. Si lo hacemos corral sugerira renderizar
-su informacion a a PNG_ utilizando Graphviz
-(usted es responsable de su intalación)
+When using the ``-o`` flag we can switch the output to a file.
+In this case Corral will attempt to render the diagram in a PNG_ 
+using Graphviz_ (you must install this library first).
 
 
 .. code-block:: bash
@@ -482,8 +476,8 @@ su informacion a a PNG_ utilizando Graphviz
 
     More Help: http://www.graphviz.org/
 
-Ejemplos de la salida en dot_ y PNG_ pueden verse
-aqui: https://github.com/toros-astro/corral/tree/master/docs/models_output_examples
+Examples of output diagrams in dot_ and PNG_ can be found at: 
+https://github.com/toros-astro/corral/tree/master/docs/models_output_examples
 
 
 3. qareport
@@ -494,10 +488,9 @@ and uses this to create a Markdown document detailing
 the particular results of each testing stage, and finally calculates
 the QAI index outcome.
 
-Si se utiliza el parámetro ``-o`` se puede redirecionar la salida
-de la documentacion a un archivo. Si lo hacemos corral sugerira renderizar
-su informacion a 3 formatos de ejemplo (HTML_, LaTeX_ y PDF_) utilizando
-la herramienta Pandoc_ (usted es responsable de instalar Pandoc).
+When using the ``-o`` parameter we can switch the output to a file.
+In this case Corral will suggest render the information in 3 formats
+(HTML_, LaTeX_ y PDF_) using Pandoc_ (you will need to have Pandoc installed).
 
 .. code-block:: bash
 
@@ -510,8 +503,8 @@ la herramienta Pandoc_ (usted es responsable de instalar Pandoc).
      $ pandoc report.md -o report.tex  # LaTeX
      $ pandoc report.md -o report.pdf  # PDF via LaTeX
 
-Puede ver ejemplos de estas salidas en
-aqui: https://github.com/toros-astro/corral/tree/master/docs/qareport_output_examples
+Examples of reporting output available at:
+https://github.com/toros-astro/corral/tree/master/docs/qareport_output_examples
 
 
 Notes about QAI (Quality Assurance Index)
