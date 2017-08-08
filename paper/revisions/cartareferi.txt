@@ -1,0 +1,485 @@
+﻿Comments from the editors and reviewers: -Reviewer 1
+
+
+Dear Referee,[a]
+
+
+We thank you very much for your careful reading of our manuscript and for
+pointing out important issues, which have been addressed in the new version. We
+have performed modifications following your suggestions, which we believe,
+improve our work both in quality and clarity.
+
+
+The main changes account for several clarifications and additions in the text,
+intended to improve the clarity.   We implemented a profiler within the
+framework and elaborated the concept of quality measurement.
+
+
+Please find in what follows our answers to the questions and comments raised.
+--------
+
+
+
+
+  - How does the development of pipelines in the context of the framework look
+    like? What is the role of algorithm or software developers, telescope
+    operators, researchers, etc.?
+
+CORRAL presents a framework to develop pipelines in the python language.
+
+In order to bring the reader a taste on what writing a pipeline involves, we
+added an appendix with two additional examples of pipelines, showing the python
+code of some of the parts of the pipeline in detail.
+
+In general most of the tasks concerning data management inside the database and
+parallel execution of steps are set within the framework. In order to use CORRAL, 
+the developer must write a python code establishing the data model, the data loader, 
+the steps and the alerts on the provided separated python files inside a blank 
+pipeline project.
+
+Building a pipeline requires writing the necessary code for each specific task,
+according to its purpose and particular design.
+
+
+
+
+  - What is actually stored in the database? Is that status information of the
+    pipeline run, certain results, both? 
+
+Thanks for pointing this.
+
+The database can store raw data, metadata just like pipeline status information, 
+as well as final products, like scientific results, and human readable information.
+
+This, however is not vital for every kind of pipeline. A wide range of strategies 
+--a choice delegated to the developer-- could be adopted succesfully:
+
+* there could exist pipelines storing raw data, and every intermediate metadata generated in each processing step
+* pipelines designed specifically for storing and retrieveng url's pointing to data files disk location, and without additional information regarding processing status
+* any intermediate combination of the previous methods
+    
+The database structure is defined by the models, as explained
+in section 4.2 and 5.1.
+
+The pipeline's processors (loader, steps, and alerts) are responsibles of
+querying the database for task-relevant information, and --when necessary--
+inserting back information results into the database.
+
+
+  - How does the mapping from the pipeline to the hardware happen (especially
+    when working on a compute cluster; which requires a certain level of user
+    input)?  
+  - It is mentioned that the framework makes it easier to parallelise tasks.
+    Please provide more details about how the framework distributes jobs over
+    cores/nodes.
+  - Is this only valid for embarrassingly parallell processing or is there a form
+    of inter-process communication?
+
+
+Thanks for this suggestions, now we have included a new subsection (4.3 Some words
+about Multiprocessing and distributed computing) where this is better explained.
+
+Corral is able to launch more than one system process --ideally one per CPU core--
+each one responsible for a processor task execution (a step, loader, or alert).
+
+In order to work with several cluster nodes, each processor should be launched
+separatedly by hand (as detailed in 
+http://corral.readthedocs.io/en/latest/tutorial/tuto04.html#selective-steps-runs-by-name-and-groups)
+and afterwards, they should connect to a remote database.
+
+In any case of task parallelization there exists not inter-process communication, since
+the MVC design pattern imposes task isolation. The pipeline shares information
+among processor tasks through the database exclusively.
+
+
+  - How is the support of running components that use internal parallelism
+    (openMP, MPI, etc)? 
+
+
+Internally Corral’s parallelism relies on multiprocessing
+(https://docs.python.org/3.6/library/multiprocessing.html). This library is
+included in every Python distribution, and it is in charge of encapsulating
+objects inside process at OS level. A correction has been made, just to make
+clear this topic on the last paragraph of 4.6 section.
+
+
+  - Are loops implemented in the framework?
+
+
+This is clarified in the subsections 5.3 Model Example.
+The framework implements loops internally in every step and alert.
+As shown in the examples provided each of these processors contains
+several class methods, which select the necessary material for execution.
+In particular the framework will expect from this methods to
+deliver generators, which are Python's iterable objects specially designed
+for loops. 
+Once Corral gets this generators it will start looping over them, 
+without user interaction.
+
+
+  - Does the framework handle failing processes and retries? Can a minimum (e.g.
+    5% of jobs may fail without marking the whole pipeline as such) be specified
+  per task?
+  
+Retry attempts are not in Corral's design. But this doesn't mean that tasks cannot 
+fail, or that the pipeline is not failure tolerant.
+There are not utilities specifically built for error tolerance, but the framework is
+flexible enough to implement error states, and specific retry Steps, such as 
+https://github.com/toros-astro/toritos/blob/master/toritos/steps.py#L526-L563
+provided inside a pipeline example.
+
+In any case, testing and quality specific tools included in the framework 
+should aid the developer in the error detection. There is a new subsection
+with more detailed information related to this question in
+4.4.5 Final words about corral quality.
+  
+
+  - What type of community is Corral mostly useful for? Two extrema are large,
+    international projects with hundreds of users and shared infrastructure on
+    one hand, and on the other end is the single astronomers wanting to run a small
+    pipeline on their laptop.
+
+
+Depending on the underlying Data Base (and of course of hardware resources
+available) Corral is suitable for every size of solution. Just with a basic
+computational resource, and a right choice of the DataBase system, a single
+developer can create small local experiments (seizing parallelism and MVC
+concept separation), and at the same time, huge data reduction pipelines could
+be built on top of multi-core cluster machines. To state this fact, a paragraph
+has been added, inside section 4.1 (The Underlying Tools: Python and Relational
+Databases)
+
+
+
+
+- What properties should a processing pipeline have to be portable to Corral?
+  And maybe more important for interested developers: what work flows do not
+  map the design well?
+
+
+Every processing pipeline capable of being separated in a loader, several steps
+and optionally alerts is portable to Corral, since MVC is based on concept
+separation this is the only true restriction.  Corral is less powerful when the
+pipeline is about processing a single batch of data just once. The effort of
+splitting the processing stages brings no profit unless the pipeline is being
+fed regularly with new data. Corral is extremely useful when data processing is
+not needed in real time, this should not be confused with the previous
+statement.  A comment related with this has been added in the second paragraph
+of section 4.6.
+
+
+Of course, this list is not limitative.  In the introduction, you give a very
+short overview of a several pipeline frameworks and pipelines (Kira, Apace
+Commons Pipeline, and several custom telescope pipelines). To give an idea how
+Corral compares to and differs from already existing systems, please add a
+section that discusses for several existing frameworks how they differ in
+design, functionality and/or background idea from Corral. 
+For this, it is important to look at more than only astronomy (bioinformatics for example seems
+to have an active usage of pipeline frameworks) is. It may be a good idea to
+quickly skim through https://github.com/pditommaso/awesome-pipeline . Naming a
+few examples that at quick glance may be worth comparing to (either because
+they are widely used or because the description seems to be somewhat close to
+what you do): Luigi, Airflow, Arvados, Kepler, or OPUS
+(http://www.stsci.edu/institute/software_hardware/opus/), but please feel free
+to make your own selection.
+
+
+A comparative table is now on Appendix B, showing how Corral is different from
+the suggested frameworks. Based on this table the subsection 4.6 was developed,
+highlighting the features that Corral takes advantage of, without hiding its
+weaknesses related to other software.
+
+
+  - Apart from those two main points, I have several questions / comments
+    concerning the manuscript: Stimulating astronomers (or scientists in general,
+    for that matter) to write readable, testable and maintainable code is
+    commendable effort and I am happy to see that being part of this project.
+    Software quality can be expressed in many different ways. The formula on page 4
+    seems however somewhat arbitrary. Please add a short comment on why you focus
+    on clean code and testing and not on things like performance, errors and
+    exceptions for example.  One comment that should be made is that this method
+    measures how completely the code is tested. It does not say anything on the
+    quality of the tests itself. It is very easy to come up with tests that make
+    the QAI score high by covering large amounts of code but do not reliably test
+    functionality. Only relying on this number could give a false sense of
+    confidence.
+
+
+The formula as the text expresses, intends to account for the meeting of
+requirements that the pipeline is achieving. 
+
+Since quality is subjective, and several interpretations are posible,
+we focused in testing the software that the developer is writing.  
+
+This means that a QAI close to one is the same as to say "the 
+pipeline is doing exactly what the developer was trying to do", 
+this should be true even in corner cases where the pipeline is raising exceptions,
+since that may be the developer’s prerogative as well.
+
+
+So we added to the manuscript the following paragraph:
+
+This index aims to encode in a single figure of merit how well the pipeline
+meets the requirements specified by the user.
+We note that this index represents a confidence metric. Thus a pipeline could be completely
+functional even if the tried tests all fail, or if no tests are yet written for it.
+The $QAI$ index attempts to answer the question of pipeline
+reliability and whether a particular pipeline can be trustworthy.
+It should not be confused with the pipeline's speed,
+capability, or any other performance metric.
+
+
+Testing the tests quality could be somewhat cumbersome, but
+coverage could help to get an idea:
+Coverage is our metric to define whether the testing is being carried away
+correctly.  
+
+For instance, compare the reliability on two software projects:
+first consider the case where build is passing, but coverage is 15%; secondly,
+imagine a project which coverage is 95% but build is not passing. 
+
+If we think on which project is safer to deploy, the authors agree 
+that the second would be necessarily preferred, since at least we have
+information regarding the 95% of the project, and is quite likely that
+the build error is a minor one.
+
+
+
+
+  - Why do you scale the syntactic part of the analysis with an exponential
+    function?  
+    
+    
+This is done since an style error is not as critical as other kind
+of faults, and a scaling gives some freedom to the user to decide if he needs
+to follow a strict standard (we personally use PEP08 only) or to take less
+seriously the style mistakes. This freedom is useful in different environments,
+for example a simple pipeline that runs in a single laptop where the developer
+is the customer may be less important the style guide; but in a large project
+running inside a institution cluster where a lot of scientists are reading the
+code to work on a daily basis the style standard can be a critical tool to
+share, maintain, develop and understand running code inside a community.
+
+
+  You implicitly seem to assume that T/PN <= 1 (since a larger number could make
+  the QAI become large than 1). I don't see a reason why a processor could have
+  only one unit test associated to it.  
+
+This is assumed since the high complexity
+of writing tests for steps, for instance, for some steps a mock dataset may be
+needed, in order to test functionality. If there are more tests than Processors
+it is reasonable to score at the highest QAI possible. The case where there are
+a lot of none-sense testing cases just to bring up the QAI is quite unlikely,
+since the coverage score would still need to be high.
+
+
+  In the presented code example, it is not really clear to me how the framework
+  decides what the order of steps is. This is of course due to the fact that
+  there is only 1 step.  
+
+Yes we are sorry about this, the fact is that there
+exists the possibility to make groups of steps, and to decide which group runs
+first and which one follows. This is to say, the framework understands the
+grouping of tests that can run asynchronously, and an ordering of these
+groupings so they run sequentially. 
+
+
+
+
+  - What is the overhead of the framework in terms of resource utilisation and
+    how do you expect that to behave when scaling up to many processes? 
+
+
+I make a little comment about this in the seccion Behind the scenes (4.5)
+
+
+El overhead del framework en si, es casi despreciable. No toma mas de 10
+llamadas llegar a la logica en sí y en la mayoria de los casos es mucho menos.
+El rendimiento se ve afectado casi enteramente por la configuracion de la base
+de datos, las queries que haga el usuario, el volumen de datos que el usuario
+desee levantar a memoria, los procesos que desee levantar, y obviamente el
+hardware subyacente. 
+
+
+  Finally, I have a few textual comments: 
+  - "In  our approach we suggest a simple unit testing to check for the status of
+    the stream before and after every Step, Loader or Alert". I am not sure if I
+  get what you mean here. What does "unit testing" mean in the context of the
+  status a data stream? 
+
+
+En primer lugar nosotros definimos a un Step, Loader o Alert como una unidad de
+procesamiento. Dado esto, que los test sean de tipo unitario desde el punto de
+vista del stream implica que es necesario crear y destruir toda la informacion
+contendida en los datos antes y despues de cada prueba de un Step Loader o
+Alert. Se agrego una aclaracion en la sesccion 4.4 Quality -- Trustworthy
+Pipelines
+
+
+  - Please check that the authors of citations are sensible (not Initiative et
+    al., for example). You may actually want to put a web link in a footnote in
+  some of those cases.
+
+
+  - page 4: "Where TP is 1 if test passes or 0 if it fails" -> "Where TP is 1 if
+    all tests pass or 0 if at least one test fails."
+
+
+  - I am not sure what you mean by the first part (until the comma) in the
+    sentence "Given the wide range of available libraries, Corral includes the
+  ability to automatically generate documentation, creating a manual and quality
+  reports in Markdown syntax (...)". 
+
+
+Thanks, i remove the part before the comma
+
+
+-Reviewer 2
+
+
+  -
+Decision: Accept for publication subject to major revision followed by another
+review.
+
+
+This paper presents a new python framework for streaming data
+reduction/processing with a strong focus on code quality and correctness. The
+framework deploys the model view controller pattern, often used in webdesign,
+and adapts it in a way that makes sense for a streaming pipeline framework.
+Besides data processing the user is also able to create alerts when certain
+patterns occur in the data. I enjoyed reading the paper and welcome stronger
+focus on code quality with unit testing and code coverage. 
+
+
+Major Revisions:
+
+
+1a. Performance metrics on case study and/or on other deployments.
+
+
+Besides code correctness and quality, a streaming data reduction/processing
+framework should be judged on its performance. As a potential user I would like
+to know how it scales across cores, what is the overhead of the SQL database?
+When will the database become the bottleneck (if ever)? How does CORRAL compare
+to other frameworks?
+
+
+El overhead de una Base De Datos es algo muy variable y no cuantificable a
+priori. Ya que Corral no obliga a usar alguna RDBMS en especial, así que
+dependiendo la tecnología elegida, y la configuración subjacente (tanto de la
+DB en sí, SO o su hardware) este overhead puede cambiar. Así mismo se agrego
+una mencion de este espectro de posibilidades dentro de la seccion 4.1.
+
+
+Si la base de datos es el bottleneck, eso es algo que escapa a nuestro scope
+del proyecto. Cada vendor de RDBMS ofrece su propias herramientas para hacer
+profiling sobre su producto, y es algo que no esta generalizado. Por otra parte
+si una query es la causante de la caida en rendimiento del pipeline, eso si
+puede mejorarse. SQLAlchemy permite aprovechar toda la potencia de DB subyacnte
+y de ser necesario ejecutar la consula SQL directamente sin usar la librería,
+esta cualidad se hace referencia en el ultimo parrafo de la seccion 4.1
+
+
+Y hay mencion en el cap
+
+
+1b. Performance/Hardware utilization monitoring.
+
+
+It would be nice to mention if and how one can obtain monitoring metrics of the
+pipeline itself to determine the user's bottlenecks.  Are there bottlenecks in
+a certain loader or step? How well am I utilizing my underlying hardware, how
+does it map to the underlying hardware?
+
+
+Actualmente este tipo de métricas no están disponibles en Corral y es una buena
+sugerencia para incorporarlas en versiones futuras. De todas formas Python
+ofrece una serie de alternativas para la medición de profiling de procesamiento
+(a niveles de aplicacion, funcion. linea y estadísticos) y de memoria (a nivel
+de referencias y objetos). Fuera de eso profilings a nivel mas bajo (base
+datos, hardware, trafico de red (en caso de usar la DB remota)) ya deben ser
+realizados con herramientas diferentes depende de la tecnología.
+
+
+Se agrego para aclarar este comentario el apendice XX
+
+
+2. Quality metric (QAI) justification
+
+
+The quality assurance index is interesting both for the framework and a users
+implementation. However, I feel more insight into the relation presented in the
+QAI equation would be instructive, especially the distribution of weights to
+the various contributors like the style errors.
+
+
+BRUNO Acknowledged
+
+
+Minor Revisions:
+
+
+1. Other work.
+
+
+Only one pipeline framework mentioned outside of astronomy and two pipeline
+frameworks in total, there are many more. (ZeroMQ, Storm, Pelican, ...) Where
+does CORRAL fit into this spectrum?
+
+
+En el apendice B agregamos una tabla comparativa de corral con otros frameworks
+de pipelines existentes. 
+
+
+Ademas de esto se agrego la subseccion 4.5 que explora especificamente las
+caracteristicas destacadas de corral frente a otros frameworks.
+
+
+Sobre las sugerencias:
+
+
+*  storm es algo de mucho mas bajo nivel para la implementacion de pipelines  y
+   seria un interesante remplazo para nuestro gestor de procesos (mencionado en
+la seccion 4.5)
+* ZeroMQ es una implementacion del protocolo AMQP (asi como rabitmq), y es util
+  para la comunicacion de cualquier tipo de procesos no solo pipelines. No es
+un framework en  particular.
+
+
+2. Grammar and syntax
+
+
+The abstract alone contains grammatical errors and sentences that should be
+corrected/restructured:
+
+
+
+
+
+
+ - The programmer is referred to as "him" 
+
+
+ - ...by avoiding the programmer deal with... (The whole sentence should be
+   restructured)
+
+
+ - This kind of programs are chains of ... -> Processing pipelines are chains
+   of ...
+
+
+ - Besides data transformation a pipeline can also reduce data (potentially)
+
+
+ 
+
+
+I recommend a read through of the paper on grammar and syntax by a native
+English speaker. 
+
+
+
+
+[a]Para mi tambien hay que empezar aca. Pero las respuestas son al editor, no a
+los revisores. Tipo: Reviewer 1: We thanks the reviewer for his/her carefull
+reading ...

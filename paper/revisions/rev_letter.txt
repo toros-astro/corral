@@ -1,0 +1,118 @@
+omments from the editors and reviewers:
+-Reviewer 1
+
+
+The authors present Corral, a framework they developed to execute data processing pipelines. Corral is written in python and uses and adaptation of the MVC design pattern, which makes it possible to separate the user logic, flow and data models. To help pipeline developers, the framework computes a quality index for user-created pipelines.   
+Uniform and portable methods to run pipelines are becoming more and more important in astronomy. Data sets get larger and analysis on local machines gets less doable, making managing the analysis of the data much harder. At the same time, more people realise that reproducibility is an important part of the scientific endeavour. In this light, the tool presented in this paper is very relevant.
+
+However, to accept a paper for publication, not only the question whether a tool is relevant needs to be answered but also whether the method is innovative. In my opinion, the current version of the manuscript does not provide all the information needed to make a good judgement on that point. I suggest the following additions to explain better the case for Corral :
+
+The first three sections give a theoretical background of context, pipelines and frameworks. In the fourth section, the authors discus some design considerations. However there is no section that gives a high-level overview of what is (and is not) happening within the framework (and that goes one step deeper than for example figure 
+1). When reading the manuscript, I end up having the following questions:
+- How does the development of pipelines in the context of the framework look like? What is the role of algorithm or software developers, telescope operators, researchers, etc.?
+
+- What is actually stored in the database? Is that status information of the pipeline run, certain resuls, both? 
+
+- How does the mapping from the pipeline to the hardware happen (especially when working on a compute cluster; which requires a certain level of user input)?  
+
+- It is mentioned that the framework makes it easier to parallelise tasks. Please provide more details about how the framework distributes jobs over cores/nodes.
+
+- Is this only valid for embarrassingly parallell processing or is there a form of inter-process communication?
+
+- How is the support of running components that use internal parllellism (openMP, MPI, etc)? 
+
+- Are loops implemented in the framework?
+
+- Does the framework handle failing processes and retries? Can a minimum (e.g. 5% of jobs may fail without marking the whole pipeline as such) be specified per task?
+
+- What type of community is Corral mostly useful for? Two extrema are large, international projects with hundreds of users and shared infrastructure on one hand, and on the other end is the single astronmers wanting to run a small pipeline on their laptop.
+
+- What properties should a processing pipeline have to be portable to Corral? And maybe more important for interested developers: what work flows do not map the design well?
+Of course, this list is not limitative. 
+In the introduction, you give a very short overview of a several pipeline frameworks and pipelines (Kira, Apace Commons Pipeline, and several custom telescope pipelines). To give an idea how Corral compares to and differs from already existing systems, please add a section that discusses for several existing frameworks how they differ in design, functionality and/or background idea from Corral. For this, it is important to look at more than only astronomy (bioinformatics for example seems to have an active usage of pipeline frameworks) is. It may be a good idea to quickly skim through https://github.com/pditommaso/awesome-pipeline . Naming a few examples that at quick glance may be worth comparing to (either because they are widely used or because the description seems to be somewhat close to what you do): Luigi, Airflow, Arvados, Kepler, or OPUS (http://www.stsci.edu/institute/software_hardware/opus/), but please feel free to make your own selection.
+
+- Apart from those two main points, I have several questions / comments concerning the manuscript: Stimulating astronomers (or scientists in general, for that matter) to write readable, testable and maintainable code is commendable effort and I am happy to see that being part of this project. Software quality can be expressed in many different ways. The formula on page 4 seems however somewhat arbitrary. Please add a short comment on why you focus on clean code and testing and not on things like performance, errors and exceptions for example.
+One comment that should be made is that this method measures how completely the code is tested. It does not say anything on the quality of the tests itself. It is very easy to come up with tests that make the QAI score high by covering large amounts of code but do not reliably test functionality. Only relying on this number could give a false sense of confidence.
+
+- Why do you scale the syntactic part of the analysis with an exponential function? 
+You implicitly seem to assume that T/PN <= 1 (since a larger number could make the QAI become large than 1). I don't see a reason why a processor could have only one unit test associated to it.  In the presented code example, it is not really clear to me how the framework decides what the order of steps is. This is of course due to the fact that there is only 1 step. 
+
+
+- What is the overhead of the framework in terms of resource utilisation and how do you expect that to behave when scaling up to many processes? 
+
+
+
+Finally, I have a few textual comments: 
+- "In  our approach we suggest a simple unit testing to check for the status of the stream before and after every Step, Loader or Alert". I am not sure if I get what you mean here. What does "unit testing" mean in the context of the status a data stream? 
+- Please check that the authors of citations are sensible (not Initiative et al., for example). You may actually want to put a web link in a footnote in some of those cases.
+- page 4: "Where TP is 1 if test passes or 0 if it fails" -> "Where TP is 1 if all tests pass or 0 if at least one test fails."
+- I am not sure what you mean by the first part (until the comma) in the sentence "Given the wide range of available libraries, Corral includes the ability to automatically generate documentation, creating a manual and quality reports in Markdown syntax (...)". 
+
+
+-Reviewer 2
+
+  -
+Decision: Accept for publication subject to major revision followed by another review.
+
+This paper presents a new python framework for streaming data reduction/processing with a strong focus on code quality and correctness. The framework deploys the model view controller pattern, often used in webdesign, and adapts it in a way that makes sense for a streaming pipeline framework.  Besides data processing the user is also able to create alerts when certain patterns occur in the data. I enjoyed reading the paper and welcome stronger focus on code quality with unit testing and code coverage. 
+
+
+
+Major Revisions:
+
+1a. Performance metrics on case study and/or on other deployments.
+
+Besides code correctness and quality, a streaming data reduction/processing framework should be judged on its performance. As a potential user I would like to know how it scales across cores, what is the overhead of the SQL database?  When will the database become the bottleneck (if ever)? How does CORRAL compare to other frameworks?
+
+
+
+1b. Performance/Hardware utilization monitoring.
+
+It would be nice to mention if and how one can obtain monitoring metrics of the pipeline itself to determine the user's bottlenecks.  Are there bottlenecks in a certain loader or step? How well am I utilizing my underlying hardware, how does it map to the underlying hardware?
+
+
+
+2. Quality metric (QAI) justification
+
+The quality assurance index is interesting both for the framework and a users implementation. However, I feel more insight into the relation presented in the QAI equation would be instructive, especially the distribution of weights to the various contributors like the style errors.
+
+
+
+Minor Revisions:
+
+1. Other work.
+
+Only one pipeline framework mentioned outside of astronomy and two pipeline frameworks in total, there are many more. (ZeroMQ, Storm, Pelican, ...) Where does CORRAL fit into this spectrum?
+
+Seleccionamos una serie de alternativas para comparar con Corral y agregamos el 
+
+Sobre las sugerencias:
+
+- decidimos dejar afuera Pelican por que no representaba mayores diferencias que
+las elegidas. 
+- storm es algo de mucho mas bajo nivel para la implementacion de pipelines
+  y seria un interesante remplazo para nuestro gestor de procesos 
+- ZeroMQ es una implementacion del protocolo AMQP (asi como rabitmq), y es util para la comunicacion
+  de cualquier tipo de procesos no solo pipelines. No es un framework en
+  particular.
+
+
+
+2. Grammar and syntax
+
+The abstract alone contains grammatical errors and sentences that should be corrected/restructured:
+
+
+
+ - The programmer is referred to as "him" 
+
+ - ...by avoiding the programmer deal with... (The whole sentence should be restructured)
+
+ - This kind of programs are chains of ... -> Processing pipelines are chains of ...
+
+ - Besides data transformation a pipeline can also reduce data (potentially)
+
+ 
+
+I recommend a read through of the paper on grammar and syntax by a native English speaker. 
+
