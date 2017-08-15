@@ -453,9 +453,6 @@ class LSSteps(BaseCommand):
             print("  TOTAL PROCESSES: {}".format(procs))
         else:
             print("  NO STEPS FOUND")
-        procs_status = (
-            "Enabled" if conf.settings.DEBUG_PROCESS else "Disabled")
-        print("  DEBUG PROCESS: {}\n".format(procs_status))
 
 
 class Run(BaseCommand):
@@ -538,9 +535,6 @@ class LSAlerts(BaseCommand):
             print("  TOTAL PROCESSES: {}".format(procs))
         else:
             print("  NO ALERTS FOUND")
-        procs_status = (
-            "Enabled" if conf.settings.DEBUG_PROCESS else "Disabled")
-        print("  DEBUG PROCESS: {}\n".format(procs_status))
 
 
 class CheckAlerts(BaseCommand):

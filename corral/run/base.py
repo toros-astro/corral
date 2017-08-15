@@ -60,14 +60,16 @@ class Processor(object):
         pass
 
     @classmethod
+    def class_teardown(cls):
+        pass
+
+    @classmethod
     def get_groups(cls):
         return cls.groups
 
     @classmethod
     def get_procno(cls):
-        if conf.settings.DEBUG_PROCESS:
-            return cls.procno
-        return getattr(cls, "production_procno", cls.procno)
+        return cls.procno
 
     @classmethod
     def retrieve_python_path(cls):

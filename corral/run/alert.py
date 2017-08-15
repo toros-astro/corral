@@ -213,4 +213,5 @@ def execute_alert(alert_cls, sync=False):
             db.engine.dispose()
             runner.start()
         procs.append(runner)
+    alert_cls.class_teardown()
     return tuple(procs)

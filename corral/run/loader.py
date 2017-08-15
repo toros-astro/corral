@@ -109,4 +109,5 @@ def execute_loader(loader_cls, sync=False):
             db.engine.dispose()
             runner.start()
         procs.append(runner)
+    loader_cls.class_teardown()
     return tuple(procs)

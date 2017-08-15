@@ -151,4 +151,5 @@ def execute_step(step_cls, sync=False):
             db.engine.dispose()
             runner.start()
         procs.append(runner)
+    step_cls.class_teardown()
     return tuple(procs)
