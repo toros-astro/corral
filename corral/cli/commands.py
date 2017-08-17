@@ -440,17 +440,11 @@ class LSSteps(BaseCommand):
             table.set_deco(
                 Texttable.BORDER | Texttable.HEADER | Texttable.VLINES)
 
-            table.header(("Step Class", "Process", "Groups"))
+            table.header(("Step Class", "Groups"))
             for cls in steps:
-                row = [
-                    cls.__name__, cls.get_procno(),
-                    ":".join(cls.get_groups())]
+                row = [cls.__name__, ":".join(cls.get_groups())]
                 table.add_row(row)
-
             print(table.draw())
-
-            procs = sum(cls.get_procno() for cls in steps)
-            print("  TOTAL PROCESSES: {}".format(procs))
         else:
             print("  NO STEPS FOUND")
 
@@ -522,17 +516,12 @@ class LSAlerts(BaseCommand):
             table.set_deco(
                 Texttable.BORDER | Texttable.HEADER | Texttable.VLINES)
 
-            table.header(("Alert Class", "Process", "Groups"))
+            table.header(("Alert Class", "Groups"))
             for cls in alerts:
-                row = [
-                    cls.__name__,  cls.get_procno(),
-                    ":".join(cls.get_groups())]
+                row = [cls.__name__, ":".join(cls.get_groups())]
                 table.add_row(row)
 
             print(table.draw())
-
-            procs = sum(cls.get_procno() for cls in alerts)
-            print("  TOTAL PROCESSES: {}".format(procs))
         else:
             print("  NO ALERTS FOUND")
 

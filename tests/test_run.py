@@ -86,13 +86,6 @@ class TestLoaderFunctions(BaseTest):
                 with self.assertRaises(TypeError):
                     run.execute_loader(TestLoader, sync=True)
 
-    @mock.patch("corral.run.loader.LoaderRunner.start")
-    @mock.patch("corral.run.loader.LoaderRunner.join")
-    def test_procces_corectly_created(self, *args):
-        with mock.patch("tests.steps.TestLoader.procno", 20):
-            procs = run.execute_loader(TestLoader)
-            self.assertEqual(len(procs), 20)
-
 
 class TestStepFunctions(BaseTest):
 
@@ -163,13 +156,6 @@ class TestStepFunctions(BaseTest):
         with mock.patch("tests.steps.Step1.conditions", None):
             with self.assertRaises(NotImplementedError):
                 run.execute_step(Step1, sync=True)
-
-    @mock.patch("corral.run.step.StepRunner.start")
-    @mock.patch("corral.run.step.StepRunner.join")
-    def test_procces_corectly_created(self, *args):
-        with mock.patch("tests.steps.Step1.procno", 20):
-            procs = run.execute_step(Step1)
-            self.assertEqual(len(procs), 20)
 
 
 class TestAlertFunctions(BaseTest):
@@ -257,13 +243,6 @@ class TestAlertFunctions(BaseTest):
         with mock.patch("tests.alerts.Alert1.model", None):
             with self.assertRaises(NotImplementedError):
                 run.execute_alert(Alert1, sync=True)
-
-    @mock.patch("corral.run.alert.AlertRunner.start")
-    @mock.patch("corral.run.alert.AlertRunner.join")
-    def test_procces_corectly_created(self, *args):
-        with mock.patch("tests.alerts.Alert1.procno", 20):
-            procs = run.execute_alert(Alert1)
-            self.assertEqual(len(procs), 20)
 
     @mock.patch("tests.alerts.Alert1.auto_register", False)
     def test_manual_register_filter_registered(self):

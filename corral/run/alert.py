@@ -69,9 +69,9 @@ class AlertRunner(Runner):
             raise TypeError(msg.format(alert_cls))
 
     def run(self):
-        alert_cls, proc = self.target, self.current_proc
-        logger.info("Executing alert '{}' #{}".format(alert_cls, proc+1))
-        with db.session_scope() as session, alert_cls(session, proc) as alert:
+        alert_cls = self.target
+        logger.info("Executing alert '{}'".format(alert_cls))
+        with db.session_scope() as session, alert_cls(session) as alert:
             for obj in alert.generate():
                 alert.validate(obj)
 
@@ -81,7 +81,7 @@ class AlertRunner(Runner):
                 for proc_obj in generator:
                     alert.validate(proc_obj)
                     alert.save(proc_obj)
-        logger.info("Done Alert '{}' #{}".format(alert_cls, proc+1))
+        logger.info("Done Alert '{}'".format(alert_cls))
 
 
 class Alert(Processor):
@@ -125,8 +125,6 @@ class Alert(Processor):
 
         if self.ordering is not None:
             query = query.order_by(*self.ordering)
-        query = self.filter_by_proc(
-            query, self.current_proc, self.get_procno())
         return query
 
     def _filter_auto_registered(self, query):
@@ -201,14 +199,13 @@ def execute_alert(alert_cls, sync=False):
         raise TypeError(msg.format(alert_cls))
     procs = []
     alert_cls.class_setup()
-    for proc in six.moves.range(alert_cls.get_procno()):
-        runner = alert_cls.runner_class()
-        runner.setup(alert_cls, proc)
-        if sync:
-            runner.run()
-        else:
-            db.engine.dispose()
-            runner.start()
-        procs.append(runner)
+    runner = alert_cls.runner_class()
+    runner.setup(alert_cls)
+    if sync:
+        runner.run()
+    else:
+        db.engine.dispose()
+        runner.start()
+    procs.append(runner)
     alert_cls.class_teardown()
     return tuple(procs)

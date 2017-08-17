@@ -445,8 +445,7 @@ class LSSteps(BaseTest):
         with mock.patch("texttable.Texttable.header") as header, \
              mock.patch("texttable.Texttable.add_row") as row:
             cli.run_from_command_line()
-            header.assert_called_with(
-                ('Step Class', 'Process', 'Groups'))
+            header.assert_called_with(('Step Class', 'Groups'))
             self.assertEquals(row.call_count, len(run.load_steps()))
 
     @mock.patch("sys.argv", new=["test", "lssteps"])
@@ -470,8 +469,7 @@ class LSAlerts(BaseTest):
         with mock.patch("texttable.Texttable.header") as header, \
              mock.patch("texttable.Texttable.add_row") as row:
             cli.run_from_command_line()
-            header.assert_called_with(
-                ('Alert Class', 'Process', 'Groups'))
+            header.assert_called_with(('Alert Class', 'Groups'))
             self.assertEquals(row.call_count, len(run.load_alerts()))
 
     @mock.patch("sys.argv", new=["test", "lsalerts"])

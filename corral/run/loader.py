@@ -36,8 +36,6 @@
 
 import inspect
 
-import six
-
 from .. import db, util, exceptions
 from ..core import logger
 
@@ -59,14 +57,14 @@ class LoaderRunner(Runner):
             raise TypeError(msg.format(loader_cls))
 
     def run(self):
-        loader_cls, proc = self.target, self.current_proc
-        logger.info("Executing loader '{}' #{}".format(loader_cls, proc+1))
-        with db.session_scope() as session, loader_cls(session, proc) as ldr:
+        loader_cls = self.target
+        logger.info("Executing loader '{}'".format(loader_cls))
+        with db.session_scope() as session, loader_cls(session) as ldr:
             generator = ldr.generate()
             for obj in (generator or []):
                 ldr.validate(obj)
                 ldr.save(obj)
-        logger.info("Done Loader '{}' #{}".format(loader_cls, proc+1))
+        logger.info("Done Loader '{}'".format(loader_cls))
 
 
 class Loader(Processor):
@@ -100,14 +98,13 @@ def execute_loader(loader_cls, sync=False):
 
     procs = []
     loader_cls.class_setup()
-    for proc in six.moves.range(loader_cls.get_procno()):
-        runner = loader_cls.runner_class()
-        runner.setup(loader_cls, proc)
-        if sync:
-            runner.run()
-        else:
-            db.engine.dispose()
-            runner.start()
-        procs.append(runner)
+    runner = loader_cls.runner_class()
+    runner.setup(loader_cls)
+    if sync:
+        runner.run()
+    else:
+        db.engine.dispose()
+        runner.start()
+    procs.append(runner)
     loader_cls.class_teardown()
     return tuple(procs)

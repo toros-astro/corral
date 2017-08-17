@@ -52,7 +52,6 @@ conf = util.dimport("corral.conf", lazy=True)
 class Processor(object):
 
     runner_class = None
-    procno = 1
     groups = ["default"]
 
     @classmethod
@@ -68,16 +67,11 @@ class Processor(object):
         return cls.groups
 
     @classmethod
-    def get_procno(cls):
-        return cls.procno
-
-    @classmethod
     def retrieve_python_path(cls):
         return cls.__name__
 
-    def __init__(self, session, proc):
+    def __init__(self, session):
         self.__session = session
-        self.__current_proc = proc
 
     def __enter__(self):
         self.setup()
@@ -116,10 +110,6 @@ class Processor(object):
     def session(self):
         return self.__session
 
-    @property
-    def current_proc(self):
-        return self.__current_proc
-
 
 @six.add_metaclass(abc.ABCMeta)
 class Runner(multiprocessing.Process):
@@ -132,7 +122,6 @@ class Runner(multiprocessing.Process):
     def run(self):
         raise NotImplementedError  # pragma: no cover
 
-    def setup(self, target, proc):
+    def setup(self, target):
         self.validate_target(target)
         self.target = target
-        self.current_proc = proc

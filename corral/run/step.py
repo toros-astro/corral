@@ -37,8 +37,6 @@
 import abc
 import inspect
 
-import six
-
 from .. import db, util, exceptions
 from ..core import logger
 
@@ -59,9 +57,9 @@ class StepRunner(Runner):
             raise TypeError(msg.format(step_cls))
 
     def run(self):
-        step_cls, proc = self.target, self.current_proc
-        logger.info("Executing step '{}' #{}".format(step_cls, proc+1))
-        with db.session_scope() as session, step_cls(session, proc) as step:
+        step_cls = self.target
+        logger.info("Executing step '{}'".format(step_cls))
+        with db.session_scope() as session, step_cls(session) as step:
             for obj in step.generate():
                 step.validate(obj)
                 generator = step.process(obj) or []
@@ -71,7 +69,7 @@ class StepRunner(Runner):
                     step.validate(proc_obj)
                     step.save(proc_obj)
                 step.save(obj)
-        logger.info("Done Step '{}' #{}".format(step_cls, proc+1))
+        logger.info("Done Step '{}'".format(step_cls))
 
 
 class Step(Processor):
@@ -98,8 +96,6 @@ class Step(Processor):
         query = self.session.query(self.model).filter(*self.conditions)
         if self.ordering is not None:
             query = query.order_by(*self.ordering)
-        query = self.filter_by_proc(
-            query, self.current_proc, self.get_procno())
         return query
 
     @abc.abstractmethod
@@ -139,14 +135,13 @@ def execute_step(step_cls, sync=False):
 
     procs = []
     step_cls.class_setup()
-    for proc in six.moves.range(step_cls.get_procno()):
-        runner = step_cls.runner_class()
-        runner.setup(step_cls, proc)
-        if sync:
-            runner.run()
-        else:
-            db.engine.dispose()
-            runner.start()
-        procs.append(runner)
+    runner = step_cls.runner_class()
+    runner.setup(step_cls)
+    if sync:
+        runner.run()
+    else:
+        db.engine.dispose()
+        runner.start()
+    procs.append(runner)
     step_cls.class_teardown()
     return tuple(procs)
