@@ -92,7 +92,6 @@ class Alert(Processor):
     conditions = None
 
     ordering = None
-    offset, limit = None, None
 
     auto_register = True
 
@@ -126,10 +125,8 @@ class Alert(Processor):
 
         if self.ordering is not None:
             query = query.order_by(*self.ordering)
-        if self.offset is not None:
-            query = query.offset(self.offset)
-        if self.limit is not None:
-            query = query.limit(self.limit)
+        query = self.filter_by_proc(
+            query, self.current_proc, self.get_procno())
         return query
 
     def _filter_auto_registered(self, query):

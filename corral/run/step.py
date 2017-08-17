@@ -82,7 +82,6 @@ class Step(Processor):
     conditions = None
 
     ordering = None
-    offset, limit = None, None
 
     @classmethod
     def retrieve_python_path(cls):
@@ -99,10 +98,8 @@ class Step(Processor):
         query = self.session.query(self.model).filter(*self.conditions)
         if self.ordering is not None:
             query = query.order_by(*self.ordering)
-        if self.offset is not None:
-            query = query.offset(self.offset)
-        if self.limit is not None:
-            query = query.limit(self.limit)
+        query = self.filter_by_proc(
+            query, self.current_proc, self.get_procno())
         return query
 
     @abc.abstractmethod

@@ -97,6 +97,9 @@ class Processor(object):
             msg = "{} must be an instance of corral.db.Model"
             raise TypeError(msg.format(obj))
 
+    def filter_by_proc(self, query, proc_number, proc_n):
+        return query
+
     def save(self, obj):
         if isinstance(obj, db.Model):
             self.session.add(obj)
