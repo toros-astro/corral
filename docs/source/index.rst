@@ -34,29 +34,41 @@ This license allows unlimited redistribution for any purpose as long as its
 copyright notices and the license's disclaimers of warranty are maintained.
 
 
-Citation (Preprint)
--------------------
+Citation
+--------
 
 If you are using Corral in your research, please cite:
 
 .. note::
 
     Juan B. Cabral, Bruno Sánchez, Martín Beroiz, Mariano Domínguez, Marcelo Lares,
-    Sebastián Gurovich: “Corral Framework: Trustworthy and Fully Functional Data Intensive Parallel Astronomical Pipelines”, 2017; arXiv:1701.05566.
+    Sebastián Gurovich: “Corral Framework: Trustworthy and Fully Functional Data Intensive Parallel Astronomical Pipelines”, 2017; https://doi.org/10.1016/j.ascom.2017.07.003.
 
 
 .. code-block:: bibtex
+    @ARTICLE{
+        2017A&C....20..140C,
+        author = {{Cabral}, J.~B. and {S{\'a}nchez}, B. and 
+                  {Beroiz}, M. and {Dom{\'{\i}}nguez}, M. and 
+                  {Lares}, M. and {Gurovich}, S. and {Granitto}, P.},
+        title = "{Corral framework: 
+                  Trustworthy and fully functional data intensive 
+                  parallel astronomical pipelines}",
+        journal = {Astronomy and Computing},
+        archivePrefix = "arXiv",
+        eprint = {1701.05566},
+        primaryClass = "astro-ph.IM",
+        keywords = {Astroinformatics, Astronomical pipeline, 
+                    Software and its engineering, Multiprocessing, Design patterns},
+        year = 2017,
+        month = jul,
+        volume = 20,
+        pages = {140-154},
+        doi = {10.1016/j.ascom.2017.07.003},
+        adsurl = {http://adsabs.harvard.edu/abs/2017A%26C....20..140C},
+        adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+        }
 
-    @misc{
-        1701.05566,
-        Author = {Juan B. Cabral and Bruno Sánchez and
-                  Martín Beroiz and Mariano Domínguez and
-                  Marcelo Lares and Sebastián Gurovich and Pablo Granitto},
-        Title = {Corral Framework: Trustworthy and Fully Functional
-                 Data Intensive Parallel Astronomical Pipelines},
-        Year = {2017},
-        Eprint = {arXiv:1701.05566},
-    }
 
 **Full Paper:** https://arxiv.org/abs/1701.05566
 
