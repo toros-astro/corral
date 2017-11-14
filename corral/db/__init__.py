@@ -146,7 +146,7 @@ def session_scope(session_cls=None):
     try:
         yield session
         session.commit()
-    except:
+    except Exception:
         session.rollback()
         raise
     finally:

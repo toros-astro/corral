@@ -84,7 +84,7 @@ class BaseTest(unittest.TestCase):
             with db.session_scope() as session:
                 for model in util.collect_subclasses(db.Model):
                     session.query(model).delete()
-        except:
+        except Exception:
             pass
 
     def get_tempfile(self, *args, **kwargs):

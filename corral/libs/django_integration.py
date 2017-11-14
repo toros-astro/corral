@@ -50,7 +50,7 @@ class CorralSessionMiddleware(object):
         try:
             session.commit()
             return response
-        except:
+        except Exception:
             session.rollback()
             raise
 

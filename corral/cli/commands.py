@@ -263,7 +263,7 @@ class Notebook(BaseCommand):
             try:
                 ks = ksm.get_kernel_spec(spec_name)
                 break
-            except:
+            except Exception:
                 continue
         if not ks:
             self.parser.error("No notebook (Python) kernel specs found")

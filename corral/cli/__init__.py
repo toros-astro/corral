@@ -172,7 +172,7 @@ def create_parser():
 
     try:
         load_commands_module()
-    except:
+    except Exception:
         if in_pipeline:
             raise
 
