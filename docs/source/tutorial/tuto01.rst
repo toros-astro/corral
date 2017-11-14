@@ -47,7 +47,7 @@ code, then run the following command:
 
 .. code-block:: console
 
-   $ corrral create my_pipeline
+   $ corral create my_pipeline
 
 This will create a ``my_pipeline`` directory in your current directory.
 

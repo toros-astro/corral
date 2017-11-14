@@ -201,7 +201,7 @@ variables ``model`` and ``conditions``.
 #. Step 5: Add the new steps to ``settings.STEPS``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The last piece is to make your pipelne aware of the new steps. For
+The last piece is to make your pipeline aware of the new steps. For
 this, you need to add the full python path to the ``STEPS`` list inside
 the settings.py file.
 
@@ -209,10 +209,10 @@ the settings.py file.
 
     # Pipeline processor steps
     STEPS = [
-        "pipeline.steps.StatisticsCreator",
-        "pipeline.steps.SetosaStatistics",
-        "pipeline.steps.VirginicaStatistics",
-        "pipeline.steps.VersicolorStatistics"]
+        "my_pipeline.steps.StatisticsCreator",
+        "my_pipeline.steps.SetosaStatistics",
+        "my_pipeline.steps.VirginicaStatistics",
+        "my_pipeline.steps.VersicolorStatistics"]
 
 Finally you can inspect the registered steps with the ``lssteps`` command
 
@@ -244,7 +244,7 @@ Running The Steps
 
 The main command to run the corral steps is **run**.
 
-when you excecute ``python in_corral run`` all the steps are executed
+when you execute ``python in_corral run`` all the steps are executed
 asynchronous. If for some particular case you need to run the steps sequentially
 (in the same order of ``settings.STEPS``) you can add the ``--sync`` flag.
 
@@ -259,7 +259,7 @@ Here is a **run** example output
 .. code-block:: bash
 
     $ python in_corral.py run --sync
-    [INFO] Executing step '<class 'pipeline.steps.SetosaStatistics'>' #1
+    [INFO] Executing step '<class 'my_pipeline.steps.SetosaStatistics'>' #1
     [INFO] SELECT CAST('test plain returns' AS VARCHAR(60)) AS anon_1
     [INFO] ()
     [INFO] SELECT CAST('test unicode returns' AS VARCHAR(60)) AS anon_1
@@ -308,7 +308,7 @@ Run by Groups
 One of the most important concepts with Corral steps is the notion of groups.
 
 Certain steps can be grouped together by adding a ``groups`` attribute to
-a Step class. For exampe, if we want to add the tree statiscis calculators
+a Step class. For example, if we want to add the tree statistics calculators
 steps to a ``statistics`` group, we'd write:
 
 
@@ -388,8 +388,3 @@ flag on the **run** command
     ...
 
 As you can see, the ``StatisticsCreator`` step didn't run.
-
-
-
-
-

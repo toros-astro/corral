@@ -48,7 +48,7 @@ So for instance
     # the output into the console
     >>> import csv
     >>> for row in csv.DictReader(open(settings.IRIS_PATH)):
-    ...     print row
+    ...     print(row)
     ...
     {'SepalLength': '5.1', 'PetalLength': '1.4', 'PetalWidth': '0.2', 'SepalWidth': '3.5', 'Name': 'Iris-setosa'}
     {'SepalLength': '4.9', 'PetalLength': '1.4', 'PetalWidth': '0.2', 'SepalWidth': '3.0', 'Name': 'Iris-setosa'}
@@ -97,7 +97,7 @@ To write the loader what we should do is to open the file
 
 First we need to import the python module ``csv``, the ``settings`` from
 corral and import from our pipeline the models module, in order to
-generate them using the loader. With all this the import block should 
+generate them using the loader. With all this the import block should
 have this looks:
 
 .. code-block:: python
@@ -123,7 +123,7 @@ and screen print it, as like we did in the interactive session:
 
         def generate(self):
             for row in csv.DictReader(open(settings.IRIS_PATH)):
-                print row
+                print(row)
 
 Now if we go to the command line and execute
 
@@ -179,7 +179,7 @@ The simplest way to implement this is the following:
         def generate(self):
             # now we make use of "self.fp" for the reader
             for row in csv.DictReader(self.fp):
-                print row
+                print(row)
 
 For the sake of simplicity now we split the processing into two sides:
 
@@ -190,7 +190,7 @@ For the sake of simplicity now we split the processing into two sides:
    this method must create a new one and to store this model before returning it.
 #. A method named ``store_observation`` which receives the row as a parameter, and
    also the instance of ``my_pipeline.models.Name`` just created by the previous
-   model. This method just needs to return the instance and deliver it to the 
+   model. This method just needs to return the instance and deliver it to the
    loader without saving it.
 
 
@@ -243,14 +243,14 @@ Finally the ``generate`` method would be defined as:
             yield obs
 
 In the very last line with the ``yield`` command,
-we deliver the instance created by ``store_observation`` 
+we deliver the instance created by ``store_observation``
 to corral so it would be persisted when the time comes.
 
 
 .. warning::
 
     Bare in mind that ``generate`` *by default* can only return ``None``
-    or an *models* instances *iterator* or a single *model*. 
+    or a *models* instance *iterator* or a single *model*.
     If you wish for it to generate another object it is necessary to redefine
     the ``validate`` method which is not treated on this tutorial.
 
@@ -304,7 +304,7 @@ Finally the loader should be defined as:
     If you wish to register another name for the loader class, just update the value
     of the ``LOADER`` variable in ``settings.py``.
 
-Now when we run 
+Now when we run
 
 .. code-block:: bash
 
@@ -357,7 +357,7 @@ Or more easily with Python:
 .. code-block:: python
 
     >>> for obs in session.query(Observation).all():
-    ...     print obs
+    ...     print(obs)
     ...
     [my_pipeline-INFO @ 2016-01-10 19:24:20,555] SELECT CAST('test plain returns' AS VARCHAR(60)) AS anon_1
     [my_pipeline-INFO @ 2016-01-10 19:24:20,556] ()
@@ -373,7 +373,7 @@ Or more easily with Python:
     <my_pipeline.models.Observation object at 0x7fd14f45e950>
 
     >>> for name in session.query(Name).all():
-    ...     print name
+    ...     print(name)
     ...
     [my_pipeline-INFO @ 2016-01-10 19:26:01,907] SELECT "Name".id AS "Name_id", "Name".name AS "Name_name"
     FROM "Name"
@@ -383,7 +383,7 @@ Or more easily with Python:
     <my_pipeline.models.Name object at 0x7fd14f414bd0>
 
 This output could be improved, since it doesn't give much information.
-To do this, we can redefine the ``__repr__`` method for each model 
+To do this, we can redefine the ``__repr__`` method for each model
 (https://docs.python.org/2/reference/datamodel.html#object.__repr__)
 
 
@@ -423,7 +423,7 @@ and of ``Observation`` like this:
     LOAD: session (sqlalchemy.orm.session)
     --------------------------------------------------------------------------------
     >>> for obs in session.query(Observation).all():
-    ...     print obs
+    ...     print(obs)
     ...
     <Observation (Iris-setosa, 5.1, 3.5, 1.4, 0.2) 1>
     <Observation (Iris-setosa, 4.9, 3.0, 1.4, 0.2) 2>
@@ -439,4 +439,3 @@ and of ``Observation`` like this:
      <Observation (Iris-versicolor, 5.5, 2.3, 4.0, 1.3) 54>,
      <Observation (Iris-versicolor, 6.5, 2.8, 4.6, 1.5) 55>,
      ...]
-
