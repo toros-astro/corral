@@ -11,7 +11,7 @@ tell Corral is installed and which version by running the following command:
 
 .. code-block:: console
 
-    $ python -c "import corral; print(corral.VERSION)"
+    $ python -c "import corral; print(corral.__version__)"
 
 If Corral is installed, you should see the version of your installation. If it
 isn't, you'll get an error telling "No module named corral".
