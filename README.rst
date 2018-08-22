@@ -34,6 +34,11 @@ The Powerful Pipeline Framework
 .. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
    :target: http://corral.readthedocs.io/en/latest/
    :alt: Documentation Status
+   
+.. image:: https://img.shields.io/badge/Astropy-Affiliated-magenta.svg
+   :target: https://www.astropy.org/affiliated/index.html
+   :alt: Astropy Affiliated
+   
 
 Corral will solve your pipeline needs by merging a database full connection
 interface with a MVC model, by making you able of editing your custom schemas
