@@ -49,6 +49,10 @@ intuitive data handling model.
 .. image:: https://img.shields.io/badge/Astropy-Affiliated-magenta.svg
    :target: https://www.astropy.org/affiliated/index.html
    :alt: Astropy Affiliated
+   
+.. image:: https://img.shields.io/badge/ascl-1808.003-blue.svg?colorB=262255
+   :target: http://ascl.net/1808.003
+   :alt: ascl:1808.003
 
 
 Help & discussion mailing list
