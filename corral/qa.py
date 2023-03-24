@@ -456,6 +456,8 @@ def get_testcases(processors, commands, test_module):
     for cls in vars(test_module).values():
         if inspect.isclass(cls) and issubclass(cls, TestCase):
             subject = cls.get_subject()
+            if not inspect.isclass(subject):
+                subject = cls
             if not issubclass(subject, (Processor, cli.BaseCommand)):
                 msg = (
                     "'{}' subject must be a Processor or BaseCommand instance."

@@ -72,7 +72,8 @@ REQUIREMENTS = [
     'termcolor>=1.1.0',
     'texttable>=0.8.3',
     'xmltodict>=0.10.1',
-    'snakeviz>=0.4.1'
+    'snakeviz>=0.4.1',
+    'pep8>=1.7'
 ]
 
 with open('README.rst') as fp:

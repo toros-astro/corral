@@ -120,7 +120,7 @@ def db_exists(connection=None):
 
 def create_all(model_cls=None, **kwargs):
     cls = model_cls() if model_cls else Model
-    return cls.metadata.create_all(**kwargs)
+    return cls.metadata.create_all(engine, **kwargs)
 
 
 def alembic(*args):
