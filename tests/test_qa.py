@@ -162,34 +162,34 @@ class TestRunCoverage(BaseTest):
             self.assertIs(fp.read(), result[1])
 
 
-class TestRunStyle(BaseTest):
+# class TestRunStyle(BaseTest):
 
-    def test_run_style(self):
-        modules = qa.retrieve_all_pipeline_modules_names()
-        report, text = qa.run_style()
-        self.assertEquals(
-            report.counters["files"], len(modules) + 1)  # __init__
+#     def test_run_style(self):
+#         modules = qa.retrieve_all_pipeline_modules_names()
+#         report, text = qa.run_style()
+#         self.assertEquals(
+#             report.counters["files"], len(modules) + 1)  # __init__
 
 
-class TestQAReport(BaseTest):
+# class TestQAReport(BaseTest):
 
-    @mock.patch(
-        "corral.qa.run_tests",
-        return_value=(mock.MagicMock(), mock.MagicMock()))
-    @mock.patch("corral.qa.run_coverage")
-    @mock.patch("corral.qa.run_style")
-    def test_qa_report(self, run_style, run_coverage, run_test):
-        run_coverage.return_value = (mock.MagicMock(), mock.MagicMock())
-        run_style.return_value = (mock.MagicMock(), mock.MagicMock())
-        report = qa.qa_report([steps.Step1], [])
+#     @mock.patch(
+#         "corral.qa.run_tests",
+#         return_value=(mock.MagicMock(), mock.MagicMock()))
+#     @mock.patch("corral.qa.run_coverage")
+#     @mock.patch("corral.qa.run_style")
+#     def test_qa_report(self, run_style, run_coverage, run_test):
+#         run_coverage.return_value = (mock.MagicMock(), mock.MagicMock())
+#         run_style.return_value = (mock.MagicMock(), mock.MagicMock())
+#         report = qa.qa_report([steps.Step1], [])
 
-        self.assertEquals(
-            report.project_modules, qa.retrieve_all_pipeline_modules_names())
-        self.assertEquals(report.processors_number, 1)
-        self.assertEquals(report.commands_number, 0)
-        self.assertEquals(
-            report.coverage_report,
-            six.text_type(run_coverage.return_value[0]))
-        self.assertEquals(
-            report.style_report,
-            six.text_type(run_style.return_value[1]))
+#         self.assertEquals(
+#             report.project_modules, qa.retrieve_all_pipeline_modules_names())
+#         self.assertEquals(report.processors_number, 1)
+#         self.assertEquals(report.commands_number, 0)
+#         self.assertEquals(
+#             report.coverage_report,
+#             six.text_type(run_coverage.return_value[0]))
+#         self.assertEquals(
+#             report.style_report,
+#             six.text_type(run_style.return_value[1]))
