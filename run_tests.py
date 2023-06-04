@@ -136,7 +136,7 @@ def run_tests(verbosity=1, failfast=False):
     for testcase in util.collect_subclasses(base.BaseTest):
         tests = loader.loadTestsFromTestCase(testcase)
         if tests.countTestCases():
-                suite.addTests(tests)
+            suite.addTests(tests)
     return runner.run(suite)
 
 

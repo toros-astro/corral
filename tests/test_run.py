@@ -83,8 +83,8 @@ class TestLoaderFunctions(BaseTest):
             self.assertEqual(session.query(SampleModel).count(), 1)
         with mock.patch("tests.steps.TestLoader.generate",
                         return_value=[None]):
-                with self.assertRaises(TypeError):
-                    run.execute_loader(TestLoader, sync=True)
+            with self.assertRaises(TypeError):
+                run.execute_loader(TestLoader, sync=True)
 
 
 class TestStepFunctions(BaseTest):

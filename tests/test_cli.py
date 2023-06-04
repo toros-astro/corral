@@ -246,16 +246,16 @@ class Alembic(BaseTest):
     @mock.patch("corral.core.setup_environment")
     @mock.patch("corral.db.alembic")
     def test_alembic(self, alembic, *args):
-            cli.run_from_command_line()
-            alembic.assert_called_with("foo")
+        cli.run_from_command_line()
+        alembic.assert_called_with("foo")
 
     @mock.patch("sys.argv", new=["test", "alembic", "init"])
     @mock.patch("corral.core.setup_environment")
     @mock.patch("corral.db.alembic")
     @mock.patch("sys.stderr")
     def test_alembic_fail_init(self, stderr, *args):
-            cli.run_from_command_line()
-            stderr.write.assert_called()
+        cli.run_from_command_line()
+        stderr.write.assert_called()
 
 
 class Shell(BaseTest):
@@ -730,9 +730,9 @@ class Test(BaseTest):
             [TestLoader, Step1, Alert1],
             [commands.TestAPICommand], False, 0, False)
         with mock.patch("sys.argv", new=params), \
-                mock.patch("corral.docs.qa.run_tests") as rt:
-                    cli.run_from_command_line()
-                    rt.assert_called_with(*expected)
+             mock.patch("corral.docs.qa.run_tests") as rt:
+            cli.run_from_command_line()
+            rt.assert_called_with(*expected)
 
     @mock.patch("corral.core.setup_environment")
     @mock.patch("sys.stdout")
@@ -741,27 +741,27 @@ class Test(BaseTest):
         params = ["test", "test", "-s", "Step1", "Step1",
                   "-a", "Alert1", "-c", "TestAPICommand"]
         with mock.patch("sys.argv", new=params), \
-                mock.patch("sys.exit") as sys_exit:
-                    cli.run_from_command_line()
-                    sys_exit.assert_called_with(1)
+             mock.patch("sys.exit") as sys_exit:
+            cli.run_from_command_line()
+            sys_exit.assert_called_with(1)
         params = ["test", "test", "-s", "Step1",
                   "-a", "Alert1", "Alert1", "-c", "TestAPICommand"]
         with mock.patch("sys.argv", new=params), \
-                mock.patch("sys.exit") as sys_exit:
-                    cli.run_from_command_line()
-                    sys_exit.assert_called_with(1)
+             mock.patch("sys.exit") as sys_exit:
+            cli.run_from_command_line()
+            sys_exit.assert_called_with(1)
         params = ["test", "test", "-s", "Step1", "Step1",
                   "-a", "Alert1", "-c", "TestAPICommand"]
         with mock.patch("sys.argv", new=params), \
-                mock.patch("sys.exit") as sys_exit:
-                    cli.run_from_command_line()
-                    sys_exit.assert_called_with(1)
+             mock.patch("sys.exit") as sys_exit:
+            cli.run_from_command_line()
+            sys_exit.assert_called_with(1)
         params = ["test", "test", "-s", "Step1",
                   "-a", "Alert1", "-c", "TestAPICommand", "TestAPICommand"]
         with mock.patch("sys.argv", new=params), \
-                mock.patch("sys.exit") as sys_exit:
-                    cli.run_from_command_line()
-                    sys_exit.assert_called_with(1)
+             mock.patch("sys.exit") as sys_exit:
+            cli.run_from_command_line()
+            sys_exit.assert_called_with(1)
 
     @mock.patch("corral.core.setup_environment")
     @mock.patch("sys.stdout")
@@ -770,21 +770,21 @@ class Test(BaseTest):
         params = ["test", "test", "-s", "Step1x",
                   "-a", "Alert1", "-c", "TestAPICommand"]
         with mock.patch("sys.argv", new=params), \
-                mock.patch("sys.exit") as sys_exit:
-                    cli.run_from_command_line()
-                    sys_exit.assert_called_with(1)
+             mock.patch("sys.exit") as sys_exit:
+            cli.run_from_command_line()
+            sys_exit.assert_called_with(1)
         params = ["test", "test", "-s", "Step1",
                   "-a", "Alert1x", "-c", "TestAPICommand"]
         with mock.patch("sys.argv", new=params), \
-                mock.patch("sys.exit") as sys_exit:
-                    cli.run_from_command_line()
-                    sys_exit.assert_called_with(1)
+             mock.patch("sys.exit") as sys_exit:
+            cli.run_from_command_line()
+            sys_exit.assert_called_with(1)
         params = ["test", "test", "-s", "Step1",
                   "-a", "Alert1", "-c", "TestAPICommandx"]
         with mock.patch("sys.argv", new=params), \
-                mock.patch("sys.exit") as sys_exit:
-                    cli.run_from_command_line()
-                    sys_exit.assert_called_with(1)
+             mock.patch("sys.exit") as sys_exit:
+            cli.run_from_command_line()
+            sys_exit.assert_called_with(1)
 
 
 class RunAll(BaseTest):
@@ -795,13 +795,13 @@ class RunAll(BaseTest):
     @mock.patch("sys.argv", new=["test", "run-all"])
     def test_run_all(self, *args):
         with mock.patch("corral.run.execute_loader") as execute_loader, \
-                mock.patch("corral.run.execute_step") as execute_step, \
-                mock.patch("corral.run.execute_alert") as execute_alert:
-                    cli.run_from_command_line()
-                    execute_loader.assert_any_call(TestLoader)
-                    execute_step.assert_any_call(Step1)
-                    execute_step.assert_any_call(Step2)
-                    execute_alert.assert_any_call(Alert1)
+             mock.patch("corral.run.execute_step") as execute_step, \
+             mock.patch("corral.run.execute_alert") as execute_alert:
+            cli.run_from_command_line()
+            execute_loader.assert_any_call(TestLoader)
+            execute_step.assert_any_call(Step1)
+            execute_step.assert_any_call(Step2)
+            execute_alert.assert_any_call(Alert1)
 
     @mock.patch("sys.argv", new=["test", "run-all"])
     @mock.patch("corral.core.setup_environment")
@@ -811,7 +811,7 @@ class RunAll(BaseTest):
         fproc = mock.MagicMock()
         fproc.exitcode = 1
         with mock.patch("corral.run.execute_loader", return_value=[fproc]), \
-                mock.patch("corral.run.execute_step"), \
-                mock.patch("corral.run.execute_alert"):
-                    cli.run_from_command_line()
+             mock.patch("corral.run.execute_step"), \
+             mock.patch("corral.run.execute_alert"):
+            cli.run_from_command_line()
         sys_exit.assert_called_with(1)

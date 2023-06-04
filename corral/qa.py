@@ -590,17 +590,17 @@ def run_style():
         report = pep8.check_files()
 
     if report.total_errors:
-            lines = ["Found pep8-style errors."]
-            lines.append(
-                "Please check the Python code style reference: "
-                "https://www.python.org/dev/peps/pep-0008/"
-            )
-            lines.append("\nErrors found: ")
-            for error in report.error_list():
-                if error.startswith("/") or error.startswith("\\"):
-                    error = error[1:]
-                lines.append(error)
-            text = "\n".join(lines)
+        lines = ["Found pep8-style errors."]
+        lines.append(
+            "Please check the Python code style reference: "
+            "https://www.python.org/dev/peps/pep-0008/"
+        )
+        lines.append("\nErrors found: ")
+        for error in report.error_list():
+            if error.startswith("/") or error.startswith("\\"):
+                error = error[1:]
+            lines.append(error)
+        text = "\n".join(lines)
     else:
         text = ""
     return report, text
